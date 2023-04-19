@@ -1,6 +1,6 @@
 {
     "name": "heliumos-client-desktop",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "main": "main.js",
     "scripts": {
         "electron-start": "cross-env NODE_ENV=121212j electron . --icon=favicon.ico ",
@@ -39,7 +39,7 @@
             {
                 "provider": "github",
                 "owner": "helium-os",
-                "repo": "heliumos-client-desktop",
+                "repo": "electron",
                 "releaseType": "release",
                 "private": true,
                 "token": "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"
