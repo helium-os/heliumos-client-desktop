@@ -2,7 +2,7 @@ name: Build-Mac
 on:
     pull_request: {}
     push:
-        branches: [master]
+        branches: [main]
 # develop pushes and repository_dispatch handled in build_develop.yaml
 env:
     # These must be set for fetchdep.sh to get the right branch
