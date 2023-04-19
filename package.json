@@ -36,11 +36,13 @@
             "perMachine": false
         },
         "publish": [
-            {
+           {
                 "provider": "github",
                 "owner": "helium-os",
-                "repo": "heliumos-client-desktop",
-                "token": "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"
+                "repo": "electron",
+                "releaseType": "release",
+                "private": false,
+                "token": "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"
             }
         ],
         "mac": {
