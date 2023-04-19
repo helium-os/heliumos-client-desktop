@@ -35,16 +35,7 @@
         "nsis": {
             "perMachine": false
         },
-        "publish": [
-           {
-                "provider": "github",
-                "owner": "helium-os",
-                "repo": "heliumos-client-desktop",
-                "token": "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",
-                "releaseType": "release",
-                "publishAutoUpdate": true
-            }
-        ],
+        "publish": [],
         "mac": {
             "target": [
                 "dmg",

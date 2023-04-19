@@ -33,10 +33,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
 
-      - name: Release
-        uses: softprops/action-gh-release@v0.1.15
-        with:
-          tag_name: v${{ env.VERSION }}
+      
 
       - name: Install Dependencies&&Build
         run: |
@@ -52,14 +49,18 @@ jobs:
           fi
         shell: bash
 
-      #     files: |
-      #      dist/admin-web-${{ env.VERSION }}.dmg
-      #      dist/admin-web-${{ env.VERSION }}-mac.zip
-      #      dist/admin-web-${{ env.VERSION }}.dmg.blockmap
-      #      dist/admin-web-${{ env.VERSION }}-mac.zip.blockmap
-      #      dist/latest-mac.yml
-      #      dist/admin-web Setup ${{ env.VERSION }}.exe
-      #      dist/admin-web Setup ${{ env.VERSION }}.exe.blockmap
-      #      dist/latest.yml
-      #      dist/admin-web-${{ env.VERSION }}.AppImage
-      #      dist/admin-web-${{ env.VERSION }}.zip
+      - name: Release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          tag_name: v${{ env.VERSION }}
+          files: |
+           dist/admin-web-${{ env.VERSION }}.dmg
+           dist/admin-web-${{ env.VERSION }}-mac.zip
+           dist/admin-web-${{ env.VERSION }}.dmg.blockmap
+           dist/admin-web-${{ env.VERSION }}-mac.zip.blockmap
+           dist/latest-mac.yml
+           dist/admin-web Setup ${{ env.VERSION }}.exe
+           dist/admin-web Setup ${{ env.VERSION }}.exe.blockmap
+           dist/latest.yml
+           dist/admin-web-${{ env.VERSION }}.AppImage
+           dist/admin-web-${{ env.VERSION }}.zip
