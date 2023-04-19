@@ -1,0 +1,65 @@
+name: Build
+on:
+  workflow_dispatch:
+  pull_request: {}
+  push:
+    branches: []
+# develop pushes and repository_dispatch handled in build_develop.yaml
+env:
+  # These must be set for fetchdep.sh to get the right branch
+  REPOSITORY: ${{ github.repository }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 720
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Export version to variable
+        run: |
+          npm install npm@8.15.0 -g
+          npm config set electron_mirror "https://npm.taobao.org/mirrors/electron/"
+          npm install --registry=https://registry.npm.taobao.org/
+          node getVersion.js
+          export VERSION=$(cat version)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          tag_name: v${{ env.VERSION }}
+
+      - name: Install Dependencies&&Build
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+          sh build.sh
+
+          fi
+          if [ "$RUNNER_OS" == "Linux" ]; then
+          sh build-linux.sh
+          fi
+          if [ "$RUNNER_OS" == "macOS" ]; then
+          sh build-mac.sh
+          fi
+        shell: bash
+
+      #     files: |
+      #      dist/admin-web-${{ env.VERSION }}.dmg
+      #      dist/admin-web-${{ env.VERSION }}-mac.zip
+      #      dist/admin-web-${{ env.VERSION }}.dmg.blockmap
+      #      dist/admin-web-${{ env.VERSION }}-mac.zip.blockmap
+      #      dist/latest-mac.yml
+      #      dist/admin-web Setup ${{ env.VERSION }}.exe
+      #      dist/admin-web Setup ${{ env.VERSION }}.exe.blockmap
+      #      dist/latest.yml
+      #      dist/admin-web-${{ env.VERSION }}.AppImage
+      #      dist/admin-web-${{ env.VERSION }}.zip

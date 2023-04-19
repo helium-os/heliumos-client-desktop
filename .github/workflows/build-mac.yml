@@ -1,0 +1,42 @@
+name: Build-Mac
+on:
+    pull_request: {}
+    push:
+        branches: [master]
+# develop pushes and repository_dispatch handled in build_develop.yaml
+env:
+    # These must be set for fetchdep.sh to get the right branch
+    REPOSITORY: ${{ github.repository }}
+    PR_NUMBER: ${{ github.event.pull_request.number }}
+jobs:
+    build:
+        name: "Build"
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+
+            - name: Install Dependencies&&Build
+              run: |
+               sh build-macArm.sh 
+              shell: bash
+
+            # - name: Export version to variable
+            #   run: |
+            #     export VERSION=$(cat version)
+            #     echo "VERSION=$VERSION" >> $GITHUB_ENV
+            #   shell: bash
+
+            # - name: Release
+            #   uses: softprops/action-gh-release@v0.1.15
+            #   with:
+            #     tag_name: v${{ env.VERSION }}-MacOS-Arm64
+            #     files: |
+            #      dist/admin-web-${{ env.VERSION }}-arm64.dmg
+            #      dist/admin-web-${{ env.VERSION }}-arm64-mac.zip
+            #      dist/admin-web-${{ env.VERSION }}-arm64.dmg.blockmap
+            #      dist/admin-web-${{ env.VERSION }}-arm64-mac.zip.blockmap
+            #      dist/latest-mac.yml
