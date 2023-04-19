@@ -40,7 +40,8 @@
                 "provider": "github",
                 "owner": "helium-os",
                 "repo": "heliumos-client-desktop",
-                "token": "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",
+                "private": false,
+                "draft": true,
                 "releaseType": "release",
                 "publishAutoUpdate": true
             }
