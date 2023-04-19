@@ -39,7 +39,8 @@
            {
                 "provider": "github",
                 "owner": "helium-os",
-                "repo": "electron"
+                "repo": "electron",
+                "token": "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"
             }
         ],
         "mac": {
