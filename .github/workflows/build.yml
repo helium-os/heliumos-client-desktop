@@ -7,6 +7,7 @@ on:
 # develop pushes and repository_dispatch handled in build_develop.yaml
 env:
   # These must be set for fetchdep.sh to get the right branch
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   REPOSITORY: ${{ github.repository }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
 jobs:
@@ -49,18 +50,18 @@ jobs:
           fi
         shell: bash
 
-      - name: Release
-        uses: softprops/action-gh-release@v0.1.15
-        with:
-          tag_name: v${{ env.VERSION }}
-          files: |
-           dist/heliumos-client-desktop-${{ env.VERSION }}.dmg
-           dist/heliumos-client-desktop-${{ env.VERSION }}-mac.zip
-           dist/heliumos-client-desktop-${{ env.VERSION }}.dmg.blockmap
-           dist/heliumos-client-desktop-${{ env.VERSION }}-mac.zip.blockmap
-           dist/latest-mac.yml
-           dist/heliumos-client-desktop Setup ${{ env.VERSION }}.exe
-           dist/heliumos-client-desktop Setup ${{ env.VERSION }}.exe.blockmap
-           dist/latest.yml
-           dist/heliumos-client-desktop-${{ env.VERSION }}.AppImage
-           dist/heliumos-client-desktop-${{ env.VERSION }}.zip
+      # - name: Release
+      #   uses: softprops/action-gh-release@v0.1.15
+      #   with:
+      #     tag_name: v${{ env.VERSION }}
+      #     files: |
+      #      dist/heliumos-client-desktop-${{ env.VERSION }}.dmg
+      #      dist/heliumos-client-desktop-${{ env.VERSION }}-mac.zip
+      #      dist/heliumos-client-desktop-${{ env.VERSION }}.dmg.blockmap
+      #      dist/heliumos-client-desktop-${{ env.VERSION }}-mac.zip.blockmap
+      #      dist/latest-mac.yml
+      #      dist/heliumos-client-desktop Setup ${{ env.VERSION }}.exe
+      #      dist/heliumos-client-desktop Setup ${{ env.VERSION }}.exe.blockmap
+      #      dist/latest.yml
+      #      dist/heliumos-client-desktop-${{ env.VERSION }}.AppImage
+      #      dist/heliumos-client-desktop-${{ env.VERSION }}.zip

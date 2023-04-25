@@ -49,58 +49,9 @@ createWindow = async () => {
   });
 
   autoUpdater.autoDownload = true;
-  autoUpdater.setFeedURL({
-    provider: "github",
-    owner: "helium-os",
-    repo: "electron",
-    releaseType: "release",
-    private: true,
-    token: "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",
-  });
+ 
   autoUpdater.checkForUpdatesAndNotify();
 
-  // autoUpdater.signals.updateDownloaded(() => {})
-  //   autoUpdater.on('error', (error) => {
-  //     console.log('检查更新失败: ' + error == null ? 'unknown' : (error.stack || error).toString())
-
-  //   })
-  //  autoUpdater.checkForUpdates()
-
-  //   autoUpdater.on('update-available', (info) => {
-
-  //     // dialog.showMessageBox({
-  //     //   type: 'info',
-  //     //   title: '更新提示',
-  //     //   message: '软件需要更新，您是否立即更新？',
-  //     //   buttons: ['推迟', '立即更新']
-  //     // }).then((res) => {
-  //     //   console.log('index:' + res.response)
-  //     //   if (res.response === 1) {
-  //     //     console.log('选择升级')
-  //     //     autoUpdater.downloadUpdate()
-  //     //   } else {
-  //     //     console.log('选择不升级:')
-  //     //   }
-  //     // })
-  //   })
-
-  //   // 检查更新时触发
-  //   autoUpdater.on('update-available', (res) => {
-  //     console.log('检查更新时触发')
-
-  //   })
-
-  //   // 没有可用更新
-  //   autoUpdater.on('update-not-available', () => {
-  //     console.log('没有可用更新')
-
-  //   })
-
-  //   // 安装更新
-  //   autoUpdater.on('update-downloaded', (res) => {
-
-  //     autoUpdater.quitAndInstall()
-  //   })
 
   ipcMain.on("ping", function (event, arg) {
     event.returnValue = "pong";
@@ -156,22 +107,22 @@ createWindow = async () => {
       let contents = win.webContents
       globalShortcut.register('CommandOrControl+C', () => {
         console.log('注册复制快捷键成功')
-        contents.copy()
+        contents?.copy()
       })
 
       globalShortcut.register('CommandOrControl+V', () => {
         console.log('注册粘贴快捷键成功')
-        contents.paste()
+        contents?.paste()
       })
 
       globalShortcut.register('CommandOrControl+X', () => {
         console.log('注册剪切快捷键成功')
-        contents.cut()
+        contents?.cut()
       })
 
       globalShortcut.register('CommandOrControl+A', () => {
         console.log('注册全选快捷键成功')
-        contents.selectAll()
+        contents?.selectAll()
       })
     }
   })

@@ -1,6 +1,6 @@
 {
     "name": "heliumos-client-desktop",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "main.js",
     "scripts": {
         "electron-start": "cross-env NODE_ENV=121212j electron . --icon=favicon.ico ",
@@ -8,6 +8,7 @@
         "dist-mac": "electron-builder --mac --x64",
         "dist-macArm": "electron-builder --mac --arm64",
         "dist-linux": "electron-builder --linux  --x64",
+        "release": "electron-builder --win --config --publish always",
         "version": "echo $npm_package_version > version",
         "version-win": "echo $npm_package_version "
     },
@@ -35,6 +36,14 @@
         "nsis": {
             "perMachine": false
         },
+        "publish": [
+            {
+                "provider": "github",
+                "owner": "helium-os",
+                "repo": "heliumos-client-desktop",
+                "releaseType": "release"
+            }
+        ],
         "mac": {
             "target": [
                 "dmg",
