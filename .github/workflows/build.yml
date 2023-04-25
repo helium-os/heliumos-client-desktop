@@ -33,7 +33,11 @@ jobs:
           export VERSION=$(cat version)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
-
+      
+      - name: Release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          tag_name: v${{ env.VERSION }}
       
 
       - name: Install Dependencies&&Build
