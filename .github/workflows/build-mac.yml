@@ -35,13 +35,13 @@ jobs:
                sh build-macArm.sh 
               shell: bash
 
-            # - name: Release
-            #   uses: softprops/action-gh-release@v0.1.15
-            #   with:
-            #     tag_name: v${{ env.VERSION }}-MacOS-Arm64
-            #     files: |
-            #      dist/heliumos-client-desktop-${{ env.VERSION }}-arm64.dmg
-            #      dist/heliumos-client-desktop-${{ env.VERSION }}-arm64-mac.zip
-            #      dist/heliumos-client-desktop-${{ env.VERSION }}-arm64.dmg.blockmap
-            #      dist/heliumos-client-desktop-${{ env.VERSION }}-arm64-mac.zip.blockmap
-            #      dist/latest-mac.yml
+            - name: Release
+              uses: softprops/action-gh-release@v0.1.15
+              with:
+                tag_name: v${{ env.VERSION }}-MacOS-Arm64
+                files: |
+                 dist/heliumos-client-desktop-${{ env.VERSION }}-arm64.dmg
+                 dist/heliumos-client-desktop-${{ env.VERSION }}-arm64-mac.zip
+                 dist/heliumos-client-desktop-${{ env.VERSION }}-arm64.dmg.blockmap
+                 dist/heliumos-client-desktop-${{ env.VERSION }}-arm64-mac.zip.blockmap
+                 dist/latest-mac.yml
