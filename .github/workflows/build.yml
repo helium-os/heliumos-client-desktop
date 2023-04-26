@@ -34,25 +34,25 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
       
-      - name: Release
-        uses: softprops/action-gh-release@v0.1.15
-        with:
-          tag_name: v${{ env.VERSION }}
+      # - name: Release
+      #   uses: softprops/action-gh-release@v0.1.15
+      #   with:
+      #     tag_name: v${{ env.VERSION }}
       
 
-      - name: Install Dependencies&&Build
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-          sh build.sh
+      # - name: Install Dependencies&&Build
+      #   run: |
+      #     if [ "$RUNNER_OS" == "Windows" ]; then
+      #     sh build.sh
 
-          fi
-          if [ "$RUNNER_OS" == "Linux" ]; then
-          sh build-linux.sh
-          fi
-          if [ "$RUNNER_OS" == "macOS" ]; then
-          sh build-mac.sh
-          fi
-        shell: bash
+      #     fi
+      #     if [ "$RUNNER_OS" == "Linux" ]; then
+      #     sh build-linux.sh
+      #     fi
+      #     if [ "$RUNNER_OS" == "macOS" ]; then
+      #     sh build-mac.sh
+      #     fi
+      #   shell: bash
 
       # - name: Release
       #   uses: softprops/action-gh-release@v0.1.15
