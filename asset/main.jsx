@@ -117,7 +117,7 @@ const Login = ({ changeType }) => {
       }
       window.location.href = 
       // "http://192.168.50.120:8312/";
-       'http://desktop.' + values?.usePoint.split('@')[1] + '.helium';
+       'http://desktop.' + values?.usePoint.split('@')[1];
     }
   };
   const [form] = antd.Form.useForm();

@@ -69,12 +69,12 @@ createWindow = async () => {
     let secureDnsServers = [];
 
     if (arg.DNS) {
-      // secureDnsServers[0] = "https://dns." + arg?.DNS + ".helium";
-      //   app.configureHostResolver({
-      //  enableBuiltInResolver:false,
-      //  secureDnsMode: 'secure',
-      //  secureDnsServers
-      // })
+      secureDnsServers[0] = "https://dns." + arg?.DNS + "/dns-query";
+        app.configureHostResolver({
+       enableBuiltInResolver:false,
+       secureDnsMode: 'secure',
+       secureDnsServers
+      })
     }
     
     storage.get("data", function (error, data) {
@@ -160,18 +160,18 @@ app.on(
 );
 
 app.whenReady().then(async () => {
-  let  secureDnsServers = ["https://dns-testinner.easypayx.com/dns-query"];
+  let  secureDnsServers = ["https://dns.heliumos-public/dns-query"];
   console.log(publicKey)
   await storage.get("data", function (error, data) {
     datas = data;
-    // if (datas?.DNS ) {
-    //   secureDnsServers[0] = 'https://dns.' + datas?.DNS + '.helium';
-    //     app.configureHostResolver({
-    //    enableBuiltInResolver:false,
-    //    secureDnsMode: 'secure',
-    //    secureDnsServers
-    //   })
-    // }
+    if (datas?.DNS ) {
+      secureDnsServers[0] = 'https://dns.' + datas?.DNS + '/dns-query';
+        app.configureHostResolver({
+       enableBuiltInResolver:false,
+       secureDnsMode: 'secure',
+       secureDnsServers
+      })
+    }
   });
    app.configureHostResolver({
        enableBuiltInResolver:false,
