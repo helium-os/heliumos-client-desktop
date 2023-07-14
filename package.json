@@ -1,6 +1,6 @@
 {
     "name": "heliumos-client-desktop",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "main": "main.js",
     "scripts": {
         "electron-start": "cross-env NODE_ENV=121212j electron . --icon=favicon.ico ",
