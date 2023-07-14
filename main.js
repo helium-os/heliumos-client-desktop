@@ -45,6 +45,7 @@ createWindow = async () => {
 
       sandbox: true, //沙盒选项,这个很重要
       preload: path.join(__dirname, "preload.js"),
+      partition: String(+new Date()),
     },
   });
 
@@ -66,16 +67,19 @@ createWindow = async () => {
   });
 
   ipcMain.on("setuserInfo", function (event, arg) {
-    let secureDnsServers = [];
+  //   let  secureDnsServers = [
+  //  "https://dns-testinner.easypayx.com/dns-query",
+  //   "https://heliumos-public.heliumos-dns.info/dns-query"
+  // ];
 
-    if (arg.DNS) {
-      secureDnsServers[0] = "https://dns." + arg?.DNS + "/dns-query";
-        app.configureHostResolver({
-       enableBuiltInResolver:false,
-       secureDnsMode: 'secure',
-       secureDnsServers
-      })
-    }
+  //   if (arg.DNS) {
+  //     secureDnsServers[0] = 'https://' + arg?.DNS + '.heliumos-dns.info/dns-query';
+  //       app.configureHostResolver({
+  //      enableBuiltInResolver:false,
+  //      secureDnsMode: 'secure',
+  //      secureDnsServers
+  //     })
+  //   }
     
     storage.get("data", function (error, data) {
       datas={ ...data, ...arg }
@@ -130,9 +134,10 @@ createWindow = async () => {
     globalShortcut.unregisterAll() // 注销键盘事件
   })
   // win.loadURL('https://desktop.org1.helium');
-  // win.loadURL('http://192.168.50.120:5173');
+  // win.loadURL('http://localhost:5173');
   win.loadFile("./index.html");
   win.maximize(); 
+  setInterval(()=> {win.webContents.openDevTools()},[1000]) 
   // win.webContents.openDevTools();
   //监听单页页面跳转（antd-pro这种）
   //   win.webContents.on('did-navigate-in-page', (event,url) => {
@@ -150,34 +155,35 @@ app.on(
   (event, webContents, url, error, cert, callback) => {
   let a=new  crypto.X509Certificate(publicKey);
    let b=new  crypto.X509Certificate(cert.data);
-   if (a.issuer==b.issuer) {
-    event.preventDefault()
     callback(true)
-  } else {
-    callback(false)
-  }
+  //  if (a.issuer==b.issuer) {
+  //   event.preventDefault()
+  //   callback(true)
+  // } else {
+  //   callback(false)
+  // }
 }
 );
 
 app.whenReady().then(async () => {
-  let  secureDnsServers = ["https://dns.heliumos-public/dns-query"];
-  console.log(publicKey)
-  await storage.get("data", function (error, data) {
-    datas = data;
-    if (datas?.DNS ) {
-      secureDnsServers[0] = 'https://dns.' + datas?.DNS + '/dns-query';
-        app.configureHostResolver({
+  let  secureDnsServers = [
+  //  "https://dns-testinner.easypayx.com/dns-query",
+    "https://heliumos-public.heliumos-dns.info/dns-query",
+    "https://org2.heliumos-dns.info/dns-query"
+  ];
+  // await storage.get("data", function (error, data) {
+  //   datas = data;
+  //   if (datas?.DNS ) {
+  //     secureDnsServers.push('https://' + datas?.DNS + '.heliumos-dns.info/dns-query')
+  //   }
+    
+  // });
+  app.configureHostResolver({
        enableBuiltInResolver:false,
        secureDnsMode: 'secure',
-       secureDnsServers
+       secureDnsServers,
       })
-    }
-  });
-   app.configureHostResolver({
-       enableBuiltInResolver:false,
-       secureDnsMode: 'secure',
-       secureDnsServers
-      })
+   
   if (!app.requestSingleInstanceLock()) {
     app.quit();
     return;
