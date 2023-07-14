@@ -171,13 +171,13 @@ app.whenReady().then(async () => {
     "https://heliumos-public.heliumos-dns.info/dns-query",
     "https://org2.heliumos-dns.info/dns-query"
   ];
-  // await storage.get("data", function (error, data) {
-  //   datas = data;
-  //   if (datas?.DNS ) {
-  //     secureDnsServers.push('https://' + datas?.DNS + '.heliumos-dns.info/dns-query')
-  //   }
+  await storage.get("data", function (error, data) {
+    datas = data;
+    // if (datas?.DNS ) {
+    //   secureDnsServers.push('https://' + datas?.DNS + '.heliumos-dns.info/dns-query')
+    // }
     
-  // });
+  });
   app.configureHostResolver({
        enableBuiltInResolver:false,
        secureDnsMode: 'secure',
