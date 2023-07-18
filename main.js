@@ -69,14 +69,14 @@ createWindow = async () => {
   ipcMain.on("setuserInfo", function (event, arg) {
     let  secureDnsServers = [];
 
-    if (arg.DNS) {
-      secureDnsServers[0] = 'https://' + arg?.DNS + '.heliumos-dns.info/dns-query';
-        app.configureHostResolver({
-       enableBuiltInResolver:false,
-       secureDnsMode: 'secure',
-       secureDnsServers
-      })
-    }
+    // if (arg.DNS) {
+    //   secureDnsServers[0] = 'https://' + arg?.DNS + '.heliumos-dns.info/dns-query';
+    //     app.configureHostResolver({
+    //    enableBuiltInResolver:false,
+    //    secureDnsMode: 'secure',
+    //    secureDnsServers
+    //   })
+    // }
     
     storage.get("data", function (error, data) {
       datas={ ...data, ...arg }
@@ -164,13 +164,13 @@ app.on(
 
 app.whenReady().then(async () => {
   let  secureDnsServers = [
-    "https://heliumos-public.heliumos-dns.info/dns-query",
+    "https://org2.heliumos-dns.info/dns-query",
   ];
   await storage.get("data", function (error, data) {
     datas = data;
-    if (datas?.DNS ) {
-      secureDnsServers[0]='https://' + datas?.DNS + '.heliumos-dns.info/dns-query'
-    }
+    // if (datas?.DNS ) {
+    //   secureDnsServers[0]='https://' + datas?.DNS + '.heliumos-dns.info/dns-query'
+    // }
     
   });
   app.configureHostResolver({
