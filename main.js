@@ -45,7 +45,6 @@ createWindow = async () => {
 
       sandbox: true, //沙盒选项,这个很重要
       preload: path.join(__dirname, "preload.js"),
-      partition: String(+new Date()),
     },
   });
 
