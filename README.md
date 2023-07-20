@@ -1,1 +1,1 @@
-# heliumos-client-desktop
+# Helium OS

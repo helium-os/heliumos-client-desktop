@@ -40,8 +40,8 @@ jobs:
             #   with:
             #     tag_name: v${{ env.VERSION }}-MacOS-Arm64
             #     files: |
-            #      dist/heliumos-client-desktop-${{ env.VERSION }}-arm64.dmg
-            #      dist/heliumos-client-desktop-${{ env.VERSION }}-arm64-mac.zip
-            #      dist/heliumos-client-desktop-${{ env.VERSION }}-arm64.dmg.blockmap
-            #      dist/heliumos-client-desktop-${{ env.VERSION }}-arm64-mac.zip.blockmap
+            #      dist/Helium OS-${{ env.VERSION }}-arm64.dmg
+            #      dist/Helium OS-${{ env.VERSION }}-arm64-mac.zip
+            #      dist/Helium OS-${{ env.VERSION }}-arm64.dmg.blockmap
+            #      dist/Helium OS-${{ env.VERSION }}-arm64-mac.zip.blockmap
             #      dist/latest-mac.yml
