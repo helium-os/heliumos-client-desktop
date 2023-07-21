@@ -27,6 +27,7 @@
     },
     "build": {
         "appId": "com.xxx.app",
+        "productName":"Helium OS",
         "extraResources": [
             {
                 "from": "heliumos.crt",
