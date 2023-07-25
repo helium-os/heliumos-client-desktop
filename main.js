@@ -72,7 +72,7 @@ createWindow = async () => {
     if (arg.autoStart === true || arg.autoStart === false) {
       app.setLoginItemSettings({
         // 设置为true注册开机自起
-        openAtLogin: datas?.autoStart,
+        openAtLogin: arg?.autoStart,
         openAsHidden: false,
         path: process.execPath,
       });
@@ -176,7 +176,7 @@ app.whenReady().then(async () => {
   //开机自启动
   app.setLoginItemSettings({
     // 设置为true注册开机自起
-    openAtLogin: true,
+    openAtLogin: datas?.autoStart,
     openAsHidden: false,
     path: process.execPath,
   });
