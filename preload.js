@@ -14,4 +14,5 @@ contextBridge.exposeInMainWorld("versions", {
   setuserInfo: (value) => ipcRenderer.send("setuserInfo", value),
   getDNS: () => ipcRenderer.invoke("getValue", "DNS"),
   clearInfo:()=> ipcRenderer.send("clearInfo"),
+  getValue: (res) => ipcRenderer.invoke("getValue", res),
 });

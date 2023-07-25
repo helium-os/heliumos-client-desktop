@@ -6,22 +6,19 @@ const fetch = require("electron-fetch").default;
 let a = true;
 const storage = require("electron-json-storage");
 let { autoUpdater } = require("electron-updater");
-var crypto  = require('crypto')
-var fs      = require('fs')
+var crypto = require('crypto')
+var fs = require('fs')
 const forge = require('node-forge');
-var keyList=["heliumos.crt",'../heliumos.crt']
+var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
-
-// app.commandLine.appendSwitch('disk-cache-size',20000000)
 app.commandLine.appendSwitch('no-proxy-server')
-// app.commandLine.appendSwitch('disable-http2')
 
-keyList.forEach(item=>{
-  if( fs.existsSync(path.join(__dirname, item))){
-    publicKey=fs.readFileSync(path.join(__dirname, item), 'utf8')
+keyList.forEach(item => {
+  if (fs.existsSync(path.join(__dirname, item))) {
+    publicKey = fs.readFileSync(path.join(__dirname, item), 'utf8')
   }
 })
- let datas = {}
+let datas = {}
 createWindow = async () => {
   //  清除store
   //   storage.clear(function(error) {
@@ -36,22 +33,48 @@ createWindow = async () => {
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false, //禁用同源策略
-
       plugins: true, //是否支持插件
-
       nativeWindowOpen: true, //是否使用原生的window.open()
-
       webviewTag: true, //是否启用 <webview> tag标签
-
       sandbox: true, //沙盒选项,这个很重要
       preload: path.join(__dirname, "preload.js"),
     },
   });
 
   autoUpdater.autoDownload = true;
- 
+
   autoUpdater.checkForUpdatesAndNotify();
 
+  function sendStatusToWindow(text) {
+    win.webContents.send('message', text);
+  }
+
+  autoUpdater.on('checking-for-update', () => {
+    sendStatusToWindow('Checking for update...');
+  })
+
+  autoUpdater.on('update-available', (info) => {
+    sendStatusToWindow('Update available.');
+  })
+
+  autoUpdater.on('update-not-available', (info) => {
+    sendStatusToWindow('Update not available.');
+  })
+
+  autoUpdater.on('error', (err) => {
+    sendStatusToWindow('Error in auto-updater. ' + err);
+  })
+
+  autoUpdater.on('download-progress', (progressObj) => {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    sendStatusToWindow(log_message);
+  })
+
+  autoUpdater.on('update-downloaded', (info) => {
+    sendStatusToWindow('Update downloaded');
+  });
 
   ipcMain.on("ping", function (event, arg) {
     event.returnValue = "pong";
@@ -66,7 +89,7 @@ createWindow = async () => {
   });
 
   ipcMain.on("setuserInfo", function (event, arg) {
-    let  secureDnsServers = [];
+    let secureDnsServers = [];
 
     // if (arg.DNS) {
     //   secureDnsServers[0] = 'https://' + arg?.DNS + '.heliumos-dns.info/dns-query';
@@ -76,9 +99,19 @@ createWindow = async () => {
     //    secureDnsServers
     //   })
     // }
-    
+
+    if (arg.autoStart === true || arg.autoStart === false) {
+      app.setLoginItemSettings({
+        // 设置为true注册开机自起
+        openAtLogin: datas?.autoStart,
+        openAsHidden: false,
+        path: process.execPath,
+      });
+    }
+
+
     storage.get("data", function (error, data) {
-      datas={ ...data, ...arg }
+      datas = { ...data, ...arg }
       storage.set("data", { ...data, ...arg });
     });
   });
@@ -86,7 +119,7 @@ createWindow = async () => {
   ipcMain.on("setDNS", function (event, arg) {
     storage.set("DNS", arg);
   });
-  ipcMain.on('clearInfo',()=> win.loadFile("./index.html"))
+  ipcMain.on('clearInfo', () => win.loadFile("./index.html"))
   //获取本地唯一MAC地址
   var mac = "";
   var networkInterfaces = os.networkInterfaces();
@@ -101,7 +134,7 @@ createWindow = async () => {
       }
     }
   }
-    win.on('focus', () => {
+  win.on('focus', () => {
     // mac下快捷键失效的问题
     if (process.platform === 'darwin') {
       let contents = win.webContents
@@ -130,10 +163,9 @@ createWindow = async () => {
     globalShortcut.unregisterAll() // 注销键盘事件
   })
   // win.loadURL('https://desktop.org1.helium');
-  // win.loadURL('http://localhost:5173');
   win.loadFile("./index.html");
-  win.maximize(); 
-  // setInterval(()=> {win.webContents.openDevTools()},[1000]) 
+  win.maximize();
+  // setInterval(() => { win.webContents.openDevTools() }, [1000])
   // win.webContents.openDevTools();
   //监听单页页面跳转（antd-pro这种）
   //   win.webContents.on('did-navigate-in-page', (event,url) => {
@@ -149,20 +181,20 @@ createWindow = async () => {
 app.on(
   "certificate-error",
   (event, webContents, url, error, cert, callback) => {
-  let a=new  crypto.X509Certificate(publicKey);
-   let b=new  crypto.X509Certificate(cert.data);
+    let a = new crypto.X509Certificate(publicKey);
+    let b = new crypto.X509Certificate(cert.data);
     callback(true)
-  //  if (a.issuer==b.issuer) {
-  //   event.preventDefault()
-  //   callback(true)
-  // } else {
-  //   callback(false)
-  // }
-}
+    //  if (a.issuer==b.issuer) {
+    //   event.preventDefault()
+    //   callback(true)
+    // } else {
+    //   callback(false)
+    // }
+  }
 );
 
 app.whenReady().then(async () => {
-  let  secureDnsServers = [
+  let secureDnsServers = [
     "https://org2.heliumos-dns.info/dns-query",
   ];
   await storage.get("data", function (error, data) {
@@ -170,14 +202,22 @@ app.whenReady().then(async () => {
     // if (datas?.DNS ) {
     //   secureDnsServers[0]='https://' + datas?.DNS + '.heliumos-dns.info/dns-query'
     // }
-    
+
   });
+  //开机自启动
+  app.setLoginItemSettings({
+    // 设置为true注册开机自起
+    openAtLogin: datas?.autoStart,
+    openAsHidden: false,
+    path: process.execPath,
+  });
+
   app.configureHostResolver({
-       enableBuiltInResolver:false,
-       secureDnsMode: 'secure',
-       secureDnsServers,
-      })
-   
+    enableBuiltInResolver: false,
+    secureDnsMode: 'secure',
+    secureDnsServers,
+  })
+
   if (!app.requestSingleInstanceLock()) {
     app.quit();
     return;
