@@ -13,7 +13,7 @@ var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 app.commandLine.appendSwitch('no-proxy-server')
 
-keyList.forEach(item => {
+ keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
     publicKey = fs.readFileSync(path.join(__dirname, item), 'utf8')
   }
