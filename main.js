@@ -13,7 +13,7 @@ var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 app.commandLine.appendSwitch('no-proxy-server')
 
- keyList.forEach(item => {
+keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
     publicKey = fs.readFileSync(path.join(__dirname, item), 'utf8')
   }
@@ -40,10 +40,58 @@ createWindow = async () => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-
-  autoUpdater.autoDownload = true;
-
+  autoUpdater.setFeedURL({
+    provider: 'github',
+    owner: 'helium-os',
+    repo: 'heliumos-client-desktop',
+    releaseType:'release'
+  });
   autoUpdater.checkForUpdatesAndNotify();
+  // 处理检查更新事件
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Checking for update...');
+  });
+
+  // 处理发现更新事件
+  autoUpdater.on('update-available', (info) => {
+    console.log('Update available:', info);
+  });
+
+  // 处理没有更新的事件
+  autoUpdater.on('update-not-available', () => {
+    console.log('No update available.');
+  });
+
+  // 处理更新下载进度事件
+  autoUpdater.on('download-progress', (progressObj) => {
+    console.log('Download progress:', progressObj);
+  });
+
+  // 处理更新下载完成事件
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('Update downloaded:', info);
+    // 当更新下载完成后，你可以提示用户进行安装并重启应用程序
+    // 例如，调用 autoUpdater.quitAndInstall() 来自动安装更新并退出应用程序
+    autoUpdater.quitAndInstall();
+  });
+
+  // 处理更新错误事件
+  autoUpdater.on('error', (err) => {
+    console.error('Error while checking for updates:', err);
+    dialog.showMessageBox({
+      type: 'info', // 消息框类型为信息提示
+      title: 'Information',
+      message: String(err),
+      buttons: ['OK', 'Cancel'] // 按钮选项，用户可以点击其中一个按钮进行选择
+    }).then(result => {
+      // 用户的选择将在 result.response 中返回，通常是 0 表示点击了第一个按钮（'OK'），1 表示点击了第二个按钮（'Cancel'）
+      console.log(result.response);
+    }).catch(err => {
+      console.error(err);
+    });
+  });
+
+
 
   ipcMain.on("ping", function (event, arg) {
     event.returnValue = "pong";
