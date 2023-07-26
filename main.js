@@ -43,10 +43,10 @@ createWindow = async () => {
   autoUpdater.setFeedURL({
     provider: 'github',
     owner: 'helium-os',
-    repo: 'heliumos-client-desktop',
-    releaseType:'release'
+    repo: 'heliumos-client-desktop'
   });
   autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdates()
   // 处理检查更新事件
   autoUpdater.on('checking-for-update', () => {
     console.log('Checking for update...');
@@ -55,6 +55,11 @@ createWindow = async () => {
   // 处理发现更新事件
   autoUpdater.on('update-available', (info) => {
     console.log('Update available:', info);
+     dialog.showMessageBox({
+      type: 'info',
+      title: '应用更新',
+      message: String(info),
+    })
   });
 
   // 处理没有更新的事件
@@ -65,14 +70,27 @@ createWindow = async () => {
   // 处理更新下载进度事件
   autoUpdater.on('download-progress', (progressObj) => {
     console.log('Download progress:', progressObj);
+     dialog.showMessageBox({
+      type: 'info',
+      title: '下载进度',
+      message: String(progressObj),
+    })
   });
 
   // 处理更新下载完成事件
   autoUpdater.on('update-downloaded', (info) => {
-    console.log('Update downloaded:', info);
-    // 当更新下载完成后，你可以提示用户进行安装并重启应用程序
-    // 例如，调用 autoUpdater.quitAndInstall() 来自动安装更新并退出应用程序
-    autoUpdater.quitAndInstall();
+      dialog.showMessageBox({
+      type: 'info',
+      title: '应用更新',
+      message: '发现新版本，是否更新？',
+      buttons: ['是', '否']
+    }).then((buttonIndex) => {
+      if(buttonIndex.response == 0) {  //选择是，则退出程序，安装新版本
+        autoUpdater.quitAndInstall() 
+        app.quit()
+      }
+    })
+
   });
 
   // 处理更新错误事件
@@ -229,11 +247,11 @@ app.whenReady().then(async () => {
     path: process.execPath,
   });
 
-  app.configureHostResolver({
-    enableBuiltInResolver: false,
-    secureDnsMode: 'secure',
-    secureDnsServers,
-  })
+  // app.configureHostResolver({
+  //   enableBuiltInResolver: false,
+  //   secureDnsMode: 'secure',
+  //   secureDnsServers,
+  // })
 
   if (!app.requestSingleInstanceLock()) {
     app.quit();
