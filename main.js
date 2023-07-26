@@ -41,6 +41,7 @@ createWindow = async () => {
     },
   });
 
+  
   //要想使用自动更新，不能配置DNS解析
   autoUpdater.setFeedURL({
     provider: 'github',
