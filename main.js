@@ -43,7 +43,8 @@ createWindow = async () => {
   autoUpdater.setFeedURL({
     provider: 'github',
     owner: 'helium-os',
-    repo: 'heliumos-client-desktop'
+    repo: 'heliumos-client-desktop',
+    "releaseType":"release"
   });
   autoUpdater.checkForUpdatesAndNotify();
   autoUpdater.checkForUpdates()

@@ -41,7 +41,8 @@
             {
                 "provider": "github",
                 "owner": "helium-os",
-                "repo": "heliumos-client-desktop"
+                "repo": "heliumos-client-desktop",
+                "releaseType":"release"
             }
         ],
         "mac": {
