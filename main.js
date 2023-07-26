@@ -40,13 +40,15 @@ createWindow = async () => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
+
+  //要想使用自动更新，不能配置DNS解析
   autoUpdater.setFeedURL({
     provider: 'github',
     owner: 'helium-os',
     repo: 'heliumos-client-desktop',
     "releaseType":"release"
   });
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdates();
   // 处理检查更新事件
   autoUpdater.on('checking-for-update', () => {
     console.log('Checking for update...');
@@ -55,11 +57,6 @@ createWindow = async () => {
   // 处理发现更新事件
   autoUpdater.on('update-available', (info) => {
     console.log('Update available:', info);
-     dialog.showMessageBox({
-      type: 'info',
-      title: '应用更新',
-      message: String(info),
-    })
   });
 
   // 处理没有更新的事件
@@ -70,11 +67,6 @@ createWindow = async () => {
   // 处理更新下载进度事件
   autoUpdater.on('download-progress', (progressObj) => {
     console.log('Download progress:', progressObj);
-     dialog.showMessageBox({
-      type: 'info',
-      title: '下载进度',
-      message: String(progressObj),
-    })
   });
 
   // 处理更新下载完成事件
@@ -96,17 +88,6 @@ createWindow = async () => {
   // 处理更新错误事件
   autoUpdater.on('error', (err) => {
     console.error('Error while checking for updates:', err);
-    dialog.showMessageBox({
-      type: 'info', // 消息框类型为信息提示
-      title: 'Information',
-      message: String(err),
-      buttons: ['OK', 'Cancel'] // 按钮选项，用户可以点击其中一个按钮进行选择
-    }).then(result => {
-      // 用户的选择将在 result.response 中返回，通常是 0 表示点击了第一个按钮（'OK'），1 表示点击了第二个按钮（'Cancel'）
-      console.log(result.response);
-    }).catch(err => {
-      console.error(err);
-    });
   });
 
 
@@ -247,11 +228,11 @@ app.whenReady().then(async () => {
     path: process.execPath,
   });
 
-  // app.configureHostResolver({
-  //   enableBuiltInResolver: false,
-  //   secureDnsMode: 'secure',
-  //   secureDnsServers,
-  // })
+  app.configureHostResolver({
+    enableBuiltInResolver: false,
+    secureDnsMode: 'secure',
+    secureDnsServers,
+  })
 
   if (!app.requestSingleInstanceLock()) {
     app.quit();
