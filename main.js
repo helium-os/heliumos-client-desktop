@@ -19,7 +19,7 @@ keyList.forEach(item => {
   }
 })
 let datas = {}
-createWindow = async () => {
+createWindow = async (data) => {
   //  清除store
   //   storage.clear(function(error) {
   //   if (error) throw error;
@@ -41,13 +41,13 @@ createWindow = async () => {
     },
   });
 
-  
+
   //要想使用自动更新，不能配置DNS解析
   autoUpdater.setFeedURL({
     provider: 'github',
     owner: 'helium-os',
     repo: 'heliumos-client-desktop',
-    "releaseType":"release"
+    "releaseType": "release"
   });
   autoUpdater.checkForUpdates();
   // 处理检查更新事件
@@ -72,14 +72,14 @@ createWindow = async () => {
 
   // 处理更新下载完成事件
   autoUpdater.on('update-downloaded', (info) => {
-      dialog.showMessageBox({
+    dialog.showMessageBox({
       type: 'info',
       title: '应用更新',
       message: '发现新版本，是否更新？',
       buttons: ['是', '否']
     }).then((buttonIndex) => {
-      if(buttonIndex.response == 0) {  //选择是，则退出程序，安装新版本
-        autoUpdater.quitAndInstall() 
+      if (buttonIndex.response == 0) {  //选择是，则退出程序，安装新版本
+        autoUpdater.quitAndInstall()
         app.quit()
       }
     })
@@ -125,8 +125,6 @@ createWindow = async () => {
         path: process.execPath,
       });
     }
-
-
     storage.get("data", function (error, data) {
       datas = { ...data, ...arg }
       storage.set("data", { ...data, ...arg });
@@ -176,11 +174,19 @@ createWindow = async () => {
       })
     }
   })
+  win.loadFile("./loading.html");
   win.on('blur', () => {
     globalShortcut.unregisterAll() // 注销键盘事件
   })
   // win.loadURL('https://desktop.org1.helium');
-  win.loadFile("./index.html");
+  storage.get("data", function (error, data) {
+    if (data?.DNS && data?.password) {
+      win.loadURL('http://desktop.' + data?.DNS);
+    } else {
+      win.loadFile("./index.html");
+    }
+  });
+
   win.maximize();
   // setInterval(() => { win.webContents.openDevTools() }, [1000])
   // win.webContents.openDevTools();
@@ -241,7 +247,6 @@ app.whenReady().then(async () => {
   }
 
   //dns配置
-
   ipcMain.handle("getValue", async function (event, arg) {
     return datas[arg] || "";
   });
