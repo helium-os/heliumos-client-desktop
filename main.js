@@ -47,7 +47,6 @@ createWindow = async () => {
     "releaseType":"release"
   });
   autoUpdater.checkForUpdatesAndNotify();
-  autoUpdater.checkForUpdates()
   // 处理检查更新事件
   autoUpdater.on('checking-for-update', () => {
     console.log('Checking for update...');
