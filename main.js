@@ -206,13 +206,12 @@ app.on(
   (event, webContents, url, error, cert, callback) => {
     let a = new crypto.X509Certificate(publicKey);
     let b = new crypto.X509Certificate(cert.data);
-    callback(true)
-    //  if (a.issuer==b.issuer) {
-    //   event.preventDefault()
-    //   callback(true)
-    // } else {
-    //   callback(false)
-    // }
+     if (a.issuer.split('OU=')[1].split('\n')[0]==b.issuer.split('OU=')[1].split('\n')[0]) {
+      event.preventDefault()
+      callback(true)
+    } else {
+      callback(false)
+    }
   }
 );
 
