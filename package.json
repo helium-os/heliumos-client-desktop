@@ -1,6 +1,6 @@
 {
     "name": "Helium-OS",
-    "version": "1.0.9",
+    "version": "1.0.9-demo",
     "main": "main.js",
     "scripts": {
         "electron-start": "cross-env NODE_ENV=121212j electron . --icon=favicon.ico ",

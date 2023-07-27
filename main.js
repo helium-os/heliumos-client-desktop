@@ -174,18 +174,19 @@ createWindow = async (data) => {
       })
     }
   })
-  win.loadFile("./loading.html");
+  // win.loadFile("./loading.html");
+  win.loadFile("./index.html");
   win.on('blur', () => {
     globalShortcut.unregisterAll() // 注销键盘事件
   })
   // win.loadURL('https://desktop.org1.helium');
-  storage.get("data", function (error, data) {
-    if (data?.DNS && data?.password) {
-      win.loadURL('http://desktop.' + data?.DNS);
-    } else {
-      win.loadFile("./index.html");
-    }
-  });
+  // storage.get("data", function (error, data) {
+  //   if (data?.DNS && data?.password) {
+  //     win.loadURL('http://desktop.' + data?.DNS);
+  //   } else {
+  //     win.loadFile("./index.html");
+  //   }
+  // });
 
   win.maximize();
   // setInterval(() => { win.webContents.openDevTools() }, [1000])
@@ -217,7 +218,7 @@ app.on(
 
 app.whenReady().then(async () => {
   let secureDnsServers = [
-    "https://org2.heliumos-dns.info/dns-query",
+    "https://easypay.heliumos-dns.info/dns-query",
   ];
   await storage.get("data", function (error, data) {
     datas = data;
