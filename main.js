@@ -108,9 +108,9 @@ createWindow = async (data) => {
   ipcMain.on("setuserInfo", function (event, arg) {
     let secureDnsServers = [];
 
-    // if (arg.DNS) {
-    //   secureDnsServers[0] = 'https://' + arg?.DNS + '.heliumos-dns.info/dns-query';
-    //     app.configureHostResolver({
+    // if (arg.dnsValue) {
+    //   secureDnsServers[0] = 'https://' + arg?.dnsValue + '.heliumos-dns.info/dns-query';
+    //   app.configureHostResolver({
     //    enableBuiltInResolver:false,
     //    secureDnsMode: 'secure',
     //    secureDnsServers
@@ -149,7 +149,28 @@ createWindow = async (data) => {
       }
     }
   }
+
+
+
+  win.webContents.on('did-navigate', (event, url) => {
+    if (url.includes('/index.html')) {
+      globalShortcut.register('F11', () => {
+        win.webContents.openDevTools()
+      });
+    } else{
+      globalShortcut.unregister('F11');
+    }
+  })
+  // Handle the case when the app is quitting
+
   win.on('focus', () => {
+
+    
+    if (win.webContents.getURL().includes('/index.html')) {
+      globalShortcut.register('F11', () => {
+        win.webContents.openDevTools()
+      });
+    }
     // mac下快捷键失效的问题
     if (process.platform === 'darwin') {
       let contents = win.webContents
@@ -189,17 +210,7 @@ createWindow = async (data) => {
   // });
 
   win.maximize();
-  // setInterval(() => { win.webContents.openDevTools() }, [1000])
-  // win.webContents.openDevTools();
-  //监听单页页面跳转（antd-pro这种）
-  //   win.webContents.on('did-navigate-in-page', (event,url) => {
-  //   console.log(url)
-  // });
-  //监听页面跳转
-  // win.webContents.on('will-navigate', (event,url) => {
-  //   console.log(event)
-  //   console.log(url)
-  // });
+  // setInterval(() => { win.webContents.openDevTools() }, [1000]
 };
 
 app.on(
@@ -207,7 +218,7 @@ app.on(
   (event, webContents, url, error, cert, callback) => {
     let a = new crypto.X509Certificate(publicKey);
     let b = new crypto.X509Certificate(cert.data);
-     if (a.issuer.split('OU=')[1].split('\n')[0]==b.issuer.split('OU=')[1].split('\n')[0]) {
+    if (a.issuer.split('OU=')[1].split('\n')[0] == b.issuer.split('OU=')[1].split('\n')[0]) {
       event.preventDefault()
       callback(true)
     } else {
@@ -218,12 +229,12 @@ app.on(
 
 app.whenReady().then(async () => {
   let secureDnsServers = [
-    "https://easypay.heliumos-dns.info/dns-query",
+    "https://org2.heliumos-dns.info/dns-query",
   ];
   await storage.get("data", function (error, data) {
     datas = data;
-    // if (datas?.DNS ) {
-    //   secureDnsServers[0]='https://' + datas?.DNS + '.heliumos-dns.info/dns-query'
+    // if (datas?.dnsValue ) {
+    //   secureDnsServers[0]='https://' + datas?.dnsValue + '.heliumos-dns.info/dns-query'
     // }
 
   });
@@ -264,3 +275,4 @@ app.on("window-all-closed", () => {
     app.quit();
   }
 });
+

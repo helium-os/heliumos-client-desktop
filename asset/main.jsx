@@ -110,45 +110,59 @@ const checkEmail = (rule, value) => {
 
 //登录
 const Login = ({ changeType }) => {
-  const onFinish = async(values) => {
+  const onFinish = async (values) => {
     if (values?.usePoint.split("@")[1]) {
       if (window?.versions) {
-       await window?.versions?.setuserInfo({ DNS: values?.usePoint.split("@")[1],name:values?.usePoint.split("@")[0] });
+        await window?.versions?.setuserInfo({ DNS: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0] });
       }
-      window.location.href = 
-      // "http://192.168.50.120:8312/";
-       'http://desktop.' + values?.usePoint.split('@')[1];
+      window.location.href =
+        // "http://192.168.50.120:8312/";
+        'http://desktop.' + values?.usePoint.split('@')[1];
     }
   };
   const [form] = antd.Form.useForm();
-  const getValue = async()=>{
-  if (window?.versions) {
+  const getValue = async () => {
+    if (window?.versions) {
       let a = await window?.versions?.getDNS();
       let b = await window?.versions?.name()
-      if(a&&b){
-      form.setFieldsValue({ usePoint: b+'@'+a });
-    }
+      if (a && b) {
+        form.setFieldsValue({ usePoint: b + '@' + a });
+      }
     }
   }
   React.useEffect(() => {
-  getValue()
+    getValue()
   }, []);
 
   return (
     <div>
       <antd.Form form={form} onFinish={onFinish} layout={"vertical"}>
         <div className="account">
-        <antd.Form.Item
-          name="usePoint"
-          rules={[
-            { required: true, message: "请输入账号!" },
-            { validator: checkEmail },
-          ]}
-          label="账号"
-        >
-          <antd.Input placeholder="请输入账号" style={{ width: "100%" }} />
-        </antd.Form.Item>
+          <antd.Form.Item
+            name="usePoint"
+            rules={[
+              { required: true, message: "请输入账号!" },
+              { validator: checkEmail },
+            ]}
+            label="账号"
+          >
+            <antd.Input placeholder="请输入账号" style={{ width: "100%" }} />
+          </antd.Form.Item>
         </div>
+        {/* <div className="account">
+          <antd.Form.Item
+            label="环境"
+          >
+            <antd.Select placeholder="请选择环境" style={{ width: "100%" }} onChange={async (e) => {
+              if (window?.versions) {
+                await window?.versions?.setuserInfo({ dnsValue: e });
+              }
+            }}>
+              <antd.Select.Option value='easypay'>demo</antd.Select.Option>
+              <antd.Select.Option value='org2'>testinner</antd.Select.Option>
+            </antd.Select>
+          </antd.Form.Item>
+        </div> */}
         <antd.Form.Item>
           <antd.Button className="loginButton" type="primary" htmlType="submit">
             <img src="asset/arrowhead.png" alt="" />
@@ -159,17 +173,7 @@ const Login = ({ changeType }) => {
   );
 };
 
-//标题头
-const Header = ({ type, changeType }) => {
-  return (
-    <div className="header">
-      <div className="content">
-        <div></div>
-      </div>
-    </div>
-  );
-};
-const Introduce = () => <div className="introduce">v1.0.6</div>;
+
 const MessageBox = () => {
   const [type, setType] = React.useState("login");
   const changeType = (res) => {
@@ -179,13 +183,13 @@ const MessageBox = () => {
   return (<>
     <div className="login">
       <div className="panel">
-          <div className="form">
-            <Login changeType={(res) => changeType(res)} />
-          </div>
+        <div className="form">
+          <Login changeType={(res) => changeType(res)} />
         </div>
-        
+      </div>
+
     </div>
-    </>
+  </>
   );
 };
 
