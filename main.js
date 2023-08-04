@@ -9,9 +9,16 @@ let { autoUpdater } = require("electron-updater");
 var crypto = require('crypto')
 var fs = require('fs')
 const forge = require('node-forge');
+const { node_http } = require('./http.js')
+const sqlite3 = require('sqlite3').verbose();
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 app.commandLine.appendSwitch('no-proxy-server')
+//F9双击
+let f9Pressed = false;
+let lastF9PressTime = 0;
+const doublePressInterval = 300;
+let db
 
 keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
@@ -135,6 +142,7 @@ createWindow = async (data) => {
     storage.set("DNS", arg);
   });
   ipcMain.on('clearInfo', () => win.loadFile("./index.html"))
+
   //获取本地唯一MAC地址
   var mac = "";
   var networkInterfaces = os.networkInterfaces();
@@ -157,15 +165,35 @@ createWindow = async (data) => {
       globalShortcut.register('F11', () => {
         win.webContents.openDevTools()
       });
-    } else{
+      // 注册全局快捷键 F10
+      globalShortcut.register('F10', () => {
+        const now = Date.now();
+        // 第一次按下 F10 键
+        if (!f9Pressed) {
+          f9Pressed = true;
+          lastF9PressTime = now;
+        } else {
+          // 第二次按下 F10 键，检查时间间隔
+          if (now - lastF9PressTime < doublePressInterval) {
+            console.log('Double press F10');
+            // 在这里处理连续按下两次 F10 键的操作
+          }
+          f9Pressed = false; // 重置状态
+        }
+      });
+
+
+    } else {
       globalShortcut.unregister('F11');
+      globalShortcut.unregister('F10');
     }
   })
   // Handle the case when the app is quitting
 
+
   win.on('focus', () => {
 
-    
+
     if (win.webContents.getURL().includes('/index.html')) {
       globalShortcut.register('F11', () => {
         win.webContents.openDevTools()
@@ -228,6 +256,20 @@ app.on(
 );
 
 app.whenReady().then(async () => {
+
+
+  const dbPath = path.join(app.getPath('userData'), 'database');
+  // 创建数据库连接
+  db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err.message);
+    } else {
+      console.log('Connected to the database.');
+      // 在这里可以执行数据库操作
+    }
+  });
+  // await node_http(db)
+
   let secureDnsServers = [
     "https://org2.heliumos-dns.info/dns-query",
   ];
@@ -238,6 +280,9 @@ app.whenReady().then(async () => {
     // }
 
   });
+  //配置proxy
+  // app.commandLine.appendSwitch('proxy-server', 'http://your-proxy-server:port');
+
   //开机自启动
   app.setLoginItemSettings({
     // 设置为true注册开机自起
