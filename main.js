@@ -15,7 +15,7 @@ var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 app.commandLine.appendSwitch('no-proxy-server')
 //F9双击
-let f9Pressed = false;
+let f10Presse = false;
 let lastF9PressTime = 0;
 const doublePressInterval = 300;
 let db
@@ -26,6 +26,46 @@ keyList.forEach(item => {
   }
 })
 let datas = {}
+
+//修改数据库链接 
+
+const changeDb=async(name)=>{
+  const dbPath = path.join(app.getPath('userData'), name);
+  // 创建数据库连接
+  db = await new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err.message);
+    } else {
+      console.log('Connected to the database.');
+      // 在这里可以执行数据库操作
+    }
+  });
+}
+
+
+//双击F10操作
+
+const F10=()=>{
+  const options = {
+    type: 'question',
+    title: '选择环境',
+    message: '请选择您的环境：',
+    buttons: ['开发环境', '测试环境', '生产环境', '取消'],
+  };
+
+  dialog.showMessageBox(options).then(async(response) => {
+    const selectedOption = response.response;
+    let dbNameList=['testinner','demo','prod']
+    let dbName=dbNameList[selectedOption]
+    if(dbName){
+      console.log(dbName)
+      await changeDb(dbName)
+    }
+  });
+}
+
+
+
 createWindow = async (data) => {
   //  清除store
   //   storage.clear(function(error) {
@@ -169,16 +209,16 @@ createWindow = async (data) => {
       globalShortcut.register('F10', () => {
         const now = Date.now();
         // 第一次按下 F10 键
-        if (!f9Pressed) {
-          f9Pressed = true;
+        if (!f10Presse) {
+          f10Presse = true;
           lastF9PressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastF9PressTime < doublePressInterval) {
             console.log('Double press F10');
-            // 在这里处理连续按下两次 F10 键的操作
+           F10()
           }
-          f9Pressed = false; // 重置状态
+          f10Presse = false; // 重置状态
         }
       });
 
@@ -197,6 +237,22 @@ createWindow = async (data) => {
     if (win.webContents.getURL().includes('/index.html')) {
       globalShortcut.register('F11', () => {
         win.webContents.openDevTools()
+      });
+       // 注册全局快捷键 F10
+      globalShortcut.register('F10', () => {
+        const now = Date.now();
+        // 第一次按下 F10 键
+        if (!f10Presse) {
+          f10Presse = true;
+          lastF9PressTime = now;
+        } else {
+          // 第二次按下 F10 键，检查时间间隔
+          if (now - lastF9PressTime < doublePressInterval) {
+            console.log('Double press F10');
+           F10()
+          }
+          f10Presse = false; // 重置状态
+        }
       });
     }
     // mac下快捷键失效的问题
@@ -271,7 +327,7 @@ app.whenReady().then(async () => {
   // await node_http(db)
 
   let secureDnsServers = [
-    "https://org2.heliumos-dns.info/dns-query",
+    "https://easypay.heliumos-dns.info/dns-query",
   ];
   await storage.get("data", function (error, data) {
     datas = data;

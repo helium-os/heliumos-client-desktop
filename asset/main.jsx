@@ -142,7 +142,7 @@ const Login = ({ changeType }) => {
             name="usePoint"
             rules={[
               { required: true, message: "请输入账号!" },
-              { validator: checkEmail },
+              // { validator: checkEmail },
             ]}
             label="账号"
           >
