@@ -20,6 +20,10 @@ let lastF9PressTime = 0;
 const doublePressInterval = 300;
 let db
 
+const proxy = require('./proxy/proxy');
+const tools = require('./proxy/tools');
+const config = require('./proxy/config');
+
 keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
     publicKey = fs.readFileSync(path.join(__dirname, item), 'utf8')
@@ -27,7 +31,7 @@ keyList.forEach(item => {
 })
 let datas = {}
 
-//修改数据库链接 
+//修改数据库链接
 
 const changeDb=async(name)=>{
   const dbPath = path.join(app.getPath('userData'), name);
@@ -60,6 +64,11 @@ const F10=()=>{
     if(dbName){
       console.log(dbName)
       await changeDb(dbName)
+
+
+      //proxy
+      await proxy.setEnv(dbName)
+      await proxy.updateAliasDb(dbName)
     }
   });
 }
@@ -313,7 +322,8 @@ app.on(
 
 app.whenReady().then(async () => {
 
-
+  let port = await proxy.runProxy()
+  console.log("port=" + port)
   const dbPath = path.join(app.getPath('userData'), 'database');
   // 创建数据库连接
   db = new sqlite3.Database(dbPath, (err) => {
