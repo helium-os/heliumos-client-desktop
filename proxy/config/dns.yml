@@ -1,4 +1,4 @@
 prod_dns: https://dns.heliumos-dns.info
 testinner_dns: https://dns-testinner.heliumos-dns.info
 demo_dns: https://dns-demo.heliumos-dns.info
-alias_server: https://transaction-agent.heliumos/v1/pubcc/organizations
+alias_server: https://transaction-agent.

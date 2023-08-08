@@ -39,5 +39,12 @@ function updateDb(dbname, aliasArray) {
     const insertSql = "insert into alias(id, alias) values(?, ?)";
     sqliteDB.insertData(insertSql, aliasArray);
 
+
+    // sqliteDB.queryData("select * from alias", function (objects) {
+    //     for(let i = 0; i < objects.length; ++i){
+    //         console.log(objects[i]);
+    //     }
+    // });
+
     sqliteDB.close()
 }
