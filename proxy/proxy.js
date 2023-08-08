@@ -8,6 +8,8 @@ storage.setDataPath(os.tmpdir());
 
 const tools = require('./tools');
 const config = require('./config');
+const hostile = require('./hostile')
+
 const logger = require('./logger').getLogger('Node-heliumos-proxy');
 
 const curve = 'prime256v1';
@@ -16,6 +18,28 @@ const buf = Buffer.alloc(16);
 const helloInfo = {"port": ":443"};
 
 const dnsMap = new Map();
+
+
+
+async function setHosts(ip, url) {
+    let res;
+    let promise = new Promise((resolve, reject) => {
+        res = resolve;
+    });
+
+
+    hostile.set(ip, url, function (err) {
+        if (err) {
+            logger.debug(`Set /etc/hosts error: ${err}`);
+        } else {
+            logger.info(`Set /etc/hosts ${ip} ${url}`);
+        }
+
+        res(err);
+    })
+
+    return promise;
+}
 
 
 async function setEnv(env) {
@@ -29,15 +53,30 @@ async function setEnv(env) {
     }
 
     const dnsData = await tools.getUrl(dnsUrl, null);
+    let org = ""
+    let ip = ""
     JSON.parse(dnsData).data.forEach(element => {
+        org = element.name;
+        ip = element.ip
+    });
+
+    await setHosts(ip, "dns." + org)
+    await sleep(5000);
+
+    const realDnsData = await tools.getUrl("https://dns."+org+"/api/v1/zones", null);
+
+    dnsMap.clear()
+    JSON.parse(realDnsData).data.forEach(element => {
+        logger.info(`Update dns map org: ${element.name} ip: ${element.ip}`);
         dnsMap.set(element.name, element.ip);
     });
+
     logger.info(`Set env finished: ${env}`);
 }
 
 
 async function runProxy() {
-    await setEnv("testinner");
+    await setEnv("demo");
 
     const requestHandler = (req, res) => {
         res.writeHead(405, {'Content-Type': 'text/plain'})
@@ -168,13 +207,22 @@ async function getPort() {
 }
 
 async function updateAliasDb(dbName) {
-    let port = await getPort()
-    const aliasData = await tools.getUrl(config.alias_server, "http://127.0.0.1:"+port);
+    let port = await getPort();
+    let org = "";
+    for (const [key, value] of dnsMap) {
+        org = key;
+        break;
+    }
+    const aliasData = await tools.getUrl(config.alias_server+org+"/v1/pubcc/organizations", "http://127.0.0.1:"+port);
     const aliasArray = [];
     JSON.parse(aliasData).data.forEach(element => {
         aliasArray.push([element.name,element.alias]);
     });
     const data = await tools.updateDb(dbName, aliasArray)
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 module.exports = {
