@@ -13,7 +13,7 @@ const { node_http } = require('./http.js')
 const sqlite3 = require('sqlite3').verbose();
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
-app.commandLine.appendSwitch('no-proxy-server')
+// app.commandLine.appendSwitch('no-proxy-server')
 //F9双击
 let f10Presse = false;
 let lastF9PressTime = 0;
@@ -31,22 +31,6 @@ keyList.forEach(item => {
 })
 let datas = {}
 
-//修改数据库链接
-
-const changeDb=async(name)=>{
-  const dbPath = path.join(app.getPath('userData'), name);
-  // 创建数据库连接
-  db = await new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-      console.error('Error connecting to the database:', err.message);
-    } else {
-      console.log('Connected to the database.');
-      // 在这里可以执行数据库操作
-    }
-  });
-}
-
-
 //双击F10操作
 
 const F10=()=>{
@@ -62,11 +46,6 @@ const F10=()=>{
     let dbNameList=['testinner','demo','prod']
     let dbName=dbNameList[selectedOption]
     if(dbName){
-      console.log(dbName)
-      await changeDb(dbName)
-
-
-      //proxy
       await proxy.setEnv(dbName)
       await proxy.updateAliasDb(dbName)
     }
@@ -293,17 +272,7 @@ createWindow = async (data) => {
   win.on('blur', () => {
     globalShortcut.unregisterAll() // 注销键盘事件
   })
-  // win.loadURL('https://desktop.org1.helium');
-  // storage.get("data", function (error, data) {
-  //   if (data?.DNS && data?.password) {
-  //     win.loadURL('http://desktop.' + data?.DNS);
-  //   } else {
-  //     win.loadFile("./index.html");
-  //   }
-  // });
-
   win.maximize();
-  // setInterval(() => { win.webContents.openDevTools() }, [1000]
 };
 
 app.on(
@@ -321,48 +290,20 @@ app.on(
 );
 
 app.whenReady().then(async () => {
-
+ //配置proxy
   let port = await proxy.runProxy()
-  console.log("port=" + port)
-  const dbPath = path.join(app.getPath('userData'), 'database');
-  // 创建数据库连接
-  db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-      console.error('Error connecting to the database:', err.message);
-    } else {
-      console.log('Connected to the database.');
-      // 在这里可以执行数据库操作
-    }
-  });
-  // await node_http(db)
-
-  let secureDnsServers = [
-    "https://easypay.heliumos-dns.info/dns-query",
-  ];
+  console.log(port)
+  app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:'+port);
   await storage.get("data", function (error, data) {
     datas = data;
-    // if (datas?.dnsValue ) {
-    //   secureDnsServers[0]='https://' + datas?.dnsValue + '.heliumos-dns.info/dns-query'
-    // }
-
   });
-  //配置proxy
-  // app.commandLine.appendSwitch('proxy-server', 'http://your-proxy-server:port');
-
-  //开机自启动
+ //开机自启动
   app.setLoginItemSettings({
     // 设置为true注册开机自起
     openAtLogin: datas?.autoStart,
     openAsHidden: false,
     path: process.execPath,
   });
-
-  app.configureHostResolver({
-    enableBuiltInResolver: false,
-    secureDnsMode: 'secure',
-    secureDnsServers,
-  })
-
   if (!app.requestSingleInstanceLock()) {
     app.quit();
     return;
@@ -372,7 +313,6 @@ app.whenReady().then(async () => {
   ipcMain.handle("getValue", async function (event, arg) {
     return datas[arg] || "";
   });
-
   createWindow();
   require("./menu.js");
   app.on("active", () => {
