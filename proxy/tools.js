@@ -10,12 +10,23 @@ module.exports = {
     updateDb: updateDb
 };
 
-async function getUrl(url, proxy) {
+async function getUrl(url, proxy, host, ip) {
     return new Promise((resolve, reject) => {
         let options = {
             'method': 'GET',
             'url': url,
             'proxy': proxy
+        };
+        if (host != null) {
+            options = {
+                'method': 'GET',
+                'url': url,
+                'proxy': proxy,
+                'hostname': ip,
+                'headers': {
+                    'Host': host
+                }
+            };
         };
         request(options, function (error, response) {
             if (error) {
