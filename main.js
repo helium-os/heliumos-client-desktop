@@ -322,7 +322,7 @@ app.on(
 
 app.whenReady().then(async () => {
 
-  let port = await proxy.runProxy()
+  let port = await proxy.runProxy("testinner")
   console.log("port=" + port)
   const dbPath = path.join(app.getPath('userData'), 'database');
   // 创建数据库连接
