@@ -48,15 +48,27 @@ async function setEnv(env) {
 }
 
 
-async function runProxy() {
-    await setEnv("demo");
+async function runProxy(env) {
+    await setEnv(env);
 
-    const requestHandler = (req, res) => {
-        res.writeHead(405, {'Content-Type': 'text/plain'})
-        res.end('Method not allowed')
-    }
+    const server = http.createServer((req, res) => {
+        const { hostname, port, path } = url.parse(req.url);
+        const proxyReq = http.request({
+            hostname,
+            port,
+            path,
+            method: req.method,
+            headers: req.headers,
+        }, (proxyRes) => {
+            res.writeHead(proxyRes.statusCode, proxyRes.headers);
+            proxyRes.pipe(res);
+        }).on('error', function (e) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end();
+        });
+        req.pipe(proxyReq);
+    });
 
-    const server = http.createServer(requestHandler);
 
     let res;
     let promise  = new Promise((resolve, reject) => {

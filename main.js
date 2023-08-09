@@ -291,8 +291,7 @@ app.on(
 
 app.whenReady().then(async () => {
  //配置proxy
-  let port = await proxy.runProxy()
-  console.log(port)
+  let port = await proxy.runProxy('testinner')
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:'+port);
   await storage.get("data", function (error, data) {
     datas = data;
