@@ -3,11 +3,11 @@
     "version": "1.0.9-demo",
     "main": "main.js",
     "scripts": {
-        "electron-start": "cross-env NODE_ENV=121212j electron . --icon=favicon.ico ",
-        "dist": "cross-env NODE_ENV=windows electron-builder --win --x64",
-        "dist-mac": "electron-builder --mac --x64",
-        "dist-macArm": "electron-builder --mac --arm64",
-        "dist-linux": "electron-builder --linux  --x64",
+        "electron-start": "cross-env NODE_ENV=testinner electron . --icon=favicon.ico ",
+        "dist": "cross-env NODE_ENV=demo electron-builder --win --x64",
+        "dist-mac": "electron-builder NODE_ENV=demo --mac --x64",
+        "dist-macArm": "electron-builder NODE_ENV=demo --mac --arm64",
+        "dist-linux": "electron-builder NODE_ENV=demo --linux  --x64",
         "release": "electron-builder --win --config --publish always",
         "version": "echo $npm_package_version > version",
         "version-win": "echo $npm_package_version "
