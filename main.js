@@ -47,7 +47,6 @@ const F10=()=>{
     let dbName=dbNameList[selectedOption]
     if(dbName){
       await proxy.setEnv(dbName)
-      await proxy.updateAliasDb(dbName)
     }
   });
 }

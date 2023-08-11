@@ -1,3 +1,4 @@
+const schedule = require('node-schedule');
 const http = require('http');
 const net = require('net');
 const url = require('url');
@@ -18,8 +19,23 @@ const helloInfo = {"port": ":443"};
 
 const dnsMap = new Map();
 
-
 async function setEnv(env) {
+    storage.set("proxy_env", env);
+    await setDNS();
+    await updateAliasDb()
+}
+
+async function runProxy(env) {
+    storage.set("proxy_env", env);
+    let port = await runServer()
+    await updateAliasDb()
+    return port;
+}
+
+async function setDNS() {
+    let env = await getStorage("proxy_env");
+    dnsMap.clear()
+
     let dnsUrl = config.prod_dns;
     if (env == "testinner") {
         dnsUrl = config.testinner_dns + "/api/v1/zones"
@@ -30,6 +46,10 @@ async function setEnv(env) {
     }
 
     const dnsData = await tools.getUrl(dnsUrl, null, null, null);
+    if (dnsData == null || JSON.parse(dnsData).data == null) {
+        logger.error(`Get dns failed: ${dnsUrl}`);
+        return false;
+    }
     let org = ""
     let ip = ""
     JSON.parse(dnsData).data.forEach(element => {
@@ -37,19 +57,24 @@ async function setEnv(env) {
         ip = element.ip
     });
 
-    const realDnsData = await tools.getUrl("https://dns."+org+"/api/v1/zones", null, "dns." + org, ip);
+    const url = "https://dns."+org+"/api/v1/zones";
+    const realDnsData = await tools.getUrl(url, null, "dns." + org, ip);
+    if (realDnsData == null || JSON.parse(realDnsData).data == null) {
+        logger.error(`Get dns failed: ${url} ${ip}`);
+        return false;
+    }
     logger.info(`Dns data: ${realDnsData}`);
-    dnsMap.clear()
+
     JSON.parse(realDnsData).data.forEach(element => {
         dnsMap.set(element.name, element.ip);
     });
 
-    logger.info(`Set env finished: ${env}`);
+    logger.info(`Set dns finished: ${env}`);
+    return true;
 }
 
-
-async function runProxy(env) {
-    await setEnv(env);
+async function runServer() {
+    await setDNS();
 
     const server = http.createServer((req, res) => {
         const { hostname, port, path } = url.parse(req.url);
@@ -178,41 +203,52 @@ async function runProxy(env) {
     return promise;
 }
 
-async function getPort() {
+async function getStorage(key) {
     let res;
     let promise = new Promise((resolve, reject) => {
         res = resolve;
     });
 
-    storage.get("proxy_port", function (error, data) {
+    storage.get(key, function (error, data) {
         res(data);
     });
 
     return promise;
 }
 
-async function updateAliasDb(dbName) {
-    let port = await getPort();
+async function updateAliasDb() {
+    let env = await getStorage("proxy_env");
+    let port = await getStorage("proxy_port");
+
     let org = "";
     for (const [key, value] of dnsMap) {
         org = key;
         break;
     }
-    const aliasData = await tools.getUrl(config.alias_server+org+"/v1/pubcc/organizations", "http://127.0.0.1:"+port, null, null);
+
+    const url = config.alias_server+org+"/v1/pubcc/organizations"
+    const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
+    if (aliasData == null || JSON.parse(aliasData).data == null) {
+        logger.error(`Get alias failed: ${url}`);
+        return false;
+    }
+
     const aliasArray = [];
     JSON.parse(aliasData).data.forEach(element => {
         aliasArray.push([element.name,element.alias]);
     });
-    const data = await tools.updateDb(dbName, aliasArray)
+    await tools.updateDb(env, aliasArray)
+    logger.info(`Update aliasDb finished: ${env}`);
+    return true;
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 module.exports = {
     runProxy,
     setEnv,
-    updateAliasDb,
-    getPort
 };
+
+schedule.scheduleJob('00 30 * * * *', async () => {
+    await updateAliasDb()
+});
+
