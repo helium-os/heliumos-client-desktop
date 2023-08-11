@@ -31,6 +31,7 @@ async function getUrl(url, proxy, host, ip) {
         request(options, function (error, response) {
             if (error) {
                 logger.error(`http get error: ${error}, url: ${url}`);
+                resolve(null);
             } else {
                 resolve(response.body);
             }
@@ -59,3 +60,4 @@ function updateDb(dbname, aliasArray) {
 
     sqliteDB.close()
 }
+

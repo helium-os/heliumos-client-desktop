@@ -1,10 +1,8 @@
+const schedule = require('node-schedule');
 const http = require('http');
 const net = require('net');
 const url = require('url');
 const crypto = require("crypto");
-const os = require('os');
-const storage = require("electron-json-storage");
-storage.setDataPath(os.tmpdir());
 
 const tools = require('./tools');
 const config = require('./config');
@@ -17,9 +15,27 @@ const buf = Buffer.alloc(16);
 const helloInfo = {"port": ":443"};
 
 const dnsMap = new Map();
+let env = "";
+let proxy_port = 0;
 
+async function setEnv(electron_env) {
+    logger.info(`Start set env: ${electron_env}`);
+    env = electron_env;
+    await setDNS();
+    await updateAliasDb()
+}
 
-async function setEnv(env) {
+async function runProxy(electron_env) {
+    logger.info(`Start run proxy: ${electron_env}`);
+    env = electron_env;
+    proxy_port = await runServer()
+    await updateAliasDb()
+    return proxy_port;
+}
+
+async function setDNS() {
+    dnsMap.clear()
+
     let dnsUrl = config.prod_dns;
     if (env == "testinner") {
         dnsUrl = config.testinner_dns + "/api/v1/zones"
@@ -30,6 +46,10 @@ async function setEnv(env) {
     }
 
     const dnsData = await tools.getUrl(dnsUrl, null, null, null);
+    if (dnsData == null || JSON.parse(dnsData).data == null) {
+        logger.error(`Get dns failed: ${dnsUrl}`);
+        return false;
+    }
     let org = ""
     let ip = ""
     JSON.parse(dnsData).data.forEach(element => {
@@ -37,19 +57,24 @@ async function setEnv(env) {
         ip = element.ip
     });
 
-    const realDnsData = await tools.getUrl("https://dns."+org+"/api/v1/zones", null, "dns." + org, ip);
+    const url = "https://dns."+org+"/api/v1/zones";
+    const realDnsData = await tools.getUrl(url, null, "dns." + org, ip);
+    if (realDnsData == null || JSON.parse(realDnsData).data == null) {
+        logger.error(`Get dns failed: ${url} ${ip}`);
+        return false;
+    }
     logger.info(`Dns data: ${realDnsData}`);
-    dnsMap.clear()
+
     JSON.parse(realDnsData).data.forEach(element => {
         dnsMap.set(element.name, element.ip);
     });
 
-    logger.info(`Set env finished: ${env}`);
+    logger.info(`Set dns finished: ${env}`);
+    return true;
 }
 
-
-async function runProxy(env) {
-    await setEnv(env);
+async function runServer() {
+    await setDNS();
 
     const server = http.createServer((req, res) => {
         const { hostname, port, path } = url.parse(req.url);
@@ -75,10 +100,9 @@ async function runProxy(env) {
         res = resolve;
     });
     server.listen(0, () => {
-        const port = server.address().port
-        logger.info(`Server is listening on port ${port}`);
-        storage.set("proxy_port", port);
-        res(port);
+        proxy_port = server.address().port
+        logger.info(`Server is listening on port ${proxy_port}`);
+        res(proxy_port);
     })
 
     server.on('connect', (req, clientSocket, head) => {
@@ -178,41 +202,36 @@ async function runProxy(env) {
     return promise;
 }
 
-async function getPort() {
-    let res;
-    let promise = new Promise((resolve, reject) => {
-        res = resolve;
-    });
-
-    storage.get("proxy_port", function (error, data) {
-        res(data);
-    });
-
-    return promise;
-}
-
-async function updateAliasDb(dbName) {
-    let port = await getPort();
+async function updateAliasDb() {
     let org = "";
     for (const [key, value] of dnsMap) {
         org = key;
         break;
     }
-    const aliasData = await tools.getUrl(config.alias_server+org+"/v1/pubcc/organizations", "http://127.0.0.1:"+port, null, null);
+
+    const url = config.alias_server+org+"/v1/pubcc/organizations"
+    const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+proxy_port, null, null);
+    if (aliasData == null || JSON.parse(aliasData).data == null) {
+        logger.error(`Get alias failed: ${url}`);
+        return false;
+    }
+
     const aliasArray = [];
     JSON.parse(aliasData).data.forEach(element => {
         aliasArray.push([element.name,element.alias]);
     });
-    const data = await tools.updateDb(dbName, aliasArray)
+    await tools.updateDb(env, aliasArray)
+    logger.info(`Update aliasDb finished: ${env}`);
+    return true;
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 module.exports = {
     runProxy,
     setEnv,
-    updateAliasDb,
-    getPort
 };
+
+schedule.scheduleJob('00 30 * * * *', async () => {
+    await updateAliasDb()
+});
+
