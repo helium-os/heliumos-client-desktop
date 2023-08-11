@@ -73,6 +73,7 @@ createWindow = async (data) => {
       webviewTag: true, //是否启用 <webview> tag标签
       sandbox: true, //沙盒选项,这个很重要
       preload: path.join(__dirname, "preload.js"),
+      // partition:String(new Date())
     },
   });
 
@@ -291,7 +292,7 @@ app.on(
 
 app.whenReady().then(async () => {
  //配置proxy
-  let port = await proxy.runProxy('testinner')
+  let port = await proxy.runProxy('demo')
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:'+port);
   await storage.get("data", function (error, data) {
     datas = data;
