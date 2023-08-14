@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld("versions", {
   password: () => ipcRenderer.invoke("getValue", "password"),
   setuserInfo: (value) => ipcRenderer.send("setuserInfo", value),
   getDNS: () => ipcRenderer.invoke("getValue", "DNS"),
-  clearInfo:()=> ipcRenderer.send("clearInfo"),
+  clearInfo: () => ipcRenderer.send("clearInfo"),
   getValue: (res) => ipcRenderer.invoke("getValue", res),
+  getDbValue: () => ipcRenderer.invoke("getDbValue"),
 });

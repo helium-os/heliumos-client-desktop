@@ -112,12 +112,21 @@ const checkEmail = (rule, value) => {
 const Login = ({ changeType }) => {
   const onFinish = async (values) => {
     if (values?.usePoint.split("@")[1]) {
+      let dbList = []
       if (window?.versions) {
-        await window?.versions?.setuserInfo({ DNS: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0] });
+        dbList = await window?.versions?.getDbValue()
+        if (dbList.find(item => item?.alias == values?.usePoint.split("@")[1])) {
+          await window?.versions?.setuserInfo({ DNS: dbList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id, name: values?.usePoint.split("@")[0] });
+        } else {
+         
+         antd.message.error('没有该组织')
+          return
+        }
       }
+
       window.location.href =
         // "http://192.168.50.120:8312/";
-        'https://desktop.' + values?.usePoint.split('@')[1];
+        'https://desktop.' + dbList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id;
     }
   };
   const [form] = antd.Form.useForm();

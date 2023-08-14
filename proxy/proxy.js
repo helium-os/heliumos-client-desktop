@@ -225,7 +225,6 @@ async function updateAliasDb() {
         org = key;
         break;
     }
-
     const url = config.alias_server+org+"/v1/pubcc/organizations"
     const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
     if (aliasData == null || JSON.parse(aliasData).data == null) {
@@ -237,6 +236,7 @@ async function updateAliasDb() {
     JSON.parse(aliasData).data.forEach(element => {
         aliasArray.push([element.name,element.alias]);
     });
+    
     await tools.updateDb(env, aliasArray)
     logger.info(`Update aliasDb finished: ${env}`);
     return true;
@@ -246,6 +246,7 @@ async function updateAliasDb() {
 module.exports = {
     runProxy,
     setEnv,
+    getStorage
 };
 
 schedule.scheduleJob('00 30 * * * *', async () => {

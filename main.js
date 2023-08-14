@@ -1,28 +1,21 @@
 const { ipcMain, app, BrowserWindow, dialog, globalShortcut } = require("electron");
 const path = require("path");
 var os = require("os");
-const url = require("url");
-const fetch = require("electron-fetch").default;
-let a = true;
 const storage = require("electron-json-storage");
 let { autoUpdater } = require("electron-updater");
 var crypto = require('crypto')
 var fs = require('fs')
-const forge = require('node-forge');
-const { node_http } = require('./http.js')
 const sqlite3 = require('sqlite3').verbose();
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
-// app.commandLine.appendSwitch('no-proxy-server')
 //F9双击
 let f10Presse = false;
 let lastF9PressTime = 0;
 const doublePressInterval = 300;
-let db
+let env
 
 const proxy = require('./proxy/proxy');
 const tools = require('./proxy/tools');
-const config = require('./proxy/config');
 
 keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
@@ -33,7 +26,7 @@ let datas = {}
 
 //双击F10操作
 
-const F10=()=>{
+const F10 = () => {
   const options = {
     type: 'question',
     title: '选择环境',
@@ -41,12 +34,13 @@ const F10=()=>{
     buttons: ['开发环境', '测试环境', '生产环境', '取消'],
   };
 
-  dialog.showMessageBox(options).then(async(response) => {
+  dialog.showMessageBox(options).then(async (response) => {
     const selectedOption = response.response;
-    let dbNameList=['testinner','demo','prod']
-    let dbName=dbNameList[selectedOption]
-    if(dbName){
+    let dbNameList = ['testinner', 'demo', 'prod']
+    let dbName = dbNameList[selectedOption]
+    if (dbName) {
       await proxy.setEnv(dbName)
+      env = dbName
     }
   });
 }
@@ -141,17 +135,6 @@ createWindow = async (data) => {
   });
 
   ipcMain.on("setuserInfo", function (event, arg) {
-    let secureDnsServers = [];
-
-    // if (arg.dnsValue) {
-    //   secureDnsServers[0] = 'https://' + arg?.dnsValue + '.heliumos-dns.info/dns-query';
-    //   app.configureHostResolver({
-    //    enableBuiltInResolver:false,
-    //    secureDnsMode: 'secure',
-    //    secureDnsServers
-    //   })
-    // }
-
     if (arg.autoStart === true || arg.autoStart === false) {
       app.setLoginItemSettings({
         // 设置为true注册开机自起
@@ -204,7 +187,7 @@ createWindow = async (data) => {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastF9PressTime < doublePressInterval) {
             console.log('Double press F10');
-           F10()
+            F10()
           }
           f10Presse = false; // 重置状态
         }
@@ -226,7 +209,7 @@ createWindow = async (data) => {
       globalShortcut.register('F11', () => {
         win.webContents.openDevTools()
       });
-       // 注册全局快捷键 F10
+      // 注册全局快捷键 F10
       globalShortcut.register('F10', () => {
         const now = Date.now();
         // 第一次按下 F10 键
@@ -237,7 +220,7 @@ createWindow = async (data) => {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastF9PressTime < doublePressInterval) {
             console.log('Double press F10');
-           F10()
+            F10()
           }
           f10Presse = false; // 重置状态
         }
@@ -290,19 +273,21 @@ app.on(
 );
 
 app.whenReady().then(async () => {
- //配置proxy
-  let port = await proxy.runProxy('demo')
-  app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:'+port);
+  //配置proxy
+  env = await proxy.getStorage("proxy_env");
+  let port = await proxy.runProxy(env || 'demo')
+  app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   await storage.get("data", function (error, data) {
     datas = data;
   });
- //开机自启动
+  //开机自启动
   app.setLoginItemSettings({
     // 设置为true注册开机自起
     openAtLogin: datas?.autoStart,
     openAsHidden: false,
     path: process.execPath,
   });
+  
   if (!app.requestSingleInstanceLock()) {
     app.quit();
     return;
@@ -312,6 +297,10 @@ app.whenReady().then(async () => {
   ipcMain.handle("getValue", async function (event, arg) {
     return datas[arg] || "";
   });
+  ipcMain.handle('getDbValue', async function () {
+    let res = await tools.getDbValue(env || 'demo')
+    return res
+  })
   createWindow();
   require("./menu.js");
   app.on("active", () => {
