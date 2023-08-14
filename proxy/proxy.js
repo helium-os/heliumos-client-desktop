@@ -3,9 +3,6 @@ const http = require('http');
 const net = require('net');
 const url = require('url');
 const crypto = require("crypto");
-const os = require('os');
-const storage = require("electron-json-storage");
-storage.setDataPath(os.tmpdir());
 
 const tools = require('./tools');
 const config = require('./config');
@@ -17,23 +14,26 @@ const algorithm = 'aes-256-ctr';
 const buf = Buffer.alloc(16);
 const helloInfo = {"port": ":443"};
 
-const dnsMap = new Map();
+let dnsMap = new Map();
+let env = "";
+let proxy_port = 0;
 
-async function setEnv(env) {
-    storage.set("proxy_env", env);
+async function setEnv(electron_env) {
+    logger.info(`Start set env: ${electron_env}`);
+    env = electron_env;
     await setDNS();
     await updateAliasDb()
 }
 
-async function runProxy(env) {
-    storage.set("proxy_env", env);
-    let port = await runServer()
+async function runProxy(electron_env) {
+    logger.info(`Start run proxy: ${electron_env}`);
+    env = electron_env;
+    proxy_port = await runServer()
     await updateAliasDb()
-    return port;
+    return proxy_port;
 }
 
 async function setDNS() {
-    let env = await getStorage("proxy_env");
     dnsMap.clear()
 
     let dnsUrl = config.prod_dns;
@@ -101,10 +101,9 @@ async function runServer() {
         res = resolve;
     });
     server.listen(0, () => {
-        const port = server.address().port
-        logger.info(`Server is listening on port ${port}`);
-        storage.set("proxy_port", port);
-        res(port);
+        proxy_port = server.address().port
+        logger.info(`Server is listening on port ${proxy_port}`);
+        res(proxy_port);
     })
 
     server.on('connect', (req, clientSocket, head) => {
@@ -204,30 +203,15 @@ async function runServer() {
     return promise;
 }
 
-async function getStorage(key) {
-    let res;
-    let promise = new Promise((resolve, reject) => {
-        res = resolve;
-    });
-
-    storage.get(key, function (error, data) {
-        res(data);
-    });
-
-    return promise;
-}
-
 async function updateAliasDb() {
-    let env = await getStorage("proxy_env");
-    let port = await getStorage("proxy_port");
-
     let org = "";
     for (const [key, value] of dnsMap) {
         org = key;
         break;
     }
+
     const url = config.alias_server+org+"/v1/pubcc/organizations"
-    const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
+    const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+proxy_port, null, null);
     if (aliasData == null || JSON.parse(aliasData).data == null) {
         logger.error(`Get alias failed: ${url}`);
         return false;
@@ -237,7 +221,6 @@ async function updateAliasDb() {
     JSON.parse(aliasData).data.forEach(element => {
         aliasArray.push([element.name,element.alias]);
     });
-    
     await tools.updateDb(env, aliasArray)
     logger.info(`Update aliasDb finished: ${env}`);
     return true;
@@ -247,10 +230,8 @@ async function updateAliasDb() {
 module.exports = {
     runProxy,
     setEnv,
-    getStorage
 };
 
 schedule.scheduleJob('00 30 * * * *', async () => {
     await updateAliasDb()
 });
-

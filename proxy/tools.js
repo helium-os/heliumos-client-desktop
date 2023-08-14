@@ -71,8 +71,6 @@ function getDbValue(dbname){
     const sqliteDB = new SqliteDB(dbname);
     sqliteDB.queryData("select * from alias", function (objects) {
         res(objects||[])
-        
     });
     return promise
 }
-
