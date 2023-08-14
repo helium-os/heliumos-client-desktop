@@ -7,7 +7,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 module.exports = {
     getUrl: getUrl,
-    updateDb: updateDb
+    updateDb: updateDb,
+    getDbValue: getDbValue
 };
 
 async function getUrl(url, proxy, host, ip) {
@@ -61,3 +62,16 @@ function updateDb(dbname, aliasArray) {
     sqliteDB.close()
 }
 
+function getDbValue(dbname){
+    let res
+    let promise = new Promise((resolve, reject) => {
+        res = resolve;
+    });
+
+    const sqliteDB = new SqliteDB(dbname);
+    sqliteDB.queryData("select * from alias", function (objects) {
+        res(objects||[])
+
+    });
+    return promise
+}

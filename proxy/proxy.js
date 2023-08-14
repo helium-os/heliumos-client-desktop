@@ -14,7 +14,7 @@ const algorithm = 'aes-256-ctr';
 const buf = Buffer.alloc(16);
 const helloInfo = {"port": ":443"};
 
-const dnsMap = new Map();
+let dnsMap = new Map();
 let env = "";
 let proxy_port = 0;
 
@@ -234,4 +234,3 @@ module.exports = {
 schedule.scheduleJob('00 30 * * * *', async () => {
     await updateAliasDb()
 });
-
