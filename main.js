@@ -16,6 +16,7 @@ let env
 
 const proxy = require('./proxy/proxy');
 const tools = require('./proxy/tools');
+const api = require('./api/api');
 
 keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
@@ -250,7 +251,8 @@ createWindow = async (data) => {
       })
     }
   })
-  // win.loadFile("./loading.html");
+  // win.loadURL("http://localhost:5173/");
+  //  win.webContents.openDevTools()
   win.loadFile("./index.html");
   win.on('blur', () => {
     globalShortcut.unregisterAll() // 注销键盘事件
@@ -276,6 +278,7 @@ app.whenReady().then(async () => {
   //配置proxy
   env = await proxy.getStorage("proxy_env");
   let port = await proxy.runProxy(env || 'demo')
+  await api.creatServer()
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   await storage.get("data", function (error, data) {
     datas = data;
@@ -309,8 +312,9 @@ app.whenReady().then(async () => {
     }
   });
 });
-app.on("window-all-closed", () => {
+app.on("window-all-closed", async() => {
   if (process.platform !== "darwin") {
+    await api.closeServer()
     app.quit();
   }
 });

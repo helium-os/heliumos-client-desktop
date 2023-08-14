@@ -116,7 +116,7 @@ const Login = ({ changeType }) => {
       if (window?.versions) {
         dbList = await window?.versions?.getDbValue()
         if (dbList.find(item => item?.alias == values?.usePoint.split("@")[1])) {
-          await window?.versions?.setuserInfo({ DNS: dbList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id, name: values?.usePoint.split("@")[0] });
+          await window?.versions?.setuserInfo({ DNS: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0] });
         } else {
          
          antd.message.error('没有该组织')
