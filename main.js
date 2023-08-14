@@ -174,7 +174,7 @@ createWindow = async (data) => {
 
   win.webContents.on('did-navigate', (event, url) => {
     if (url.includes('/index.html')) {
-      globalShortcut.register('F11', () => {
+      globalShortcut.register('F9', () => {
         win.webContents.openDevTools()
       });
       // 注册全局快捷键 F10
@@ -196,7 +196,7 @@ createWindow = async (data) => {
 
 
     } else {
-      globalShortcut.unregister('F11');
+      globalShortcut.unregister('F9');
       globalShortcut.unregister('F10');
     }
   })
@@ -207,7 +207,7 @@ createWindow = async (data) => {
 
 
     if (win.webContents.getURL().includes('/index.html')) {
-      globalShortcut.register('F11', () => {
+      globalShortcut.register('F9', () => {
         win.webContents.openDevTools()
       });
       // 注册全局快捷键 F10
