@@ -16,6 +16,7 @@
         "@electron-forge/cli": "^6.0.5",
         "ali-oss": "^6.17.1",
         "asar": "^3.2.0",
+        "cors": "^2.8.5",
         "cross-env": "^7.0.3",
         "crypto": "^1.0.1",
         "crypto-js": "^4.1.1",
