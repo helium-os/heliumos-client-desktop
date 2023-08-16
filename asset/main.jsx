@@ -1,4 +1,3 @@
-
 //登录
 const Login = () => {
   const onFinish = async (values) => {
@@ -60,19 +59,13 @@ const Login = () => {
 
 
 const MessageBox = () => {
-  const [type, setType] = React.useState("login");
-  const changeType = (res) => {
-    setType(res);
-  };
-
   return (<>
     <div className="login">
       <div className="panel">
         <div className="form">
-          <Login changeType={(res) => changeType(res)} />
+          <Login  />
         </div>
       </div>
-
     </div>
   </>
   );
