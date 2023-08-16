@@ -1,8 +1,6 @@
-const { contextBridge, ipcRenderer, BrowserWindow } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("versions", {
-  node: () => process.versions.node,
-  chrome: () => "12121",
   lock: "false",
   orgId: "matrix-testinner",
   electron: () => process.versions.electron,

@@ -1,22 +1,18 @@
-const { ipcMain, app, BrowserWindow, dialog, globalShortcut } = require("electron");
+const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu } = require("electron");
 const path = require("path");
-var os = require("os");
-const storage = require("electron-json-storage");
 let { autoUpdater } = require("electron-updater");
 var crypto = require('crypto')
 var fs = require('fs')
-const sqlite3 = require('sqlite3').verbose();
+const proxy = require('./proxy/proxy');
+const tools = require('./proxy/tools');
+const util = require('./util/util');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 //F9双击
 let f10Presse = false;
 let lastF9PressTime = 0;
 const doublePressInterval = 300;
-let env
-
-const proxy = require('./proxy/proxy');
-const tools = require('./proxy/tools');
-
+let env = 'demo'
 keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
     publicKey = fs.readFileSync(path.join(__dirname, item), 'utf8')
@@ -25,7 +21,6 @@ keyList.forEach(item => {
 let datas = {}
 
 //双击F10操作
-
 const F10 = () => {
   const options = {
     type: 'question',
@@ -41,11 +36,10 @@ const F10 = () => {
     if (dbName) {
       await proxy.setEnv(dbName)
       env = dbName
+      await util.setStorageData('data', { _last: { env: dbName } })
     }
   });
 }
-
-
 
 createWindow = async (data) => {
   //  清除store
@@ -69,58 +63,8 @@ createWindow = async (data) => {
       // partition:String(new Date())
     },
   });
-
-
-  //要想使用自动更新，不能配置DNS解析
-  autoUpdater.setFeedURL({
-    provider: 'github',
-    owner: 'helium-os',
-    repo: 'heliumos-client-desktop',
-    "releaseType": "release"
-  });
-  autoUpdater.checkForUpdates();
-  // 处理检查更新事件
-  autoUpdater.on('checking-for-update', () => {
-    console.log('Checking for update...');
-  });
-
-  // 处理发现更新事件
-  autoUpdater.on('update-available', (info) => {
-    console.log('Update available:', info);
-  });
-
-  // 处理没有更新的事件
-  autoUpdater.on('update-not-available', () => {
-    console.log('No update available.');
-  });
-
-  // 处理更新下载进度事件
-  autoUpdater.on('download-progress', (progressObj) => {
-    console.log('Download progress:', progressObj);
-  });
-
-  // 处理更新下载完成事件
-  autoUpdater.on('update-downloaded', (info) => {
-    dialog.showMessageBox({
-      type: 'info',
-      title: '应用更新',
-      message: '发现新版本，是否更新？',
-      buttons: ['是', '否']
-    }).then((buttonIndex) => {
-      if (buttonIndex.response == 0) {  //选择是，则退出程序，安装新版本
-        autoUpdater.quitAndInstall()
-        app.quit()
-      }
-    })
-
-  });
-
-  // 处理更新错误事件
-  autoUpdater.on('error', (err) => {
-    console.error('Error while checking for updates:', err);
-  });
-
-
+  //自动更新
+  util.AutoUpdater(autoUpdater)
 
   ipcMain.on("ping", function (event, arg) {
     event.returnValue = "pong";
@@ -134,7 +78,18 @@ createWindow = async (data) => {
     win.setAlwaysOnTop(false);
   });
 
-  ipcMain.on("setuserInfo", function (event, arg) {
+  ipcMain.on("setuserInfo", async function (event, arg) {
+    let data = await util.getStorageData()
+    if (arg?.DNS != null && arg?.name != null) {
+      await util.setStorageData('data', { _last: { ...arg, env } })
+      app.setLoginItemSettings({
+        openAtLogin: data?.[env]?.[arg?.DNS]?.[arg?.name]?.autoStart || false,
+        openAsHidden: false,
+        path: process.execPath,
+      });
+      await util.setStorageData('data', arg, [env, arg?.DNS, arg?.name])
+      return
+    }
     if (arg.autoStart === true || arg.autoStart === false) {
       app.setLoginItemSettings({
         // 设置为true注册开机自起
@@ -143,33 +98,14 @@ createWindow = async (data) => {
         path: process.execPath,
       });
     }
-    storage.get("data", function (error, data) {
-      datas = { ...data, ...arg }
-      storage.set("data", { ...data, ...arg });
-    });
+    await util.setStorageData('data', arg, [env, data?._last?.DNS, data?._last?.name])
+
   });
 
-  ipcMain.on("setDNS", function (event, arg) {
-    storage.set("DNS", arg);
-  });
-  ipcMain.on('clearInfo', () => win.loadFile("./index.html"))
-
-  //获取本地唯一MAC地址
-  var mac = "";
-  var networkInterfaces = os.networkInterfaces();
-  for (var i in networkInterfaces) {
-    for (var j in networkInterfaces[i]) {
-      if (
-        networkInterfaces[i][j]["family"] === "IPv4" &&
-        networkInterfaces[i][j]["mac"] !== "00:00:00:00:00:00" &&
-        networkInterfaces[i][j]["address"] !== "127.0.0.1"
-      ) {
-        mac = networkInterfaces[i][j]["mac"];
-      }
-    }
-  }
-
-
+  ipcMain.on('clearInfo', async () => {
+    await util.setStorageData('data', { _last: { DNS: null, name: null } })
+    win.loadFile("./index.html")
+  })
 
   win.webContents.on('did-navigate', (event, url) => {
     if (url.includes('/index.html')) {
@@ -186,25 +122,18 @@ createWindow = async (data) => {
         } else {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastF9PressTime < doublePressInterval) {
-            console.log('Double press F10');
             F10()
           }
           f10Presse = false; // 重置状态
         }
       });
-
-
     } else {
       globalShortcut.unregister('F9');
       globalShortcut.unregister('F10');
     }
   })
-  // Handle the case when the app is quitting
-
 
   win.on('focus', () => {
-
-
     if (win.webContents.getURL().includes('/index.html')) {
       globalShortcut.register('F9', () => {
         win.webContents.openDevTools()
@@ -219,7 +148,6 @@ createWindow = async (data) => {
         } else {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastF9PressTime < doublePressInterval) {
-            console.log('Double press F10');
             F10()
           }
           f10Presse = false; // 重置状态
@@ -227,31 +155,9 @@ createWindow = async (data) => {
       });
     }
     // mac下快捷键失效的问题
-    if (process.platform === 'darwin') {
-      let contents = win.webContents
-      globalShortcut.register('CommandOrControl+C', () => {
-        console.log('注册复制快捷键成功')
-        contents?.copy()
-      })
-
-      globalShortcut.register('CommandOrControl+V', () => {
-        console.log('注册粘贴快捷键成功')
-        contents?.paste()
-      })
-
-      globalShortcut.register('CommandOrControl+X', () => {
-        console.log('注册剪切快捷键成功')
-        contents?.cut()
-      })
-
-      globalShortcut.register('CommandOrControl+A', () => {
-        console.log('注册全选快捷键成功')
-        contents?.selectAll()
-      })
-    }
+    util.macShortcutKeyFailure(win, globalShortcut)
   })
-  // win.loadURL("http://localhost:5173/");
-  //  win.webContents.openDevTools()
+
   win.loadFile("./index.html");
   win.on('blur', () => {
     globalShortcut.unregisterAll() // 注销键盘事件
@@ -274,42 +180,39 @@ app.on(
 );
 
 app.whenReady().then(async () => {
+  datas = await util.getStorageData()
+  env = datas?._last?.env || 'demo'
   //配置proxy
-  let port = await proxy.runProxy('demo')
+  let port = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
-  await storage.get("data", function (error, data) {
-    datas = data;
-  });
   //开机自启动
   app.setLoginItemSettings({
     // 设置为true注册开机自起
-    openAtLogin: datas?.autoStart,
+    openAtLogin: datas?.[env]?.[datas?._last?.DNS]?.[datas?._last?.name]?.autoStart || false,
     openAsHidden: false,
     path: process.execPath,
   });
-  
-  if (!app.requestSingleInstanceLock()) {
-    app.quit();
-    return;
-  }
 
   //dns配置
   ipcMain.handle("getValue", async function (event, arg) {
-    return datas[arg] || "";
+    let data = await util.getStorageData()
+    if (data?._last) {
+      return data?.[env]?.[data?._last?.DNS]?.[data?._last?.name]?.[arg] || "";
+    } else {
+      return "";
+    }
+
   });
   ipcMain.handle('getDbValue', async function () {
-    let res = await tools.getDbValue(env || 'demo')
+    let res = await tools.getDbValue(env)
     return res
   })
-  createWindow();
-  require("./menu.js");
-  app.on("active", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
+  const emptyMenu = Menu.buildFromTemplate([]);
+  Menu.setApplicationMenu(emptyMenu);
+  //多开配置
+  util.multipleOpen(app, BrowserWindow, createWindow, false)
 });
-app.on("window-all-closed", async() => {
+app.on("window-all-closed", async () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
