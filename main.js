@@ -41,11 +41,7 @@ const F10 = () => {
   });
 }
 
-createWindow = async (data) => {
-  //  清除store
-  //   storage.clear(function(error) {
-  //   if (error) throw error;
-  // })
+createWindow = async () => {
 
   const win = new BrowserWindow({
     width: 800,
@@ -135,7 +131,11 @@ createWindow = async (data) => {
       globalShortcut.unregister('F10');
     }
   })
-
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.type === 'keyDown' && input.key === 'Enter' && input.shift) {
+      event.preventDefault(); // 阻止默认行为，即不打开新页面
+    }
+  });
   win.on('focus', () => {
     if (env != 'prod') {
       globalShortcut.register('F9', () => {
@@ -161,7 +161,8 @@ createWindow = async (data) => {
         }
       });
     }
-    // mac下快捷键失效的问题
+
+    // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
     util.macShortcutKeyFailure(win, globalShortcut)
   })
 
@@ -210,15 +211,19 @@ app.whenReady().then(async () => {
     }
 
   });
+
   ipcMain.handle('getDbValue', async function () {
     let res = await tools.getDbValue(env)
     return res
   })
+
   const emptyMenu = Menu.buildFromTemplate([]);
+
   Menu.setApplicationMenu(emptyMenu);
   //多开配置
   util.multipleOpen(app, BrowserWindow, createWindow, false)
 });
+
 app.on("window-all-closed", async () => {
   if (process.platform !== "darwin") {
     app.quit();
