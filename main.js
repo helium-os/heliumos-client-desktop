@@ -108,10 +108,14 @@ createWindow = async (data) => {
   })
 
   win.webContents.on('did-navigate', (event, url) => {
-    if (url.includes('/index.html')) {
+    if (env != 'prod') {
       globalShortcut.register('F9', () => {
         win.webContents.openDevTools()
       });
+    } else {
+      globalShortcut.unregister('F9');
+    }
+    if (url.includes('/index.html')) {
       // 注册全局快捷键 F10
       globalShortcut.register('F10', () => {
         const now = Date.now();
@@ -128,16 +132,19 @@ createWindow = async (data) => {
         }
       });
     } else {
-      globalShortcut.unregister('F9');
       globalShortcut.unregister('F10');
     }
   })
 
   win.on('focus', () => {
-    if (win.webContents.getURL().includes('/index.html')) {
+    if (env != 'prod') {
       globalShortcut.register('F9', () => {
         win.webContents.openDevTools()
       });
+    } else {
+      globalShortcut.unregister('F9');
+    }
+    if (win.webContents.getURL().includes('/index.html')) {
       // 注册全局快捷键 F10
       globalShortcut.register('F10', () => {
         const now = Date.now();
