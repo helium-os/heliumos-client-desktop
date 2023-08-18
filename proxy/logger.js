@@ -2,7 +2,7 @@ const log4js = require('log4js');
 
 log4js.configure({
     appenders: {
-        file: { type: 'file', filename: 'proxy-logs.log' },
+        file: { type: 'file', filename: '/tmp/proxy-logs.log' },
         console: {type: 'console'}
     },
     categories: {
