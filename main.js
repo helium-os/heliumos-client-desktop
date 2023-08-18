@@ -36,7 +36,7 @@ const F10 = () => {
     if (dbName) {
       await proxy.setEnv(dbName)
       env = dbName
-      await util.setStorageData('data', { _last: { env: dbName } })
+      await util.setStorageData('data', { _last: { env: dbName, DNS: null, name: null } })
     }
   });
 }

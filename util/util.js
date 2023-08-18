@@ -137,7 +137,7 @@ multipleOpen = (app, BrowserWindow, createWindow, mul = false) => {
     });
   }
 }
-
+//获取stroage数据
 getStorageData = (data = 'data') => {
   let res
   let promise = new Promise((resolve, reject) => {
@@ -148,7 +148,7 @@ getStorageData = (data = 'data') => {
   });
   return promise
 }
-
+//存放stroage数据
 setStorageData = async (datas = 'data', arg, routeList = []) => {
   let data = await getStorageData(datas)
   if (typeof data === 'object') {

@@ -37,7 +37,6 @@ screenshot
 .firebase
 .eslintcache
 
-build
 dist
 /config/config.local.ts
 

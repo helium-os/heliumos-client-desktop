@@ -4,10 +4,10 @@
     "main": "main.js",
     "scripts": {
         "electron-start": "cross-env NODE_ENV=testinner electron . --icon=favicon.ico ",
-        "dist": "cross-env NODE_ENV=demo electron-builder --win --x64",
-        "dist-mac": "electron-builder NODE_ENV=demo --mac --x64",
-        "dist-macArm": "electron-builder NODE_ENV=demo --mac --arm64",
-        "dist-linux": "electron-builder NODE_ENV=demo --linux  --x64",
+        "dist": "cross-env  electron-builder --win --x64",
+        "dist-mac": "electron-builder  --mac --x64",
+        "dist-macArm": "electron-builder  --mac --arm64",
+        "dist-linux": "electron-builder  --linux  --x64",
         "release": "electron-builder --win --config --publish always",
         "version": "echo $npm_package_version > version",
         "version-win": "echo $npm_package_version "
@@ -56,19 +56,22 @@
             "target": [
                 "dmg",
                 "zip"
-            ]
+            ],
+            "icon": "build/icon.icns"
         },
         "win": {
             "target": [
                 "nsis",
                 "zip"
-            ]
+            ],
+            "icon": "build/icon.ico"
         },
         "linux": {
             "target": [
                 "AppImage",
                 "zip"
-            ]
+            ],
+            "icon": "build/icon.png"
         }
     },
     "devDependencies": {
