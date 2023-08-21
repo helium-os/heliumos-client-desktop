@@ -89,7 +89,7 @@ async function runServer() {
             res.writeHead(proxyRes.statusCode, proxyRes.headers);
             proxyRes.pipe(res);
         }).on('error', function (e) {
-            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.writeHead(502, { 'Content-Type': 'application/json' });
             res.end();
         });
         req.pipe(proxyReq);
@@ -121,7 +121,7 @@ async function runServer() {
 
         if (dnsMap.has(org)) {
             hostname = dnsMap.get(org)
-            port = 18888
+            port = config.server_port
         }
         const serverSocket = net.connect(port, hostname);
 
