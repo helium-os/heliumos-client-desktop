@@ -16,21 +16,27 @@ const helloInfo = {"port": ":443"};
 
 let dnsMap = new Map();
 let env = "";
-let proxy_port = 0;
+let port = 0;
 
 async function setEnv(electron_env) {
     logger.info(`Start set env: ${electron_env}`);
     env = electron_env;
     await setDNS();
-    await updateAliasDb()
+    const alias = await updateAliasDb();
+    return alias;
 }
 
 async function runProxy(electron_env) {
     logger.info(`Start run proxy: ${electron_env}`);
     env = electron_env;
-    proxy_port = await runServer()
-    await updateAliasDb()
-    return proxy_port;
+    port = await runServer()
+    const alias = await updateAliasDb()
+    return {port, alias};
+}
+
+async function getAlias(electron_env) {
+    const aliasArray = await tools.getDbValue(electron_env);
+    return aliasArray;
 }
 
 async function setDNS() {
@@ -100,9 +106,9 @@ async function runServer() {
         res = resolve;
     });
     server.listen(0, () => {
-        proxy_port = server.address().port
-        logger.info(`Server is listening on port ${proxy_port}`);
-        res(proxy_port);
+        port = server.address().port
+        logger.info(`Server is listening on port ${port}`);
+        res(port);
     })
 
     server.on('connect', (req, clientSocket, head) => {
@@ -203,6 +209,7 @@ async function runServer() {
 }
 
 async function updateAliasDb() {
+    const aliasArray = [];
     let org = "";
     for (const [key, value] of dnsMap) {
         org = key;
@@ -210,25 +217,27 @@ async function updateAliasDb() {
     }
 
     const url = config.alias_server+org+"/v1/pubcc/organizations"
-    const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+proxy_port, null, null);
+    const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
     if (aliasData == null || JSON.parse(aliasData).data == null) {
         logger.error(`Get alias failed: ${url}`);
-        return false;
+        return [];
     }
 
-    const aliasArray = [];
     JSON.parse(aliasData).data.forEach(element => {
         aliasArray.push([element.name,element.alias]);
     });
     await tools.updateDb(env, aliasArray)
     logger.info(`Update aliasDb finished: ${env}`);
-    return true;
+
+    const aliasFromDb = await tools.getDbValue(env)
+    return aliasFromDb;
 }
 
 
 module.exports = {
     runProxy,
     setEnv,
+    getAlias
 };
 
 schedule.scheduleJob('00 30 * * * *', async () => {
