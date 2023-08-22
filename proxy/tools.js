@@ -63,14 +63,16 @@ function updateDb(dbname, aliasArray) {
 }
 
 function getDbValue(dbname){
-    let res
+    let res;
     let promise = new Promise((resolve, reject) => {
         res = resolve;
     });
 
     const sqliteDB = new SqliteDB(dbname);
     sqliteDB.queryData("select * from alias", function (objects) {
-        res(objects||[])
+        res(objects||[]);
+
     });
+    sqliteDB.close();
     return promise
 }
