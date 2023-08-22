@@ -191,7 +191,7 @@ app.whenReady().then(async () => {
   datas = await util.getStorageData()
   env = datas?._last?.env || 'demo'
   //配置proxy
-  let port = await proxy.runProxy(env)
+  let {port,alias} = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   //开机自启动
   app.setLoginItemSettings({
@@ -213,7 +213,7 @@ app.whenReady().then(async () => {
   });
 
   ipcMain.handle('getDbValue', async function () {
-    let res = await tools.getDbValue(env)
+    let res = await proxy.getAlias(env)
     return res
   })
 
