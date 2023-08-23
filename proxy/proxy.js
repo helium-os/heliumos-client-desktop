@@ -63,8 +63,8 @@ async function setDNS() {
         ip = element.ip
     });
 
-    const url = "https://dns."+org+"/api/v1/zones";
-    const realDnsData = await tools.getUrl(url, null, "dns." + org, ip);
+    const url = "https://dns.system.service."+org+"/api/v1/zones";
+    const realDnsData = await tools.getUrl(url, null, "dns.system.service." + org, ip);
     if (realDnsData == null || JSON.parse(realDnsData).data == null) {
         logger.error(`Get dns failed: ${url} ${ip}`);
         return false;

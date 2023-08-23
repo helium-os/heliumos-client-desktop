@@ -41,7 +41,7 @@ DB.SqliteDB.prototype.queryData = function (sql, callback) {
     DB.db.all(sql, function (err, rows) {
         if (null != err) {
             DB.printErrorInfo(err);
-            return;
+            callback([]);
         }
 
         if (callback) {
