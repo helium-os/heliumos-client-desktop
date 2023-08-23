@@ -52,10 +52,16 @@ async function setDNS() {
     }
 
     const dnsData = await tools.getUrl(dnsUrl, null, null, null);
-    if (dnsData == null || JSON.parse(dnsData).data == null) {
-        logger.error(`Get dns failed: ${dnsUrl}`);
+    try {
+        if (dnsData == null || JSON.parse(dnsData).data == null) {
+            logger.error(`Get dns failed: ${dnsUrl}`);
+            return false;
+        }
+    } catch (e) {
+        logger.error(`Parse dns failed: ${dnsUrl}`);
         return false;
     }
+
     let org = ""
     let ip = ""
     JSON.parse(dnsData).data.forEach(element => {
@@ -65,10 +71,16 @@ async function setDNS() {
 
     const url = "https://dns.system.service."+org+"/api/v1/zones";
     const realDnsData = await tools.getUrl(url, null, "dns.system.service." + org, ip);
-    if (realDnsData == null || JSON.parse(realDnsData).data == null) {
-        logger.error(`Get dns failed: ${url} ${ip}`);
+    try {
+        if (realDnsData == null || JSON.parse(realDnsData).data == null) {
+            logger.error(`Get dns failed: ${url} ${ip}`);
+            return false;
+        }
+    } catch (e) {
+        logger.error(`Parse dns failed: ${url} ${ip}`);
         return false;
     }
+
     logger.info(`Dns data: ${realDnsData}`);
 
     JSON.parse(realDnsData).data.forEach(element => {
