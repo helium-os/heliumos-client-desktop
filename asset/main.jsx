@@ -16,7 +16,7 @@ const Login = () => {
 
       window.location.href =
         // "http://192.168.50.120:8312/";
-        'https://desktop.' + dbList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id;
+        'https://desktop.system.app. ' + dbList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id;
     }
   };
   const [form] = antd.Form.useForm();
