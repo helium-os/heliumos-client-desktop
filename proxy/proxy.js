@@ -69,8 +69,8 @@ async function setDNS() {
         ip = element.ip
     });
 
-    const url = "https://dns.system.service."+org+"/api/v1/zones";
-    const realDnsData = await tools.getUrl(url, null, "dns.system.service." + org, ip);
+    const url = "https://"+config.dns_server+org+"/api/v1/zones";
+    const realDnsData = await tools.getUrl(url, null, config.dns_server + org, ip);
     try {
         if (realDnsData == null || JSON.parse(realDnsData).data == null) {
             logger.error(`Get dns failed: ${url} ${ip}`);
@@ -230,8 +230,14 @@ async function updateAliasDb() {
 
     const url = config.alias_server+org+"/v1/pubcc/organizations"
     const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
-    if (aliasData == null || JSON.parse(aliasData).data == null) {
-        logger.error(`Get alias failed: ${url}`);
+
+    try {
+        if (aliasData == null || JSON.parse(aliasData).data == null) {
+            logger.error(`Get alias failed: ${url}`);
+            return [];
+        }
+    } catch (e) {
+        logger.error(`Parse alias failed: ${url}`);
         return [];
     }
 

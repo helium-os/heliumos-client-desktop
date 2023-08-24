@@ -2,4 +2,5 @@ server_port: 18888
 prod_dns: https://dns.heliumos-dns.info
 testinner_dns: https://dns-testinner.heliumos-dns.info
 demo_dns: https://dns-demo.heliumos-dns.info
-alias_server: https://transaction-agent.
+dns_server: dns.system.service.
+alias_server: https://transaction-agent.system.service.
