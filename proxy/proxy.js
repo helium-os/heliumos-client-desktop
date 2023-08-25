@@ -21,7 +21,8 @@ let port = 0;
 async function setEnv(electron_env) {
     logger.info(`Start set env: ${electron_env}`);
     env = electron_env;
-    await setDNS();
+    await setFirstDNS();
+    await setSecondDNS()
     const alias = await updateAliasDb();
     return alias;
 }
@@ -29,7 +30,9 @@ async function setEnv(electron_env) {
 async function runProxy(electron_env) {
     logger.info(`Start run proxy: ${electron_env}`);
     env = electron_env;
+    await setFirstDNS();
     port = await runServer()
+    await setSecondDNS()
     const alias = await updateAliasDb()
     return {port, alias};
 }
@@ -39,7 +42,7 @@ async function getAlias(electron_env) {
     return aliasArray;
 }
 
-async function setDNS() {
+async function setFirstDNS() {
     dnsMap.clear()
 
     let dnsUrl = config.prod_dns;
@@ -51,49 +54,56 @@ async function setDNS() {
         dnsUrl = config.prod_dns + "/api/v1/zones"
     }
 
-    const dnsData = await tools.getUrl(dnsUrl, null, null, null);
+    const fistDnsData = await tools.getUrl(dnsUrl, null, null, null);
+
     try {
-        if (dnsData == null || JSON.parse(dnsData).data == null) {
-            logger.error(`Get dns failed: ${dnsUrl}`);
+        if (fistDnsData == null || JSON.parse(fistDnsData).data == null) {
+            logger.error(`Get first dns failed: ${dnsUrl}`);
             return false;
         }
     } catch (e) {
-        logger.error(`Parse dns failed: ${dnsUrl}`);
+        logger.error(`Parse first dns failed: ${dnsUrl}`);
         return false;
     }
 
-    let org = ""
-    let ip = ""
-    JSON.parse(dnsData).data.forEach(element => {
-        org = element.name;
-        ip = element.ip
-    });
-
-    const url = "https://dns.system.service."+org+"/api/v1/zones";
-    const realDnsData = await tools.getUrl(url, null, "dns.system.service." + org, ip);
-    try {
-        if (realDnsData == null || JSON.parse(realDnsData).data == null) {
-            logger.error(`Get dns failed: ${url} ${ip}`);
-            return false;
-        }
-    } catch (e) {
-        logger.error(`Parse dns failed: ${url} ${ip}`);
-        return false;
-    }
-
-    logger.info(`Dns data: ${realDnsData}`);
-
-    JSON.parse(realDnsData).data.forEach(element => {
+    JSON.parse(fistDnsData).data.forEach(element => {
         dnsMap.set(element.name, element.ip);
     });
 
-    logger.info(`Set dns finished: ${env}`);
+    logger.info(`Set first dns finished: ${env}`);
+    return true;
+}
+
+async function setSecondDNS() {
+    let org = "";
+    for (const [key, value] of dnsMap) {
+        org = key;
+        break;
+    }
+
+    const url = "https://"+config.dns_server+org+"/api/v1/zones";
+    const secondDnsData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
+
+    try {
+        if (secondDnsData == null || JSON.parse(secondDnsData).data == null) {
+            logger.error(`Get second dns failed: ${url}`);
+            return false;
+        }
+    } catch (e) {
+        logger.error(`Parse second dns failed: ${url}`);
+        return false;
+    }
+
+    dnsMap.clear()
+    JSON.parse(secondDnsData).data.forEach(element => {
+        dnsMap.set(element.name, element.ip);
+    });
+
+    logger.info(`Set second dns finished: ${env}`);
     return true;
 }
 
 async function runServer() {
-    await setDNS();
-
     const server = http.createServer((req, res) => {
         const { hostname, port, path } = url.parse(req.url);
         
@@ -231,8 +241,14 @@ async function updateAliasDb() {
 
     const url = config.alias_server+org+"/v1/pubcc/organizations"
     const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
-    if (aliasData == null || JSON.parse(aliasData).data == null) {
-        logger.error(`Get alias failed: ${url}`);
+
+    try {
+        if (aliasData == null || JSON.parse(aliasData).data == null) {
+            logger.error(`Get alias failed: ${url}`);
+            return [];
+        }
+    } catch (e) {
+        logger.error(`Parse alias failed: ${url}`);
         return [];
     }
 
