@@ -1,8 +1,6 @@
-const { contextBridge, ipcRenderer, BrowserWindow } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("versions", {
-  node: () => process.versions.node,
-  chrome: () => "12121",
   lock: "false",
   orgId: "matrix-testinner",
   electron: () => process.versions.electron,
@@ -13,6 +11,7 @@ contextBridge.exposeInMainWorld("versions", {
   password: () => ipcRenderer.invoke("getValue", "password"),
   setuserInfo: (value) => ipcRenderer.send("setuserInfo", value),
   getDNS: () => ipcRenderer.invoke("getValue", "DNS"),
-  clearInfo:()=> ipcRenderer.send("clearInfo"),
+  clearInfo: () => ipcRenderer.send("clearInfo"),
   getValue: (res) => ipcRenderer.invoke("getValue", res),
+  getDbValue: () => ipcRenderer.invoke("getDbValue"),
 });
