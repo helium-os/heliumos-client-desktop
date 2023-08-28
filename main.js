@@ -1,4 +1,4 @@
-const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu } = require("electron");
+const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell } = require("electron");
 const path = require("path");
 let { autoUpdater } = require("electron-updater");
 var crypto = require('crypto')
@@ -59,6 +59,8 @@ createWindow = async () => {
       // partition:String(new Date())
     },
   });
+  //修改a标签在默认浏览器中打开
+  util.webCreated(app)
   //自动更新
   util.AutoUpdater(autoUpdater)
 
@@ -102,7 +104,7 @@ createWindow = async () => {
     await util.setStorageData('data', { _last: { DNS: null, name: null } })
     win.loadFile("./index.html")
   })
-
+ 
   win.webContents.on('did-navigate', (event, url) => {
     if (env != 'prod') {
       globalShortcut.register('F9', () => {
@@ -191,7 +193,7 @@ app.whenReady().then(async () => {
   datas = await util.getStorageData()
   env = datas?._last?.env || 'testinner'
   //配置proxy
-  let {port,alias} = await proxy.runProxy(env)
+  let { port, alias } = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   //开机自启动
   app.setLoginItemSettings({
