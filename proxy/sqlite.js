@@ -1,14 +1,18 @@
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const logger = require('./logger').getLogger('Node-heliumos-proxy-sqlite');
-
+const { app } = require("electron");
+const path = require("path");
 let DB = {};
 
 DB.SqliteDB = function (file) {
-    DB.db = new sqlite3.Database(file);
-    DB.exist = fs.existsSync(file);
+    const userDataPath = app.getPath('userData');
+    const filePath = path.join(userDataPath, file);
+
+    DB.db = new sqlite3.Database(filePath);
+    DB.exist = fs.existsSync(filePath);
     if (!DB.exist) {
-        fs.openSync(file, 'w');
+        fs.openSync(filePath, 'w');
     };
 };
 

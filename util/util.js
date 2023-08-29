@@ -101,22 +101,22 @@ macShortcutKeyFailure = (win, globalShortcut) => {
     let contents = win.webContents
     globalShortcut.register('CommandOrControl+C', () => {
       console.log('注册复制快捷键成功')
-      contents?.copy()
+      contents&&contents?.copy()
     })
 
     globalShortcut.register('CommandOrControl+V', () => {
       console.log('注册粘贴快捷键成功')
-      contents?.paste()
+      contents&&contents?.paste()
     })
 
     globalShortcut.register('CommandOrControl+X', () => {
       console.log('注册剪切快捷键成功')
-      contents?.cut()
+      contents&&contents?.cut()
     })
 
     globalShortcut.register('CommandOrControl+A', () => {
       console.log('注册全选快捷键成功')
-      contents?.selectAll()
+      contents&&contents?.selectAll()
     })
   }
 }
@@ -169,6 +169,15 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
   }
   storage.set(datas, data);
 }
+//链接在默认浏览器中打开
+webCreated=(app)=>{
+   app.on('web-contents-created', (e, webContents) => {
+    webContents.setWindowOpenHandler(({ url, frameName }) => {
+        shell.openExternal(url);
+        return { action: 'deny' };
+    });
+});
+}
 
 module.exports = {
   setDataSourse,
@@ -176,5 +185,6 @@ module.exports = {
   macShortcutKeyFailure,
   multipleOpen,
   getStorageData,
-  setStorageData
+  setStorageData,
+  webCreated
 };

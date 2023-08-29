@@ -1,6 +1,8 @@
 name: Build-Mac
 on:
-    pull_request: {}
+    pull_request:
+      types:
+        - closed
     push:
         branches: [main]
 # develop pushes and repository_dispatch handled in build_develop.yaml

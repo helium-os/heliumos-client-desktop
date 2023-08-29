@@ -1,7 +1,9 @@
 name: Build
 on:
   workflow_dispatch:
-  pull_request: {}
+  pull_request:
+      types:
+        - closed
   push:
     branches: [main]
 # develop pushes and repository_dispatch handled in build_develop.yaml
