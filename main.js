@@ -191,7 +191,7 @@ app.on(
 
 app.whenReady().then(async () => {
   datas = await util.getStorageData()
-  env = datas?._last?.env || 'testinner'
+  env = datas?._last?.env || 'prod'
   //配置proxy
   let { port, alias } = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
