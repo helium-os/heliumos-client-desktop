@@ -12,6 +12,7 @@ var publicKey
 let f10Presse = false;
 let lastF9PressTime = 0;
 const doublePressInterval = 300;
+
 let env = 'demo'
 keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
@@ -19,24 +20,37 @@ keyList.forEach(item => {
   }
 })
 let datas = {}
-
+let loading = false
 //双击F10操作
 const F10 = (win) => {
+
   const options = {
     type: 'question',
     title: '选择环境',
     message: '请选择您的环境：',
     buttons: ['开发环境', '测试环境', '生产环境', '取消'],
   };
-
+  if (loading) { return }
   dialog.showMessageBox(options).then(async (response) => {
     const selectedOption = response.response;
     let dbNameList = ['testinner', 'demo', 'prod']
     let dbName = dbNameList[selectedOption]
     if (dbName) {
-      win.webContents.send('change-env', dbName);
-      env = dbName
+      console.log(dbName)
+      loading = true
+      win.webContents.send('Loading', loading);
       await proxy.setEnv(dbName)
+      loading = false
+      win.webContents.send('change-env', dbName);
+      win.webContents.send('Loading', loading);
+      env = dbName
+      if (env != 'prod') {
+        globalShortcut.register('F9', () => {
+          win.webContents.openDevTools()
+        });
+      } else {
+        globalShortcut.unregister('F9');
+      }
       await util.setStorageData('data', { _last: { env: dbName, DNS: null, name: null } })
     }
   });
@@ -89,7 +103,7 @@ createWindow = async () => {
       await util.setStorageData('data', arg, [env, arg?.DNS, arg?.name])
       return
     }
-    if (arg?.name&&arg?.password) {
+    if (arg?.name && arg?.password) {
       let envList = await util.getStorageData(env)
       await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, DNS: data?._last?.DNS }].slice(-3), ['logList'])
     }
@@ -101,7 +115,6 @@ createWindow = async () => {
         path: process.execPath,
       });
     }
-    console.log(arg)
     await util.setStorageData('data', arg, [env, data?._last?.DNS, data?._last?.name])
 
   });
@@ -221,18 +234,18 @@ app.whenReady().then(async () => {
   });
   //dns配置
   ipcMain.handle("getLogList", async function (event) {
-    let envList=await util.getStorageData(env),res=[]
-    if(envList&&envList?.logList&&envList?.logList.length>0){
+    let envList = await util.getStorageData(env), res = []
+    if (envList && envList?.logList && envList?.logList.length > 0) {
       let data = await util.getStorageData()
-      envList?.logList.forEach(item=>{
-        if(item.name&&item.DNS){
-           let userInfo={ ...data?.[env]?.[item.DNS]?.[item.name]||{}}
-           delete userInfo.password
-           res.push({...userInfo})
-          }
+      envList?.logList.forEach(item => {
+        if (item.name && item.DNS) {
+          let userInfo = { ...data?.[env]?.[item.DNS]?.[item.name] || {} }
+          delete userInfo.password
+          res.push({ ...userInfo })
+        }
       })
       return res
-    }else{
+    } else {
       return res
     }
   });

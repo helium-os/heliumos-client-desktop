@@ -107,7 +107,7 @@ const Login = ({changePage}) => {
           >
             <antd.Input placeholder="请输入账号" style={{ width: "100%" }} suffix={
             <antd.Button className="loginButton"  htmlType="submit">
-            <img src="asset/arrowhead.png" alt="" />
+            <img src="img/submit.png" alt=""  style={{height:30,marginRight:-10}}/>
           </antd.Button>}/>
           </antd.Form.Item>
         </div>
@@ -119,11 +119,29 @@ const Login = ({changePage}) => {
 
 const MessageBox = () => {
   const [page,setPage]=React.useState('first')
+  const [spinning,setSpinning]=React.useState(false)
+  const addObverser = async () => {
+    console.log(window?.versions)
+    if (window?.versions) {
+      await window?.versions?.getMessage('Loading',async(event,arg)=>{
+         setSpinning(arg)
+      })
+    
+    }
+  }
+  React.useEffect(() => {
+    addObverser()
+  }, []);
+
   return (<>
+  <antd.Spin spinning={spinning}>
     <div className="login">
+    
       {page=='first'&&<User  changePage={(res)=>setPage(res)}/>}
       {page=='second'&&<Login  changePage={(res)=>setPage(res)}/>}
+     
     </div>
+     </antd.Spin>
   </>
   );
 };

@@ -90,8 +90,8 @@
 }
 .ant-input-affix-wrapper{
   background-color: rgba(0,0,0,.2) !important;
-   padding: 0 15px;
-  border-radius: 5px;
+   padding: 0 10px;
+  border-radius: 15px;
 }
 #usePoint::placeholder {
   color: #ffffff; /* 设置占位符文本颜色 */
