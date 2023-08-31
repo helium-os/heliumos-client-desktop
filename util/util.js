@@ -148,10 +148,22 @@ getStorageData = (data = 'data') => {
   });
   return promise
 }
+
+function getNewValue(value,oldValue) {
+  if (value === null) {
+    return value;
+  } else if (Array.isArray(value)) {
+    return value;
+  } else if (typeof value === 'object') {
+    return {...oldValue||{},...value};
+  } else {
+    return value;
+  }
+}
 //存放stroage数据
 setStorageData = async (datas = 'data', arg, routeList = []) => {
   let data = await getStorageData(datas)
-  if (typeof data === 'object') {
+    data=data||{}
     if (routeList.length == 0) {
       data = _.merge({}, data, arg);
     } else {
@@ -162,11 +174,9 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
         }
         setData=setData[routeList[i]]
       }
-      setData[routeList[routeList.length-1]]={...(setData[routeList[routeList.length-1]]||{}),...arg}
+      setData[routeList[routeList.length-1]]=getNewValue(arg,setData[routeList[routeList.length-1]]||{})
     }
-  } else {
-    data = arg
-  }
+ 
   storage.set(datas, data);
 }
 //链接在默认浏览器中打开

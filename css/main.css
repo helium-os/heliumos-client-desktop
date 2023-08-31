@@ -49,35 +49,30 @@
   margin: 0;
   padding: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
   justify-content: center;
   background:  url('../img/background.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 .loginButton{
-      line-height: 1.15;
-    -webkit-text-size-adjust: 100%;
-    color: #ffffff;
-    font-size: 13px;
-   
-    font-variant-ligatures: none;
-    font-family: Verdana,Arial,Microsoft YaHei,sans-serif;
+  border: 0px solid black!important;
     padding: 0;
     margin: 0;
-    position: absolute;
-    width: 72px;
-    height: 72px;
-    top: 10px;
-    right: -76px;
+    background-color: rgba(0,0,0,0) !important;
+    width: 25px;
+    height: 30px;
     border-radius: 50%;
-    background-color: #057feb;
     z-index: 10;
     cursor: default;
     box-shadow: none;
 }
+.loginButton img{
+  padding: 3px 0px;
+  height: 24px;
+}
 .account{
-  padding-top: 150px;
   font-size: 18px;
     color: #414b55;
     line-height: 28px;
@@ -85,18 +80,64 @@
 
 .ant-input{
   border: 0px solid black;
-  border-bottom: 1px solid #d9d9d9;
-   border-right: none !important;
-  height: 50px;
-  font-size: 18px;
+  /* border-bottom: 1px solid #d9d9d9; */
+  border-right: none !important;
+  background-color: rgba(0,0,0,0) !important;
+  color: #FFF !important;
+  height: 30px;
+ 
+  font-size: 16px;
+}
+.ant-input-affix-wrapper{
+  background-color: rgba(0,0,0,.2) !important;
+   padding: 0 15px;
+  border-radius: 5px;
+}
+#usePoint::placeholder {
+  color: #ffffff; /* 设置占位符文本颜色 */
 }
 .ant-input:focus {
-    border-color: #40a9ff;
-    box-shadow: 0 0 0 0px rgb(24 144 255 / 20%) !important;
+     border: 0px solid black;
+    /* box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2) !important; */
     border-right: none !important;
     outline: 0;
 }
 .ant-form-item-required {
-   font-size: 18px !important;
-    height: 40px;
+   font-size: 16px !important;
+    height: 30px;
+}
+
+.userInfo{
+  margin: 0px 45px;
+  width: 60px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+
+}
+.userImg{
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #FFF;
+  overflow: hidden;
+}
+.userImg img{
+  width: 100%;
+}
+.useName{
+  color:#a5817c;
+  font-size: 18px;
+  font-weight: bolder;
+}
+.useOrg{
+  visibility: hidden;
+  color: #8d8989;
+  font-size: 13px;
+}
+.userInfo:hover .useOrg{
+  visibility: visible;
 }

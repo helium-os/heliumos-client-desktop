@@ -7,11 +7,14 @@ contextBridge.exposeInMainWorld("versions", {
   ping: (data) => ipcRenderer.send("ping", data),
   iframeUP: () => ipcRenderer.send("iframeUP"),
   iframeDown: () => ipcRenderer.send("iframeDown"),
-  name: () => ipcRenderer.invoke("getValue", "name"),
-  password: () => ipcRenderer.invoke("getValue", "password"),
+  name: () => ipcRenderer.invoke("getUserValue", "name"),
+  password: () => ipcRenderer.invoke("getUserValue", "password"),
   setuserInfo: (value) => ipcRenderer.send("setuserInfo", value),
-  getDNS: () => ipcRenderer.invoke("getValue", "DNS"),
+  getDNS: () => ipcRenderer.invoke("getUserValue", "DNS"),
   clearInfo: () => ipcRenderer.send("clearInfo"),
-  getValue: (res) => ipcRenderer.invoke("getValue", res),
+  getValue: (res) => ipcRenderer.invoke("getUserValue", res),
   getDbValue: () => ipcRenderer.invoke("getDbValue"),
+  getMessage:(name,fun)=> ipcRenderer.on(name, fun),
+  sendMethod:(name)=>ipcRenderer.send(name),
+  invokMethod:(name,value)=>ipcRenderer.invoke(name, value)
 });

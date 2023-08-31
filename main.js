@@ -21,7 +21,7 @@ keyList.forEach(item => {
 let datas = {}
 
 //双击F10操作
-const F10 = () => {
+const F10 = (win) => {
   const options = {
     type: 'question',
     title: '选择环境',
@@ -34,8 +34,9 @@ const F10 = () => {
     let dbNameList = ['testinner', 'demo', 'prod']
     let dbName = dbNameList[selectedOption]
     if (dbName) {
-      await proxy.setEnv(dbName)
+      win.webContents.send('change-env', dbName);
       env = dbName
+      await proxy.setEnv(dbName)
       await util.setStorageData('data', { _last: { env: dbName, DNS: null, name: null } })
     }
   });
@@ -88,6 +89,10 @@ createWindow = async () => {
       await util.setStorageData('data', arg, [env, arg?.DNS, arg?.name])
       return
     }
+    if (arg?.name&&arg?.password) {
+      let envList = await util.getStorageData(env)
+      await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, DNS: data?._last?.DNS }].slice(-3), ['logList'])
+    }
     if (arg.autoStart === true || arg.autoStart === false) {
       app.setLoginItemSettings({
         // 设置为true注册开机自起
@@ -96,6 +101,7 @@ createWindow = async () => {
         path: process.execPath,
       });
     }
+    console.log(arg)
     await util.setStorageData('data', arg, [env, data?._last?.DNS, data?._last?.name])
 
   });
@@ -104,7 +110,7 @@ createWindow = async () => {
     await util.setStorageData('data', { _last: { DNS: null, name: null } })
     win.loadFile("./index.html")
   })
- 
+
   win.webContents.on('did-navigate', (event, url) => {
     if (env != 'prod') {
       globalShortcut.register('F9', () => {
@@ -124,7 +130,7 @@ createWindow = async () => {
         } else {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastF9PressTime < doublePressInterval) {
-            F10()
+            F10(win)
           }
           f10Presse = false; // 重置状态
         }
@@ -157,7 +163,7 @@ createWindow = async () => {
         } else {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastF9PressTime < doublePressInterval) {
-            F10()
+            F10(win)
           }
           f10Presse = false; // 重置状态
         }
@@ -191,7 +197,7 @@ app.on(
 
 app.whenReady().then(async () => {
   datas = await util.getStorageData()
-  env = datas?._last?.env || 'prod'
+  env = datas?._last?.env || 'testinner'
   //配置proxy
   let { port, alias } = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
@@ -204,7 +210,7 @@ app.whenReady().then(async () => {
   });
 
   //dns配置
-  ipcMain.handle("getValue", async function (event, arg) {
+  ipcMain.handle("getUserValue", async function (event, arg) {
     let data = await util.getStorageData()
     if (data?._last) {
       return data?.[env]?.[data?._last?.DNS]?.[data?._last?.name]?.[arg] || "";
@@ -212,6 +218,23 @@ app.whenReady().then(async () => {
       return "";
     }
 
+  });
+  //dns配置
+  ipcMain.handle("getLogList", async function (event) {
+    let envList=await util.getStorageData(env),res=[]
+    if(envList&&envList?.logList&&envList?.logList.length>0){
+      let data = await util.getStorageData()
+      envList?.logList.forEach(item=>{
+        if(item.name&&item.DNS){
+           let userInfo={ ...data?.[env]?.[item.DNS]?.[item.name]||{}}
+           delete userInfo.password
+           res.push({...userInfo})
+          }
+      })
+      return res
+    }else{
+      return res
+    }
   });
 
   ipcMain.handle('getDbValue', async function () {
