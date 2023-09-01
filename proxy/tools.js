@@ -1,8 +1,11 @@
 const request = require('request');
-const SqliteDB = require('./sqlite.js').SqliteDB;
 const logger = require('./logger').getLogger('Node-heliumos-proxy-utils');
+const sqlite3 = require('sqlite3');
+const { open } = require('sqlite');
 
 
+
+sqlite3.verbose()
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 module.exports = {
@@ -41,38 +44,42 @@ async function getUrl(url, proxy, host, ip) {
 }
 
 
-function updateDb(dbname, aliasArray) {
-    const sqliteDB = new SqliteDB(dbname);
-    const createTableSql = "CREATE TABLE IF NOT EXISTS alias (id TEXT PRIMARY KEY, alias TEXT);";
-    sqliteDB.createTable(createTableSql);
+async function updateDb(dbname, aliasArray) {
+    try {
+        const aliasDb = await createDbConnection(dbname);
+        await aliasDb.exec('CREATE TABLE IF NOT EXISTS alias (id TEXT PRIMARY KEY, alias TEXT);')
+        await aliasDb.exec('DELETE FROM alias;')
 
-    const dropTableSql = "delete from alias;";
-    sqliteDB.executeSql(dropTableSql);
+        const stmt = await aliasDb.prepare('insert into alias(id, alias) values(?, ?)')
+        for (let i = 0; i < aliasArray.length; ++i) {
+            await stmt.run(aliasArray[i]);
+        }
+        await stmt.finalize();
 
-    const insertSql = "insert into alias(id, alias) values(?, ?)";
-    sqliteDB.insertData(insertSql, aliasArray);
-
-
-    // sqliteDB.queryData("select * from alias", function (objects) {
-    //     for(let i = 0; i < objects.length; ++i){
-    //         console.log(objects[i]);
-    //     }
-    // });
-
-    sqliteDB.close()
+        const row = await aliasDb.all('SELECT * from alias;');
+        await aliasDb.close();
+        return row;
+    } catch (error) {
+        logger.error(`Sqlite error Message: ${error.message}`);
+        return [];
+    }
 }
 
-function getDbValue(dbname){
-    let res;
-    let promise = new Promise((resolve, reject) => {
-        res = resolve;
-    });
+async function getDbValue(dbname){
+    try {
+        const aliasDb = await createDbConnection(dbname);
+        const row = await aliasDb.all('SELECT * from alias;');
+        await aliasDb.close()
+        return row;
+    } catch (error) {
+        logger.error(`Sqlite error Message: ${error.message}`);
+        return [];
+    }
+}
 
-    const sqliteDB = new SqliteDB(dbname);
-    sqliteDB.queryData("select * from alias", function (objects) {
-        res(objects||[]);
-
+function createDbConnection(filename) {
+    return open({
+        filename,
+        driver: sqlite3.Database
     });
-    sqliteDB.close();
-    return promise
 }
