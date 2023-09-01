@@ -36,7 +36,6 @@ const F10 = (win) => {
     let dbNameList = ['testinner', 'demo', 'prod']
     let dbName = dbNameList[selectedOption]
     if (dbName) {
-      console.log(dbName)
       loading = true
       win.webContents.send('Loading', loading);
       await proxy.setEnv(dbName)
@@ -213,7 +212,7 @@ app.on(
 
 app.whenReady().then(async () => {
   datas = await util.getStorageData()
-  env = datas?._last?.env || 'testinner'
+  env = datas?._last?.env || 'prod'
   //配置proxy
   let { port, alias } = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
