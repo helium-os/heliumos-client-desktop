@@ -3,7 +3,7 @@ const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
 const {app, dialog } = require("electron");
-
+const log = require('electron-log');
 
 //存入数据
 setDataSourse = (data, filePath = './data.json', en = true) => {
