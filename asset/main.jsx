@@ -2,15 +2,16 @@
 const User = ({ changePage }) => {
   const [userList, setUserList] = React.useState([])
   const onFinish = async (values) => {
-    if (values.split("@")[1]) {
+    let List=values.split("@")
+    if (List.length>1) {
       let orgList = []
       if (window?.versions) {
         orgList = await window?.versions?.getDbValue()
-        if (orgList.find(item => item?.alias == values.split("@")[1])) {
+        if (orgList.find(item => item?.alias == List[1])) {
           await window?.versions?.setuserInfo({
-            org: values.split("@")[1],
+            org: List[1],
             name: values.split("@")[0],
-            orgId: orgList.filter(item => item?.alias == values.split("@")[1])[0]?.id
+            orgId: orgList.filter(item => item?.alias == List[1])[0]?.id
           });
         } else {
           antd.message.error('没有该组织');
@@ -18,7 +19,7 @@ const User = ({ changePage }) => {
         }
       }
       window.location.href =
-        'https://desktop.system.app.' + orgList.filter(item => item?.alias == values.split("@")[1])[0]?.id;
+        'https://desktop.system.app.' + orgList.filter(item => item?.alias == List[1])[0]?.id;
     }
   };
 
