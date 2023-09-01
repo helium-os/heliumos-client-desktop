@@ -187,15 +187,6 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
  
   storage.set(datas, data);
 }
-//链接在默认浏览器中打开
-webCreated=(app)=>{
-   app.on('web-contents-created', (e, webContents) => {
-    webContents.setWindowOpenHandler(({ url, frameName }) => {
-        shell.openExternal(url);
-        return { action: 'deny' };
-    });
-});
-}
 
 module.exports = {
   setDataSourse,
@@ -204,5 +195,4 @@ module.exports = {
   multipleOpen,
   getStorageData,
   setStorageData,
-  webCreated
-};
+  };

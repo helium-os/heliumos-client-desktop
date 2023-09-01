@@ -53,7 +53,7 @@ const User = ({changePage}) => {
      
     })}
      <div className='userInfo' onClick={()=>changePage('second')}>
-      <div className='userImg'><img src={'./img/userInfo.svg'}></img></div>
+      <div className='userImg'><img src={'./img/addUser.png'}></img></div>
 
      </div>
     </>
@@ -121,7 +121,6 @@ const MessageBox = () => {
   const [page,setPage]=React.useState('first')
   const [spinning,setSpinning]=React.useState(false)
   const addObverser = async () => {
-    console.log(window?.versions)
     if (window?.versions) {
       await window?.versions?.getMessage('Loading',async(event,arg)=>{
          setSpinning(arg)

@@ -73,9 +73,12 @@ createWindow = async () => {
       preload: path.join(__dirname, "preload.js"),
       // partition:String(new Date())
     },
+  })
+  //默认浏览器打开链接
+   win.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
   });
-  //修改a标签在默认浏览器中打开
-  util.webCreated(app)
   //自动更新
   util.AutoUpdater(autoUpdater)
 
