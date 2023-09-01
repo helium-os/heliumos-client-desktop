@@ -62,7 +62,7 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理发现更新事件
   autoUpdater.on('update-available', (info) => {
-    console.log('Update available:', info);
+     log.info('Update available:', info);
   });
 
   // 处理没有更新的事件
@@ -72,7 +72,7 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理更新下载进度事件
   autoUpdater.on('download-progress', (progressObj) => {
-    console.log('Download progress:', progressObj);
+     log.info('Download progress:', progressObj);
   });
 
   // 处理更新下载完成事件
