@@ -254,10 +254,8 @@ async function updateAliasDb() {
     JSON.parse(aliasData).data.forEach(element => {
         aliasArray.push([element.id,element.alias]);
     });
-    await tools.updateDb(env, aliasArray)
+    const aliasFromDb = await tools.updateDb(env, aliasArray)
     logger.info(`Update aliasDb finished: ${env}`);
-
-    const aliasFromDb = await tools.getDbValue(env)
     return aliasFromDb;
 }
 
