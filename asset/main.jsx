@@ -7,14 +7,17 @@ const User = ({ changePage }) => {
       if (window?.versions) {
         orgList = await window?.versions?.getDbValue()
         if (orgList.find(item => item?.alias == values.split("@")[1])) {
-          await window?.versions?.setuserInfo({ org: values.split("@")[1], name: values.split("@")[0] });
+          await window?.versions?.setuserInfo({
+            org: values.split("@")[1],
+            name: values.split("@")[0],
+            orgId: orgList.filter(item => item?.alias == values.split("@")[1])[0]?.id
+          });
         } else {
           antd.message.error('没有该组织');
           return
         }
       }
       window.location.href =
-        // "http://192.168.50.120:8312/";
         'https://desktop.system.app.' + orgList.filter(item => item?.alias == values.split("@")[1])[0]?.id;
     }
   };

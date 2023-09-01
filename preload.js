@@ -2,11 +2,6 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("versions", {
   lock: "false",
-  orgId: "matrix-testinner",
-  electron: () => process.versions.electron,
-  ping: (data) => ipcRenderer.send("ping", data),
-  iframeUP: () => ipcRenderer.send("iframeUP"),
-  iframeDown: () => ipcRenderer.send("iframeDown"),
   name: () => ipcRenderer.invoke("getUserValue", "name"),
   password: () => ipcRenderer.invoke("getUserValue", "password"),
   setuserInfo: (value) => ipcRenderer.send("setuserInfo", value),
