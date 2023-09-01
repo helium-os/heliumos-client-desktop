@@ -2,7 +2,7 @@ const fs = require('fs')
 const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
-
+const {app, dialog } = require("electron");
 
 
 //存入数据
@@ -53,10 +53,11 @@ AutoUpdater = (autoUpdater) => {
     repo: 'heliumos-client-desktop',
     "releaseType": "release"
   });
+  
   autoUpdater.checkForUpdates();
   // 处理检查更新事件
   autoUpdater.on('checking-for-update', () => {
-    console.log('Checking for update...');
+    log.info('Checking for update...');
   });
 
   // 处理发现更新事件
@@ -66,7 +67,7 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理没有更新的事件
   autoUpdater.on('update-not-available', () => {
-    console.log('No update available.');
+    log.info('No update available.');
   });
 
   // 处理更新下载进度事件
