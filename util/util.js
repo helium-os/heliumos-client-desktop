@@ -2,7 +2,7 @@ const fs = require('fs')
 const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
-const {app, dialog } = require("electron");
+const { app, dialog } = require("electron");
 const log = require('electron-log');
 
 //存入数据
@@ -53,7 +53,7 @@ AutoUpdater = (autoUpdater) => {
     repo: 'heliumos-client-desktop',
     "releaseType": "release"
   });
-  
+
   autoUpdater.checkForUpdates();
   // 处理检查更新事件
   autoUpdater.on('checking-for-update', () => {
@@ -62,7 +62,7 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理发现更新事件
   autoUpdater.on('update-available', (info) => {
-     log.info('Update available:', info);
+    log.info('Update available:', info);
   });
 
   // 处理没有更新的事件
@@ -72,7 +72,7 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理更新下载进度事件
   autoUpdater.on('download-progress', (progressObj) => {
-     log.info('Download progress:', progressObj);
+    log.info('Download progress:', progressObj);
   });
 
   // 处理更新下载完成事件
@@ -102,30 +102,30 @@ macShortcutKeyFailure = (win, globalShortcut) => {
     let contents = win.webContents
     globalShortcut.register('CommandOrControl+C', () => {
       if (win && !win.isDestroyed()) {
-      console.log('注册复制快捷键成功')
-      contents&&contents?.copy()
-     }
+        console.log('注册复制快捷键成功')
+        contents && contents?.copy()
+      }
     })
 
     globalShortcut.register('CommandOrControl+V', () => {
       if (win && !win.isDestroyed()) {
-      console.log('注册粘贴快捷键成功')
-      contents&&contents?.paste()
-       }
+        console.log('注册粘贴快捷键成功')
+        contents && contents?.paste()
+      }
     })
 
     globalShortcut.register('CommandOrControl+X', () => {
       if (win && !win.isDestroyed()) {
-      console.log('注册剪切快捷键成功')
-      contents&&contents?.cut()
+        console.log('注册剪切快捷键成功')
+        contents && contents?.cut()
       }
     })
 
     globalShortcut.register('CommandOrControl+A', () => {
       if (win && !win.isDestroyed()) {
-      console.log('注册全选快捷键成功')
-      contents&&contents?.selectAll()
-    }
+        console.log('注册全选快捷键成功')
+        contents && contents?.selectAll()
+      }
     })
   }
 }
@@ -158,13 +158,13 @@ getStorageData = (data = 'data') => {
   return promise
 }
 
-function getNewValue(value,oldValue) {
+function getNewValue(value, oldValue) {
   if (value === null) {
     return value;
   } else if (Array.isArray(value)) {
     return value;
   } else if (typeof value === 'object') {
-    return {...oldValue||{},...value};
+    return { ...oldValue || {}, ...value };
   } else {
     return value;
   }
@@ -172,20 +172,20 @@ function getNewValue(value,oldValue) {
 //存放stroage数据
 setStorageData = async (datas = 'data', arg, routeList = []) => {
   let data = await getStorageData(datas)
-    data=data||{}
-    if (routeList.length == 0) {
-      data = _.merge({}, data, arg);
-    } else {
-      let setData=data
-      for (let i = 0; i < routeList.length-1; i++) {
-        if(!setData[routeList[i]]){
-          setData[routeList[i]]={}
-        }
-        setData=setData[routeList[i]]
+  data = data || {}
+  if (routeList.length == 0) {
+    data = _.merge({}, data, arg);
+  } else {
+    let setData = data
+    for (let i = 0; i < routeList.length - 1; i++) {
+      if (!setData[routeList[i]]) {
+        setData[routeList[i]] = {}
       }
-      setData[routeList[routeList.length-1]]=getNewValue(arg,setData[routeList[routeList.length-1]]||{})
+      setData = setData[routeList[i]]
     }
- 
+    setData[routeList[routeList.length - 1]] = getNewValue(arg, setData[routeList[routeList.length - 1]] || {})
+  }
+
   storage.set(datas, data);
 }
 
@@ -196,4 +196,4 @@ module.exports = {
   multipleOpen,
   getStorageData,
   setStorageData,
-  };
+};

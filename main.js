@@ -50,7 +50,7 @@ const F10 = (win) => {
       } else {
         globalShortcut.unregister('F9');
       }
-      await util.setStorageData('data', { _last: { env: dbName, DNS: null, name: null } })
+      await util.setStorageData('data', { _last: { env: dbName, org: null, name: null } })
     }
   });
 }
@@ -95,19 +95,19 @@ createWindow = async () => {
 
   ipcMain.on("setuserInfo", async function (event, arg) {
     let data = await util.getStorageData()
-    if (arg?.DNS != null && arg?.name != null) {
+    if (arg?.org != null && arg?.name != null) {
       await util.setStorageData('data', { _last: { ...arg, env } })
       app.setLoginItemSettings({
-        openAtLogin: data?.[env]?.[arg?.DNS]?.[arg?.name]?.autoStart || false,
+        openAtLogin: data?.[env]?.[arg?.org]?.[arg?.name]?.autoStart || false,
         openAsHidden: false,
         path: process.execPath,
       });
-      await util.setStorageData('data', arg, [env, arg?.DNS, arg?.name])
+      await util.setStorageData('data', arg, [env, arg?.org, arg?.name])
       return
     }
     if (arg?.name && arg?.password) {
       let envList = await util.getStorageData(env)
-      await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, DNS: data?._last?.DNS }].slice(-3), ['logList'])
+      await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, org: data?._last?.org }].slice(-3), ['logList'])
     }
     if (arg.autoStart === true || arg.autoStart === false) {
       app.setLoginItemSettings({
@@ -117,12 +117,12 @@ createWindow = async () => {
         path: process.execPath,
       });
     }
-    await util.setStorageData('data', arg, [env, data?._last?.DNS, data?._last?.name])
+    await util.setStorageData('data', arg, [env, data?._last?.org, data?._last?.name])
 
   });
 
   ipcMain.on('clearInfo', async () => {
-    await util.setStorageData('data', { _last: { DNS: null, name: null } })
+    await util.setStorageData('data', { _last: { org: null, name: null } })
     win.loadFile("./index.html")
   })
 
@@ -219,7 +219,7 @@ app.whenReady().then(async () => {
   //开机自启动
   app.setLoginItemSettings({
     // 设置为true注册开机自起
-    openAtLogin: datas?.[env]?.[datas?._last?.DNS]?.[datas?._last?.name]?.autoStart || false,
+    openAtLogin: datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]?.autoStart || false,
     openAsHidden: false,
     path: process.execPath,
   });
@@ -228,7 +228,7 @@ app.whenReady().then(async () => {
   ipcMain.handle("getUserValue", async function (event, arg) {
     let data = await util.getStorageData()
     if (data?._last) {
-      return data?.[env]?.[data?._last?.DNS]?.[data?._last?.name]?.[arg] || "";
+      return data?.[env]?.[data?._last?.org]?.[data?._last?.name]?.[arg] || "";
     } else {
       return "";
     }
@@ -240,8 +240,8 @@ app.whenReady().then(async () => {
     if (envList && envList?.logList && envList?.logList.length > 0) {
       let data = await util.getStorageData()
       envList?.logList.forEach(item => {
-        if (item.name && item.DNS) {
-          let userInfo = { ...data?.[env]?.[item.DNS]?.[item.name] || {} }
+        if (item.name && item.org) {
+          let userInfo = { ...data?.[env]?.[item.org]?.[item.name] || {} }
           delete userInfo.password
           res.push({ ...userInfo })
         }

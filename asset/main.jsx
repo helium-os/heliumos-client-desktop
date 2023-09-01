@@ -1,39 +1,37 @@
 //登录用户选择
-const User = ({changePage}) => {
-  const [userList,setUserList]=React.useState([{name:111}])
+const User = ({ changePage }) => {
+  const [userList, setUserList] = React.useState([])
   const onFinish = async (values) => {
     if (values.split("@")[1]) {
-      let dbList = []
+      let orgList = []
       if (window?.versions) {
-        dbList = await window?.versions?.getDbValue()
-        if (dbList.find(item => item?.alias == values.split("@")[1])) {
-          await window?.versions?.setuserInfo({ DNS: values.split("@")[1], name: values.split("@")[0] });
+        orgList = await window?.versions?.getDbValue()
+        if (orgList.find(item => item?.alias == values.split("@")[1])) {
+          await window?.versions?.setuserInfo({ org: values.split("@")[1], name: values.split("@")[0] });
         } else {
-         
-         antd.message.error('没有该组织')
+          antd.message.error('没有该组织');
           return
         }
       }
-
       window.location.href =
         // "http://192.168.50.120:8312/";
-        'https://desktop.system.app.' + dbList.filter(item => item?.alias == values.split("@")[1])[0]?.id;
+        'https://desktop.system.app.' + orgList.filter(item => item?.alias == values.split("@")[1])[0]?.id;
     }
   };
 
   const getValue = async () => {
     if (window?.versions) {
-      let List=await window?.versions?.invokMethod('getLogList')
-         setUserList(List)
+      let List = await window?.versions?.invokMethod('getLogList')
+      setUserList(List)
     }
   }
-   const addObverser = async () => {
+  const addObverser = async () => {
     if (window?.versions) {
-      await window?.versions?.getMessage('change-env',async(event,arg)=>{
-         let List=await window?.versions?.invokMethod('getLogList')
-         setUserList(List)
+      await window?.versions?.getMessage('change-env', async (event, arg) => {
+        let List = await window?.versions?.invokMethod('getLogList')
+        setUserList(List)
       })
-    
+
     }
   }
   React.useEffect(() => {
@@ -43,33 +41,33 @@ const User = ({changePage}) => {
 
   return (
     <>
-    {userList.map(item=>{
-      return item?.name ?
-     <div className='userInfo'onClick={()=>onFinish(item?.name+'@'+item?.DNS)}>
-      <div className='userImg'><img src={item?.avatar||'./img/userInfo.svg'}></img></div>
-      <div className='useName'>{item?.display_name}</div>
-      <div className='useOrg'>{item?.name}@{item?.DNS}</div>
-     </div>:''
-     
-    })}
-     <div className='userInfo' onClick={()=>changePage('second')}>
-      <div className='userImg'><img src={'./img/addUser.png'}></img></div>
+      {userList.map(item => {
+        return item?.name ?
+          <div className='userInfo' onClick={() => onFinish(item?.name + '@' + item?.org)}>
+            <div className='userImg'><img src={item?.avatar || './img/userInfo.svg'}></img></div>
+            <div className='useName'>{item?.display_name}</div>
+            <div className='useOrg'>{item?.name}@{item?.org}</div>
+          </div> : ''
 
-     </div>
+      })}
+      <div className='userInfo' onClick={() => changePage('second')}>
+        <div className='userImg'><img src={'./img/addUser.png'}></img></div>
+
+      </div>
     </>
   );
 };
 
 //登录(输入账号密码)
-const Login = ({changePage}) => {
+const Login = ({ changePage }) => {
 
   const onFinish = async (values) => {
     if (values?.usePoint.split("@")[1]) {
-      let dbList = []
+      let orgList = []
       if (window?.versions) {
-        dbList = await window?.versions?.getDbValue()
-        if (dbList.find(item => item?.alias == values?.usePoint.split("@")[1])) {
-          await window?.versions?.setuserInfo({ DNS: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0] });
+        orgList = await window?.versions?.getDbValue()
+        if (orgList.find(item => item?.alias == values?.usePoint.split("@")[1])) {
+          await window?.versions?.setuserInfo({ org: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0] });
         } else {
           antd.message.error('没有该组织')
           return
@@ -78,16 +76,16 @@ const Login = ({changePage}) => {
 
       window.location.href =
         // "http://192.168.50.120:8312/";
-        'https://desktop.system.app.' + dbList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id;
+        'https://desktop.system.app.' + orgList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id;
     }
   };
   const [form] = antd.Form.useForm();
   const addObverser = async () => {
     if (window?.versions) {
-      await window?.versions?.getMessage('change-env',(event,arg)=>{
-        form.setFieldsValue({ usePoint:''});
+      await window?.versions?.getMessage('change-env', (event, arg) => {
+        form.setFieldsValue({ usePoint: '' });
       })
-    
+
     }
   }
   React.useEffect(() => {
@@ -106,9 +104,9 @@ const Login = ({changePage}) => {
             label=""
           >
             <antd.Input placeholder="请输入账号" style={{ width: "100%" }} suffix={
-            <antd.Button className="loginButton"  htmlType="submit">
-            <img src="img/submit.png" alt=""  style={{height:30,marginRight:-10}}/>
-          </antd.Button>}/>
+              <antd.Button className="loginButton" htmlType="submit">
+                <img src="img/submit.png" alt="" style={{ height: 30, marginRight: -10 }} />
+              </antd.Button>} />
           </antd.Form.Item>
         </div>
       </antd.Form>
@@ -118,14 +116,14 @@ const Login = ({changePage}) => {
 
 
 const MessageBox = () => {
-  const [page,setPage]=React.useState('first')
-  const [spinning,setSpinning]=React.useState(false)
+  const [page, setPage] = React.useState('first')
+  const [spinning, setSpinning] = React.useState(false)
   const addObverser = async () => {
     if (window?.versions) {
-      await window?.versions?.getMessage('Loading',async(event,arg)=>{
-         setSpinning(arg)
+      await window?.versions?.getMessage('Loading', async (event, arg) => {
+        setSpinning(arg)
       })
-    
+
     }
   }
   React.useEffect(() => {
@@ -133,14 +131,14 @@ const MessageBox = () => {
   }, []);
 
   return (<>
-  <antd.Spin spinning={spinning}>
-    <div className="login">
-    
-      {page=='first'&&<User  changePage={(res)=>setPage(res)}/>}
-      {page=='second'&&<Login  changePage={(res)=>setPage(res)}/>}
-     
-    </div>
-     </antd.Spin>
+    <antd.Spin spinning={spinning}>
+      <div className="login">
+
+        {page == 'first' && <User changePage={(res) => setPage(res)} />}
+        {page == 'second' && <Login changePage={(res) => setPage(res)} />}
+
+      </div>
+    </antd.Spin>
   </>
   );
 };
