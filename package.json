@@ -31,6 +31,8 @@
         "node-schedule": "^2.1.1",
         "request": "^2.88.2",
         "split": "^1.0.1",
+        "sqlit": "^2.0.0",
+        "sqlite": "^5.0.1",
         "sqlite3": "^5.1.6"
     },
     "build": {
