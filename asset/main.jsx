@@ -38,9 +38,20 @@ const User = ({ changePage }) => {
 
     }
   }
+  const autoLogin=async()=>{
+    if (window?.versions) {
+      let autoLogin = await window?.versions?.invokMethod('getUserValue','autoLogin')
+      let orgId = await window?.versions?.invokMethod('getUserValue','orgId')
+      if(autoLogin==true&&orgId){
+         window.location.href =
+        'https://desktop.system.app.' + orgId;
+      }
+    }
+  }
   React.useEffect(() => {
     getValue()
     addObverser()
+    autoLogin()
   }, []);
 
   return (
