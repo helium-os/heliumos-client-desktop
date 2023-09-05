@@ -32,7 +32,7 @@ async function proxyRequest(url, method, headers, body, proxy, cert) {
                 logger.error(`request error: ${error}, url: ${url}, proxy: ${proxy}`);
                 resolve(null);
             } else {
-                resolve(response.body);
+                resolve(response);
             }
         })
     });

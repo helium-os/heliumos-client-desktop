@@ -6,6 +6,9 @@ var fs = require('fs')
 const proxy = require('./proxy/proxy');
 const tools = require('./proxy/tools');
 const util = require('./util/util');
+const log = require('electron-log');
+const { Agent, fetch , ProxyAgent} = require("undici");
+
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 //F9双击
@@ -56,7 +59,7 @@ const F10 = (win) => {
 }
 
 createWindow = async () => {
-
+ 
   const win = new BrowserWindow({
     width: 800,
     height: 800,
@@ -189,10 +192,7 @@ createWindow = async () => {
     util.macShortcutKeyFailure(win, globalShortcut)
   })
 
-  protocol.handle("https", (request) => {
-    const url = new URL(request.url);
-    return proxy.fetch(url, request.method, request.headers,request.body)
-  });
+ 
 
   let LastUser=datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]
   if(LastUser?.autoLogin==true&&LastUser?.orgId){
@@ -226,10 +226,22 @@ app.whenReady().then(async () => {
   env = datas?._last?.env || 'prod'
   //配置proxy
   let { port, alias } = await proxy.runProxy(env)
-  // app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
+  console.log(port)
+  app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   //更新不走端口
   // app.commandLine.appendSwitch('proxy-bypass-list', '*github.com')
   //开机自启动
+  //   protocol.handle("https", async(request,callback) => {
+  //     const url = new URL(request.url);
+  //     console.log(port)
+  //     const client = new ProxyAgent('http://127.0.0.1:' + port);
+  //     let resF=await fetch(url.href, {
+  //       ...request,
+  //     dispatcher: client
+  //   });
+  //   return resF
+  // });
+
   app.setLoginItemSettings({
     // 设置为true注册开机自起
     openAtLogin: datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]?.autoStart || false,
