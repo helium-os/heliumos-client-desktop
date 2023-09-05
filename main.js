@@ -1,4 +1,4 @@
-const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell } = require("electron");
+const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell,protocol } = require("electron");
 const path = require("path");
 let { autoUpdater } = require("electron-updater");
 var crypto = require('crypto')
@@ -188,6 +188,12 @@ createWindow = async () => {
     // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
     util.macShortcutKeyFailure(win, globalShortcut)
   })
+
+  protocol.handle("https", (request) => {
+    const url = new URL(request.url);
+    return proxy.fetch(url, request.method, request.headers,request.body)
+  });
+
   let LastUser=datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]
   if(LastUser?.autoLogin==true&&LastUser?.orgId){
     win.loadURL('https://desktop.system.app.' + LastUser.orgId);
@@ -220,9 +226,9 @@ app.whenReady().then(async () => {
   env = datas?._last?.env || 'prod'
   //配置proxy
   let { port, alias } = await proxy.runProxy(env)
-  app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
+  // app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   //更新不走端口
-  app.commandLine.appendSwitch('proxy-bypass-list', '*github.com')
+  // app.commandLine.appendSwitch('proxy-bypass-list', '*github.com')
   //开机自启动
   app.setLoginItemSettings({
     // 设置为true注册开机自起
