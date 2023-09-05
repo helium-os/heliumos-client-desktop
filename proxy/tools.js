@@ -2,39 +2,34 @@ const request = require('request');
 const logger = require('./logger').getLogger('Node-heliumos-proxy-utils');
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
+const fs = require('fs');
 
 
 
 sqlite3.verbose()
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 module.exports = {
-    getUrl: getUrl,
+    proxyRequest: proxyRequest,
     updateDb: updateDb,
     getDbValue: getDbValue
 };
 
-async function getUrl(url, proxy, host, ip) {
+async function proxyRequest(url, method, headers, body, proxy, cert) {
     return new Promise((resolve, reject) => {
         let options = {
-            'method': 'GET',
-            'url': url,
-            'proxy': proxy
+            method: method,
+            url: url,
+            proxy: proxy,
+            headers: headers,
+            body: body
         };
-        if (host != null) {
-            options = {
-                'method': 'GET',
-                'url': url,
-                'proxy': proxy,
-                'hostname': ip,
-                'headers': {
-                    'Host': host
-                }
-            };
-        };
+        if (cert != null) {
+            options.ca = fs.readFileSync(cert);
+        }
         request(options, function (error, response) {
             if (error) {
-                logger.error(`http get error: ${error}, url: ${url}`);
+                logger.error(`request error: ${error}, url: ${url}, proxy: ${proxy}`);
                 resolve(null);
             } else {
                 resolve(response.body);
@@ -42,7 +37,6 @@ async function getUrl(url, proxy, host, ip) {
         })
     });
 }
-
 
 async function updateDb(dbname, aliasArray) {
     try {
@@ -69,7 +63,7 @@ async function getDbValue(dbname){
     try {
         const aliasDb = await createDbConnection(dbname);
         const row = await aliasDb.all('SELECT * from alias;');
-        await aliasDb.close()
+        await aliasDb.close();
         return row;
     } catch (error) {
         logger.error(`Sqlite error Message: ${error.message}`);
