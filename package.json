@@ -5,7 +5,7 @@
     "scripts": {
         "electron-start": "cross-env NODE_ENV=testinner electron . --icon=favicon.ico ",
         "dist": "cross-env  electron-builder --win --x64",
-        "dist-mac": "electron-builder  --mac --x64",
+        "dist-mac": "electron-builder --macos --arm64 --x64",
         "dist-macArm": "electron-builder  --mac --arm64",
         "dist-linux": "electron-builder  --linux  --x64",
         "release": "electron-builder --win --config --publish always",
@@ -31,7 +31,6 @@
         "node-schedule": "^2.1.1",
         "request": "^2.88.2",
         "split": "^1.0.1",
-        "sqlit": "^2.0.0",
         "sqlite": "^5.0.1",
         "sqlite3": "^5.1.6"
     },

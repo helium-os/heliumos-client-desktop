@@ -216,6 +216,8 @@ app.whenReady().then(async () => {
   //配置proxy
   let { port, alias } = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
+  //更新不走端口
+  app.commandLine.appendSwitch('proxy-bypass-list', '*github.com')
   //开机自启动
   app.setLoginItemSettings({
     // 设置为true注册开机自起

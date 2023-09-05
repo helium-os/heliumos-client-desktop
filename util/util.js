@@ -46,14 +46,10 @@ function mkdir(filePath) {
 
 //自动更新
 AutoUpdater = (autoUpdater) => {
+   autoUpdater.logger = log
   //要想使用自动更新，不能配置DNS解析
-  autoUpdater.setFeedURL({
-    provider: 'github',
-    owner: 'helium-os',
-    repo: 'heliumos-client-desktop',
-    "releaseType": "release"
-  });
-
+  // autoUpdater.setFeedURL("http://127.0.0.1:9005/");
+  autoUpdater.autoDownload = false
   autoUpdater.checkForUpdates();
   // 处理检查更新事件
   autoUpdater.on('checking-for-update', () => {
@@ -62,7 +58,16 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理发现更新事件
   autoUpdater.on('update-available', (info) => {
-    log.info('Update available:', info);
+      dialog.showMessageBox({
+            type: 'info',
+            title: '软件更新',
+            message: '发现新版本, 确定更新?',
+            buttons: ['确定', '取消']
+        }).then(resp => {
+            if (resp.response == 0) {
+                autoUpdater.downloadUpdate()
+            }
+        })
   });
 
   // 处理没有更新的事件
@@ -77,17 +82,12 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理更新下载完成事件
   autoUpdater.on('update-downloaded', (info) => {
-    dialog.showMessageBox({
-      type: 'info',
-      title: '应用更新',
-      message: '发现新版本，是否更新？',
-      buttons: ['是', '否']
-    }).then((buttonIndex) => {
-      if (buttonIndex.response == 0) {  //选择是，则退出程序，安装新版本
-        autoUpdater.quitAndInstall()
-        app.quit()
-      }
-    })
+   dialog.showMessageBox({
+            title: '下载完成',
+            message: '最新版本已下载完成, 退出程序进行安装'
+        }).then(() => {
+            autoUpdater.quitAndInstall()
+        })
 
   });
 
