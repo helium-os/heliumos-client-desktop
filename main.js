@@ -1,13 +1,15 @@
-const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell,protocol } = require("electron");
+const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, protocol } = require("electron");
 const path = require("path");
 let { autoUpdater } = require("electron-updater");
 var crypto = require('crypto')
 var fs = require('fs')
+const { readFile } = require("node:fs/promises");
+const https = require('https');
 const proxy = require('./proxy/proxy');
 const tools = require('./proxy/tools');
 const util = require('./util/util');
 const log = require('electron-log');
-const { Agent, fetch , ProxyAgent} = require("undici");
+const { Agent, fetch, ProxyAgent } = require("undici");
 
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
@@ -59,7 +61,7 @@ const F10 = (win) => {
 }
 
 createWindow = async () => {
- 
+
   const win = new BrowserWindow({
     width: 800,
     height: 800,
@@ -77,7 +79,7 @@ createWindow = async () => {
     },
   })
   //默认浏览器打开链接
-   win.webContents.setWindowOpenHandler(({ url }) => {
+  win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
@@ -192,15 +194,15 @@ createWindow = async () => {
     util.macShortcutKeyFailure(win, globalShortcut)
   })
 
- 
 
-  let LastUser=datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]
-  if(LastUser?.autoLogin==true&&LastUser?.orgId){
+
+  let LastUser = datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]
+  if (LastUser?.autoLogin == true && LastUser?.orgId) {
     win.loadURL('https://desktop.system.app.' + LastUser.orgId);
-  }else{
+  } else {
     win.loadFile("./index.html");
   }
-  
+
   win.on('blur', () => {
     globalShortcut.unregisterAll() // 注销键盘事件
   })
@@ -224,23 +226,39 @@ app.on(
 app.whenReady().then(async () => {
   datas = await util.getStorageData()
   env = datas?._last?.env || 'prod'
+  const ca = await readFile("heliumos.crt")
   //配置proxy
   let { port, alias } = await proxy.runProxy(env)
-  console.log(port)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   //更新不走端口
   // app.commandLine.appendSwitch('proxy-bypass-list', '*github.com')
   //开机自启动
-  //   protocol.handle("https", async(request,callback) => {
-  //     const url = new URL(request.url);
-  //     console.log(port)
-  //     const client = new ProxyAgent('http://127.0.0.1:' + port);
-  //     let resF=await fetch(url.href, {
-  //       ...request,
-  //     dispatcher: client
-  //   });
-  //   return resF
-  // });
+  protocol.handle("https", async (request, callback) => {
+    const url = new URL(request.url);
+    const agent = new ProxyAgent({ uri: 'http://127.0.0.1:' + port, connect: { ca: ca }, requestTls: { ca } });
+    // const client = new ProxyAgent('http://127.0.0.1:' + port);
+    // const agent = new Agent({ connect: { ca } });
+    // let resF=await 
+    // console.log(url)
+    let key = url.host.split('.').reverse()[1]
+    // log.info(JSON.stringify(request))
+    return fetch(url, {
+      // ...request,
+      body: request.body,
+      credentials: request.credentials,
+      duplex: "half",
+      headers: request.headers,
+      integrity: request.integrity,
+      keepalive: request.keepalive,
+      method: request.method,
+      mode: request.mode,
+      redirect: request.redirect,
+      referrer: request.referrer,
+      referrerPolicy: request.referrerPolicy,
+      signal: request.signal,
+      dispatcher: key === 'app' || key === 'service' ? agent : undefined
+    });
+  });
 
   app.setLoginItemSettings({
     // 设置为true注册开机自起
