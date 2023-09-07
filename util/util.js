@@ -4,6 +4,7 @@ const dirCache = {};
 const _ = require('lodash');
 const { app, dialog } = require("electron");
 const log = require('electron-log');
+const electronLocalshortcut = require('electron-localshortcut');
 
 //存入数据
 setDataSourse = (data, filePath = './data.json', en = true) => {
@@ -97,31 +98,31 @@ AutoUpdater = (autoUpdater) => {
   });
 }
 
-macShortcutKeyFailure = (win, globalShortcut) => {
+macShortcutKeyFailure = (win) => {
   if (process.platform === 'darwin') {
     let contents = win.webContents
-    globalShortcut.register('CommandOrControl+C', () => {
+    electronLocalshortcut.register(win,'CommandOrControl+C', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册复制快捷键成功')
         contents && contents?.copy()
       }
     })
 
-    globalShortcut.register('CommandOrControl+V', () => {
+    electronLocalshortcut.register(win,'CommandOrControl+V', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册粘贴快捷键成功')
         contents && contents?.paste()
       }
     })
 
-    globalShortcut.register('CommandOrControl+X', () => {
+    electronLocalshortcut.register(win,'CommandOrControl+X', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册剪切快捷键成功')
         contents && contents?.cut()
       }
     })
 
-    globalShortcut.register('CommandOrControl+A', () => {
+    electronLocalshortcut.register(win,'CommandOrControl+A', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册全选快捷键成功')
         contents && contents?.selectAll()

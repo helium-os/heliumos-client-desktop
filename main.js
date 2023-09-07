@@ -189,12 +189,9 @@ createWindow = async () => {
         }
       });
     }
-
-    // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
-    util.macShortcutKeyFailure(win, globalShortcut)
   })
-
-
+  // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
+  util.macShortcutKeyFailure(win)
 
   let LastUser = datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]
   if (LastUser?.autoLogin == true && LastUser?.orgId) {
@@ -204,7 +201,8 @@ createWindow = async () => {
   }
 
   win.on('blur', () => {
-    globalShortcut.unregisterAll() // 注销键盘事件
+     globalShortcut.unregister('F9');
+     globalShortcut.unregister('F10');
   })
   win.maximize();
 };
