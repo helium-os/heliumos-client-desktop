@@ -33,7 +33,8 @@
         "request": "^2.88.2",
         "split": "^1.0.1",
         "sqlite": "^5.0.1",
-        "sqlite3": "^5.1.6"
+        "sqlite3": "^5.1.6",
+        "undici": "^5.23.0"
     },
     "build": {
         "appId": "com.xxx.app",
