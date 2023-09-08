@@ -17,7 +17,7 @@ var publicKey
 let f10Presse = false;
 let lastF9PressTime = 0;
 const doublePressInterval = 300;
-
+let org = ''
 let env = 'demo'
 keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
@@ -100,11 +100,12 @@ createWindow = async () => {
 
   ipcMain.on("setuserInfo", async function (event, arg) {
     let data = await util.getStorageData()
-     if (arg?.name && (arg.autoLogin=== true || arg.autoLogin === false)) {
+    if (arg?.name && (arg.autoLogin === true || arg.autoLogin === false)) {
       let envList = await util.getStorageData(env)
       await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, org: data?._last?.org }].slice(-3), ['logList'])
     }
     if (arg?.org != null && arg?.name != null) {
+      org = arg?.org
       await util.setStorageData('data', { _last: { ...arg, env } })
       app.setLoginItemSettings({
         openAtLogin: data?.[env]?.[arg?.org]?.[arg?.name]?.autoStart || false,
@@ -114,7 +115,7 @@ createWindow = async () => {
       await util.setStorageData('data', arg, [env, arg?.org, arg?.name])
       return
     }
-   
+
     if (arg.autoStart === true || arg.autoStart === false) {
       app.setLoginItemSettings({
         // 设置为true注册开机自起
@@ -133,7 +134,7 @@ createWindow = async () => {
   })
 
   win.webContents.on('did-navigate', (event, url) => {
-    if (env != 'prod') {
+    if (env != 'prod' || ( org === 'heliumos' || org === 'easypay-internal')) {
       globalShortcut.register('F9', () => {
         win.webContents.openDevTools()
       });
@@ -166,7 +167,7 @@ createWindow = async () => {
     }
   });
   win.on('focus', () => {
-    if (env != 'prod') {
+    if (env != 'prod' || ( org === 'heliumos' || org === 'easypay-internal')) {
       globalShortcut.register('F9', () => {
         win.webContents.openDevTools()
       });
@@ -202,8 +203,8 @@ createWindow = async () => {
   }
 
   win.on('blur', () => {
-     globalShortcut.unregister('F9');
-     globalShortcut.unregister('F10');
+    globalShortcut.unregister('F9');
+    globalShortcut.unregister('F10');
   })
   win.maximize();
 };
@@ -225,6 +226,7 @@ app.on(
 app.whenReady().then(async () => {
   datas = await util.getStorageData()
   env = datas?._last?.env || 'prod'
+  org = datas?._last?.org
   const ca = await readFile("heliumos.crt")
   //配置proxy
   let { port, alias } = await proxy.runProxy(env)
