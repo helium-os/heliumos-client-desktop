@@ -82,7 +82,7 @@ async function setSecondDNS() {
     }
 
     const url = "https://"+config.dns_server+org+"/api/v1/zones";
-    const secondDnsData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port, config.cert_file);
+    const secondDnsData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port);
 
     try {
         if (secondDnsData == null || JSON.parse(secondDnsData).data == null) {
@@ -239,7 +239,7 @@ async function updateAliasDb() {
     }
 
     const url = config.alias_server+org+"/v1/pubcc/organizations"
-    const aliasData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port, config.cert_file);
+    const aliasData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port);
 
     try {
         if (aliasData == null || JSON.parse(aliasData).data == null) {
@@ -265,7 +265,7 @@ async function fetch(reqUrl, method, headers, body) {
     const org = hosts[hosts.length - 1];
 
     if (dnsMap.has(org)) {
-        const data = await tools.proxyRequest(reqUrl, method, headers, body,"http://127.0.0.1:"+port, config.cert_file);
+        const data = await tools.proxyRequest(reqUrl, method, headers, body,"http://127.0.0.1:"+port);
         return data;
     } else {
         const data = await tools.proxyRequest(reqUrl, method, headers, body,null, null);

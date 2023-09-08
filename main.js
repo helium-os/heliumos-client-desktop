@@ -100,6 +100,10 @@ createWindow = async () => {
 
   ipcMain.on("setuserInfo", async function (event, arg) {
     let data = await util.getStorageData()
+     if (arg?.name && (arg.autoLogin=== true || arg.autoLogin === false)) {
+      let envList = await util.getStorageData(env)
+      await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, org: data?._last?.org }].slice(-3), ['logList'])
+    }
     if (arg?.org != null && arg?.name != null) {
       await util.setStorageData('data', { _last: { ...arg, env } })
       app.setLoginItemSettings({
@@ -110,10 +114,7 @@ createWindow = async () => {
       await util.setStorageData('data', arg, [env, arg?.org, arg?.name])
       return
     }
-    if (arg?.name && arg?.password) {
-      let envList = await util.getStorageData(env)
-      await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, org: data?._last?.org }].slice(-3), ['logList'])
-    }
+   
     if (arg.autoStart === true || arg.autoStart === false) {
       app.setLoginItemSettings({
         // 设置为true注册开机自起
@@ -229,35 +230,8 @@ app.whenReady().then(async () => {
   let { port, alias } = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   //更新不走端口
-  // app.commandLine.appendSwitch('proxy-bypass-list', '*github.com')
+  app.commandLine.appendSwitch('proxy-bypass-list', '*github.com')
   //开机自启动
-  protocol.handle("https", async (request, callback) => {
-    const url = new URL(request.url);
-    const agent = new ProxyAgent({ uri: 'http://127.0.0.1:' + port, connect: { ca: ca }, requestTls: { ca } });
-    // const client = new ProxyAgent('http://127.0.0.1:' + port);
-    // const agent = new Agent({ connect: { ca } });
-    // let resF=await 
-    // console.log(url)
-    let key = url.host.split('.').reverse()[1]
-    // log.info(JSON.stringify(request))
-    return fetch(url, {
-      // ...request,
-      body: request.body,
-      credentials: request.credentials,
-      duplex: "half",
-      headers: request.headers,
-      integrity: request.integrity,
-      keepalive: request.keepalive,
-      method: request.method,
-      mode: request.mode,
-      redirect: request.redirect,
-      referrer: request.referrer,
-      referrerPolicy: request.referrerPolicy,
-      signal: request.signal,
-      dispatcher: key === 'app' || key === 'service' ? agent : undefined
-    });
-  });
-
   app.setLoginItemSettings({
     // 设置为true注册开机自起
     openAtLogin: datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]?.autoStart || false,

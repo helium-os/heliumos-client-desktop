@@ -1,5 +1,4 @@
 server_port: 18888
-cert_file: cert.pem
 prod_dns: https://dns.heliumos-dns.info
 testinner_dns: https://dns-testinner.heliumos-dns.info
 demo_dns: https://dns-demo.heliumos-dns.info
