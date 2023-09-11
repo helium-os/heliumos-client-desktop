@@ -133,14 +133,14 @@ createWindow = async () => {
     win.loadFile("./index.html")
   })
 
-  win.on('close', (event) => {
-    // 阻止默认的关闭行为
-    event.preventDefault();
+  // win.on('close', (event) => {
+  //   // 阻止默认的关闭行为
+  //   event.preventDefault();
 
-    // 最小化窗口
-    win.minimize();
-  });
-  
+  //   // 最小化窗口
+  //   win.minimize();
+  // });
+
   win.webContents.on('did-navigate', (event, url) => {
     if (env != 'prod' || (org === 'heliumos' || org === 'easypay-internal')) {
       globalShortcut.register('F9', () => {
