@@ -54,7 +54,7 @@ async function setFirstDNS() {
         dnsUrl = config.prod_dns + "/api/v1/zones"
     }
 
-    const fistDnsData = await tools.proxyRequest(dnsUrl, "get", null, null, null, null);
+    const fistDnsData = await tools.getUrl(dnsUrl, null, null, null);
 
     try {
         if (fistDnsData == null || JSON.parse(fistDnsData).data == null) {
@@ -82,7 +82,7 @@ async function setSecondDNS() {
     }
 
     const url = "https://"+config.dns_server+org+"/api/v1/zones";
-    const secondDnsData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port);
+    const secondDnsData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
 
     try {
         if (secondDnsData == null || JSON.parse(secondDnsData).data == null) {
@@ -135,7 +135,7 @@ async function runServer() {
     })
 
     server.on('connect', (req, clientSocket, head) => {
-        logger.info(clientSocket.remoteAddress, clientSocket.remotePort, req.method, req.url)
+        logger.debug(clientSocket.remoteAddress, clientSocket.remotePort, req.method, req.url)
         let {port, hostname} = url.parse(`//${req.url}`, false, true)
 
         if (!hostname || !port) {
@@ -144,15 +144,15 @@ async function runServer() {
             return
         }
 
-        const hosts = hostname.split(".");
-        const org = hosts[hosts.length - 1];
+        const paths = hostname.split(".");
+        const org = paths[paths.length - 1];
 
         if (dnsMap.has(org)) {
             hostname = dnsMap.get(org)
             port = config.server_port
         }
-
         const serverSocket = net.connect(port, hostname);
+
         const serverErrorHandler = (err) => {
             logger.debug(`Server error: ${err.message}`);
             if (clientSocket) {
@@ -188,6 +188,7 @@ async function runServer() {
             ecdh.generateKeys();
             const publicKey = ecdh.getPublicKey('hex', 'uncompressed');
             const handshakeData = {"data": publicKey};
+
 
             serverSocket.on("data", function (data) {
                 if (data.toString() == "OK") {
@@ -239,7 +240,7 @@ async function updateAliasDb() {
     }
 
     const url = config.alias_server+org+"/v1/pubcc/organizations"
-    const aliasData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port);
+    const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
 
     try {
         if (aliasData == null || JSON.parse(aliasData).data == null) {
@@ -254,31 +255,18 @@ async function updateAliasDb() {
     JSON.parse(aliasData).data.forEach(element => {
         aliasArray.push([element.id,element.alias]);
     });
-    const aliasFromDb = await tools.updateDb(env, aliasArray)
+    await tools.updateDb(env, aliasArray)
     logger.info(`Update aliasDb finished: ${env}`);
+
+    const aliasFromDb = await tools.getDbValue(env)
     return aliasFromDb;
-}
-
-async function fetch(reqUrl, method, headers, body) {
-    const { hostname } = url.parse(reqUrl);
-    const hosts = hostname.split(".");
-    const org = hosts[hosts.length - 1];
-
-    if (dnsMap.has(org)) {
-        const data = await tools.proxyRequest(reqUrl, method, headers, body,"http://127.0.0.1:"+port);
-        return data;
-    } else {
-        const data = await tools.proxyRequest(reqUrl, method, headers, body,null, null);
-        return data;
-    }
 }
 
 
 module.exports = {
     runProxy,
     setEnv,
-    getAlias,
-    fetch
+    getAlias
 };
 
 schedule.scheduleJob('00 30 * * * *', async () => {
