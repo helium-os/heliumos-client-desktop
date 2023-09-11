@@ -133,8 +133,16 @@ createWindow = async () => {
     win.loadFile("./index.html")
   })
 
+  win.on('close', (event) => {
+    // 阻止默认的关闭行为
+    event.preventDefault();
+
+    // 最小化窗口
+    win.minimize();
+  });
+  
   win.webContents.on('did-navigate', (event, url) => {
-    if (env != 'prod' || ( org === 'heliumos' || org === 'easypay-internal')) {
+    if (env != 'prod' || (org === 'heliumos' || org === 'easypay-internal')) {
       globalShortcut.register('F9', () => {
         win.webContents.openDevTools()
       });
@@ -167,7 +175,7 @@ createWindow = async () => {
     }
   });
   win.on('focus', () => {
-    if (env != 'prod' || ( org === 'heliumos' || org === 'easypay-internal')) {
+    if (env != 'prod' || (org === 'heliumos' || org === 'easypay-internal')) {
       globalShortcut.register('F9', () => {
         win.webContents.openDevTools()
       });
