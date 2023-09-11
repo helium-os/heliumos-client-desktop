@@ -2,8 +2,9 @@ const fs = require('fs')
 const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
-
-
+const { app, dialog } = require("electron");
+const log = require('electron-log');
+const electronLocalshortcut = require('electron-localshortcut');
 
 //存入数据
 setDataSourse = (data, filePath = './data.json', en = true) => {
@@ -46,47 +47,48 @@ function mkdir(filePath) {
 
 //自动更新
 AutoUpdater = (autoUpdater) => {
+   autoUpdater.logger = log
   //要想使用自动更新，不能配置DNS解析
-  autoUpdater.setFeedURL({
-    provider: 'github',
-    owner: 'helium-os',
-    repo: 'heliumos-client-desktop',
-    "releaseType": "release"
-  });
+  // autoUpdater.setFeedURL("http://127.0.0.1:9005/");
+  autoUpdater.autoDownload = false
   autoUpdater.checkForUpdates();
   // 处理检查更新事件
   autoUpdater.on('checking-for-update', () => {
-    console.log('Checking for update...');
+    log.info('Checking for update...');
   });
 
   // 处理发现更新事件
   autoUpdater.on('update-available', (info) => {
-    console.log('Update available:', info);
+      dialog.showMessageBox({
+            type: 'info',
+            title: '软件更新',
+            message: '发现新版本, 确定更新?',
+            buttons: ['确定', '取消']
+        }).then(resp => {
+            if (resp.response == 0) {
+                autoUpdater.downloadUpdate()
+            }
+        })
   });
 
   // 处理没有更新的事件
   autoUpdater.on('update-not-available', () => {
-    console.log('No update available.');
+    log.info('No update available.');
   });
 
   // 处理更新下载进度事件
   autoUpdater.on('download-progress', (progressObj) => {
-    console.log('Download progress:', progressObj);
+    log.info('Download progress:', progressObj);
   });
 
   // 处理更新下载完成事件
   autoUpdater.on('update-downloaded', (info) => {
-    dialog.showMessageBox({
-      type: 'info',
-      title: '应用更新',
-      message: '发现新版本，是否更新？',
-      buttons: ['是', '否']
-    }).then((buttonIndex) => {
-      if (buttonIndex.response == 0) {  //选择是，则退出程序，安装新版本
-        autoUpdater.quitAndInstall()
-        app.quit()
-      }
-    })
+   dialog.showMessageBox({
+            title: '下载完成',
+            message: '最新版本已下载完成, 退出程序进行安装'
+        }).then(() => {
+            autoUpdater.quitAndInstall()
+        })
 
   });
 
@@ -96,27 +98,35 @@ AutoUpdater = (autoUpdater) => {
   });
 }
 
-macShortcutKeyFailure = (win, globalShortcut) => {
+macShortcutKeyFailure = (win) => {
   if (process.platform === 'darwin') {
     let contents = win.webContents
-    globalShortcut.register('CommandOrControl+C', () => {
-      console.log('注册复制快捷键成功')
-      contents&&contents?.copy()
+    electronLocalshortcut.register(win,'CommandOrControl+C', () => {
+      if (win && !win.isDestroyed()) {
+        console.log('注册复制快捷键成功')
+        contents && contents?.copy()
+      }
     })
 
-    globalShortcut.register('CommandOrControl+V', () => {
-      console.log('注册粘贴快捷键成功')
-      contents&&contents?.paste()
+    electronLocalshortcut.register(win,'CommandOrControl+V', () => {
+      if (win && !win.isDestroyed()) {
+        console.log('注册粘贴快捷键成功')
+        contents && contents?.paste()
+      }
     })
 
-    globalShortcut.register('CommandOrControl+X', () => {
-      console.log('注册剪切快捷键成功')
-      contents&&contents?.cut()
+    electronLocalshortcut.register(win,'CommandOrControl+X', () => {
+      if (win && !win.isDestroyed()) {
+        console.log('注册剪切快捷键成功')
+        contents && contents?.cut()
+      }
     })
 
-    globalShortcut.register('CommandOrControl+A', () => {
-      console.log('注册全选快捷键成功')
-      contents&&contents?.selectAll()
+    electronLocalshortcut.register(win,'CommandOrControl+A', () => {
+      if (win && !win.isDestroyed()) {
+        console.log('注册全选快捷键成功')
+        contents && contents?.selectAll()
+      }
     })
   }
 }
@@ -148,35 +158,36 @@ getStorageData = (data = 'data') => {
   });
   return promise
 }
+
+function getNewValue(value, oldValue) {
+  if (value === null) {
+    return value;
+  } else if (Array.isArray(value)) {
+    return value;
+  } else if (typeof value === 'object') {
+    return { ...oldValue || {}, ...value };
+  } else {
+    return value;
+  }
+}
 //存放stroage数据
 setStorageData = async (datas = 'data', arg, routeList = []) => {
   let data = await getStorageData(datas)
-  if (typeof data === 'object') {
-    if (routeList.length == 0) {
-      data = _.merge({}, data, arg);
-    } else {
-      let setData=data
-      for (let i = 0; i < routeList.length-1; i++) {
-        if(!setData[routeList[i]]){
-          setData[routeList[i]]={}
-        }
-        setData=setData[routeList[i]]
-      }
-      setData[routeList[routeList.length-1]]={...(setData[routeList[routeList.length-1]]||{}),...arg}
-    }
+  data = data || {}
+  if (routeList.length == 0) {
+    data = _.merge({}, data, arg);
   } else {
-    data = arg
+    let setData = data
+    for (let i = 0; i < routeList.length - 1; i++) {
+      if (!setData[routeList[i]]) {
+        setData[routeList[i]] = {}
+      }
+      setData = setData[routeList[i]]
+    }
+    setData[routeList[routeList.length - 1]] = getNewValue(arg, setData[routeList[routeList.length - 1]] || {})
   }
+
   storage.set(datas, data);
-}
-//链接在默认浏览器中打开
-webCreated=(app)=>{
-   app.on('web-contents-created', (e, webContents) => {
-    webContents.setWindowOpenHandler(({ url, frameName }) => {
-        shell.openExternal(url);
-        return { action: 'deny' };
-    });
-});
 }
 
 module.exports = {
@@ -186,5 +197,4 @@ module.exports = {
   multipleOpen,
   getStorageData,
   setStorageData,
-  webCreated
 };
