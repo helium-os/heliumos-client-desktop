@@ -227,7 +227,6 @@ app.whenReady().then(async () => {
   datas = await util.getStorageData()
   env = datas?._last?.env || 'prod'
   org = datas?._last?.org
-  const ca = await readFile("heliumos.crt")
   //配置proxy
   let { port, alias } = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
