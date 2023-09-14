@@ -12,7 +12,7 @@ const logger = require('./logger').getLogger('Node-heliumos-proxy');
 const curve = 'prime256v1';
 const algorithm = 'aes-256-ctr';
 const buf = Buffer.alloc(16);
-const helloInfo = {"port": ":443"};
+const helloInfo = {"port": ":443", "host":""};
 
 let dnsMap = new Map();
 let env = "";
@@ -142,6 +142,7 @@ async function runServer() {
             clientSocket.destroy()
             return
         }
+        let orginalHost = hostname
 
         const hosts = hostname.split(".");
         const org = hosts[hosts.length - 1];
@@ -202,6 +203,7 @@ async function runServer() {
                     const secHash = hash.digest('hex');
                     secretKey = Buffer.from(secHash, "hex").subarray(0, 32);
                     logger.debug(`secret key string: ${Buffer.from(secHash, "hex").subarray(0, 32).toString("hex")}`);
+                    helloInfo.host = orginalHost
                     serverSocket.write(JSON.stringify(helloInfo));
                 }
             });
@@ -229,6 +231,20 @@ async function runServer() {
     return promise;
 }
 
+let count = 0
+async function updateAliasDbByCount() {
+    if (count != 0)
+        return
+    count++
+    try {
+        await updateAliasDb()
+    } catch (e) {
+        logger.error(`updateAliasDbByCount error: ${e.message}`);
+    } finally {
+        count = 0
+    }
+}
+
 async function updateAliasDb() {
     const aliasArray = [];
     let org = "";
@@ -243,11 +259,11 @@ async function updateAliasDb() {
     try {
         if (aliasData == null || JSON.parse(aliasData).data == null) {
             logger.error(`Get alias failed: ${url}`);
-            return [];
+            return []
         }
     } catch (e) {
         logger.error(`Parse alias failed: ${url}`);
-        return [];
+        return []
     }
 
     JSON.parse(aliasData).data.forEach(element => {
@@ -280,6 +296,6 @@ module.exports = {
     fetch
 };
 
-schedule.scheduleJob('00 30 * * * *', async () => {
-    await updateAliasDb()
+schedule.scheduleJob('0 30 0 * * *', async () => {
+    await updateAliasDbByCount();
 });
