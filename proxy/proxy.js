@@ -12,7 +12,7 @@ const logger = require('./logger').getLogger('Node-heliumos-proxy');
 const curve = 'prime256v1';
 const algorithm = 'aes-256-ctr';
 const buf = Buffer.alloc(16);
-const helloInfo = {"port": ":443"};
+const helloInfo = {"port": ":443", "host":""};
 
 let dnsMap = new Map();
 let env = "";
@@ -54,7 +54,7 @@ async function setFirstDNS() {
         dnsUrl = config.prod_dns + "/api/v1/zones"
     }
 
-    const fistDnsData = await tools.getUrl(dnsUrl, null, null, null);
+    const fistDnsData = await tools.proxyRequest(dnsUrl, "get", null, null, null, null);
 
     try {
         if (fistDnsData == null || JSON.parse(fistDnsData).data == null) {
@@ -82,7 +82,7 @@ async function setSecondDNS() {
     }
 
     const url = "https://"+config.dns_server+org+"/api/v1/zones";
-    const secondDnsData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
+    const secondDnsData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port, config.cert_file);
 
     try {
         if (secondDnsData == null || JSON.parse(secondDnsData).data == null) {
@@ -106,7 +106,6 @@ async function setSecondDNS() {
 async function runServer() {
     const server = http.createServer((req, res) => {
         const { hostname, port, path } = url.parse(req.url);
-        
         const proxyReq = http.request({
             hostname,
             port,
@@ -135,7 +134,7 @@ async function runServer() {
     })
 
     server.on('connect', (req, clientSocket, head) => {
-        logger.debug(clientSocket.remoteAddress, clientSocket.remotePort, req.method, req.url)
+        logger.info(clientSocket.remoteAddress, clientSocket.remotePort, req.method, req.url)
         let {port, hostname} = url.parse(`//${req.url}`, false, true)
 
         if (!hostname || !port) {
@@ -143,16 +142,17 @@ async function runServer() {
             clientSocket.destroy()
             return
         }
+        let orginalHost = hostname
 
-        const paths = hostname.split(".");
-        const org = paths[paths.length - 1];
+        const hosts = hostname.split(".");
+        const org = hosts[hosts.length - 1];
 
         if (dnsMap.has(org)) {
             hostname = dnsMap.get(org)
             port = config.server_port
         }
-        const serverSocket = net.connect(port, hostname);
 
+        const serverSocket = net.connect(port, hostname);
         const serverErrorHandler = (err) => {
             logger.debug(`Server error: ${err.message}`);
             if (clientSocket) {
@@ -189,7 +189,6 @@ async function runServer() {
             const publicKey = ecdh.getPublicKey('hex', 'uncompressed');
             const handshakeData = {"data": publicKey};
 
-
             serverSocket.on("data", function (data) {
                 if (data.toString() == "OK") {
                     let encryptStream = crypto.createCipheriv(algorithm, secretKey, buf);
@@ -204,6 +203,7 @@ async function runServer() {
                     const secHash = hash.digest('hex');
                     secretKey = Buffer.from(secHash, "hex").subarray(0, 32);
                     logger.debug(`secret key string: ${Buffer.from(secHash, "hex").subarray(0, 32).toString("hex")}`);
+                    helloInfo.host = orginalHost
                     serverSocket.write(JSON.stringify(helloInfo));
                 }
             });
@@ -231,6 +231,20 @@ async function runServer() {
     return promise;
 }
 
+let count = 0
+async function updateAliasDbByCount() {
+    if (count != 0)
+        return
+    count++
+    try {
+        await updateAliasDb()
+    } catch (e) {
+        logger.error(`updateAliasDbByCount error: ${e.message}`);
+    } finally {
+        count = 0
+    }
+}
+
 async function updateAliasDb() {
     const aliasArray = [];
     let org = "";
@@ -240,35 +254,48 @@ async function updateAliasDb() {
     }
 
     const url = config.alias_server+org+"/v1/pubcc/organizations"
-    const aliasData = await tools.getUrl(url, "http://127.0.0.1:"+port, null, null);
+    const aliasData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port, config.cert_file);
 
     try {
         if (aliasData == null || JSON.parse(aliasData).data == null) {
             logger.error(`Get alias failed: ${url}`);
-            return [];
+            return []
         }
     } catch (e) {
         logger.error(`Parse alias failed: ${url}`);
-        return [];
+        return []
     }
 
     JSON.parse(aliasData).data.forEach(element => {
         aliasArray.push([element.id,element.alias]);
     });
-    await tools.updateDb(env, aliasArray)
+    const aliasFromDb = await tools.updateDb(env, aliasArray)
     logger.info(`Update aliasDb finished: ${env}`);
-
-    const aliasFromDb = await tools.getDbValue(env)
     return aliasFromDb;
+}
+
+async function fetch(reqUrl, method, headers, body) {
+    const { hostname } = url.parse(reqUrl);
+    const hosts = hostname.split(".");
+    const org = hosts[hosts.length - 1];
+
+    if (dnsMap.has(org)) {
+        const data = await tools.proxyRequest(reqUrl, method, headers, body,"http://127.0.0.1:"+port, config.cert_file);
+        return data;
+    } else {
+        const data = await tools.proxyRequest(reqUrl, method, headers, body,null, null);
+        return data;
+    }
 }
 
 
 module.exports = {
     runProxy,
     setEnv,
-    getAlias
+    getAlias,
+    fetch
 };
 
-schedule.scheduleJob('00 30 * * * *', async () => {
-    await updateAliasDb()
+schedule.scheduleJob('0 30 0 * * *', async () => {
+    await updateAliasDbByCount();
 });
