@@ -1,37 +1,35 @@
 const request = require('request');
-const SqliteDB = require('./sqlite.js').SqliteDB;
-const logger = require('./logger').getLogger('Node-heliumos-proxy-utils');
+const logger = require('./logger').getLogger('Node-heliumos-proxy-tools');
+const sqlite3 = require('sqlite3');
+const { open } = require('sqlite');
+const fs = require('fs');
 
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+sqlite3.verbose()
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 module.exports = {
-    getUrl: getUrl,
+    proxyRequest: proxyRequest,
     updateDb: updateDb,
     getDbValue: getDbValue
 };
 
-async function getUrl(url, proxy, host, ip) {
+async function proxyRequest(url, method, headers, body, proxy, cert) {
     return new Promise((resolve, reject) => {
         let options = {
-            'method': 'GET',
-            'url': url,
-            'proxy': proxy
+            method: method,
+            url: url,
+            proxy: proxy,
+            headers: headers,
+            body: body
         };
-        if (host != null) {
-            options = {
-                'method': 'GET',
-                'url': url,
-                'proxy': proxy,
-                'hostname': ip,
-                'headers': {
-                    'Host': host
-                }
-            };
-        };
+        if (cert != null) {
+            options.ca = fs.readFileSync(cert);
+        }
         request(options, function (error, response) {
             if (error) {
-                logger.error(`http get error: ${error}, url: ${url}`);
+                logger.error(`request error: ${error}, url: ${url}, proxy: ${proxy}`);
                 resolve(null);
             } else {
                 resolve(response.body);
@@ -40,39 +38,42 @@ async function getUrl(url, proxy, host, ip) {
     });
 }
 
+async function updateDb(dbname, aliasArray) {
+    try {
+        const aliasDb = await createDbConnection(dbname);
+        await aliasDb.exec('CREATE TABLE IF NOT EXISTS alias (id TEXT PRIMARY KEY, alias TEXT);')
+        await aliasDb.exec('DELETE FROM alias;')
 
-function updateDb(dbname, aliasArray) {
-    const sqliteDB = new SqliteDB(dbname);
-    const createTableSql = "CREATE TABLE IF NOT EXISTS alias (id TEXT PRIMARY KEY, alias TEXT);";
-    sqliteDB.createTable(createTableSql);
+        const stmt = await aliasDb.prepare('insert into alias(id, alias) values(?, ?)')
+        for (let i = 0; i < aliasArray.length; ++i) {
+            await stmt.run(aliasArray[i]);
+        }
+        await stmt.finalize();
 
-    const dropTableSql = "delete from alias;";
-    sqliteDB.executeSql(dropTableSql);
-
-    const insertSql = "insert into alias(id, alias) values(?, ?)";
-    sqliteDB.insertData(insertSql, aliasArray);
-
-
-    // sqliteDB.queryData("select * from alias", function (objects) {
-    //     for(let i = 0; i < objects.length; ++i){
-    //         console.log(objects[i]);
-    //     }
-    // });
-
-    sqliteDB.close()
+        const row = await aliasDb.all('SELECT * from alias;');
+        await aliasDb.close();
+        return row;
+    } catch (error) {
+        logger.error(`Sqlite error Message: ${error.message}`);
+        return [];
+    }
 }
 
-function getDbValue(dbname){
-    let res;
-    let promise = new Promise((resolve, reject) => {
-        res = resolve;
-    });
+async function getDbValue(dbname){
+    try {
+        const aliasDb = await createDbConnection(dbname);
+        const row = await aliasDb.all('SELECT * from alias;');
+        await aliasDb.close();
+        return row;
+    } catch (error) {
+        logger.error(`Sqlite error Message: ${error.message}`);
+        return [];
+    }
+}
 
-    const sqliteDB = new SqliteDB(dbname);
-    sqliteDB.queryData("select * from alias", function (objects) {
-        res(objects||[]);
-
+function createDbConnection(filename) {
+    return open({
+        filename,
+        driver: sqlite3.Database
     });
-    sqliteDB.close();
-    return promise
 }
