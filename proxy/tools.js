@@ -25,7 +25,21 @@ async function proxyRequest(url, method, headers, body, proxy, cert) {
             body: body
         };
         if (cert != null) {
-            options.ca = fs.readFileSync(cert);
+            options.ca = '-----BEGIN CERTIFICATE-----\n' +
+                'MIICQDCCAeWgAwIBAgIQZ10HUuF4FfLZMiPKd1NLojAKBggqhkjOPQQDAjBqMQsw\n' +
+                'CQYDVQQGEwJDTjEQMA4GA1UECBMHQmVpamluZzEQMA4GA1UEBxMHQmVpamluZzER\n' +
+                'MA8GA1UEChMIaGVsaXVtb3MxETAPBgNVBAsTCGhlbGl1bW9zMREwDwYDVQQDEwho\n' +
+                'ZWxpdW1vczAeFw0yMzA4MjgxMDE1MDBaFw00MzA4MjMxMDE1MDBaMGoxCzAJBgNV\n' +
+                'BAYTAkNOMRAwDgYDVQQIEwdCZWlqaW5nMRAwDgYDVQQHEwdCZWlqaW5nMREwDwYD\n' +
+                'VQQKEwhoZWxpdW1vczERMA8GA1UECxMIaGVsaXVtb3MxETAPBgNVBAMTCGhlbGl1\n' +
+                'bW9zMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3fjGc4MqN6E02b9Wd7ZTV6je\n' +
+                'vsRXOpUOK5WaI1ls/TVJMu3dszJC1ibQ7dkg/4+mOt9x+v99/Td7kShO2xYlG6Nt\n' +
+                'MGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD\n' +
+                'ATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQiBCBCIIS6gbzeQXmXVQHoOJvvXfst\n' +
+                'MKCFy3m1gFNfF1PdXjAKBggqhkjOPQQDAgNJADBGAiEAsvREvvd1rYxcNF8YpR44\n' +
+                'fTgOLTBHbN41BOTXlsFi0qkCIQCVJ9r4AtiMmwhMogkuGWcORG65EMcKLczIyveo\n' +
+                'DUMPzQ==\n' +
+                '-----END CERTIFICATE-----';
         }
         request(options, function (error, response) {
             if (error) {
