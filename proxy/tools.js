@@ -3,8 +3,8 @@ const logger = require('./logger').getLogger('Node-heliumos-proxy-tools');
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const fs = require('fs');
-
-
+const { app } = require("electron");
+const path = require("path");
 
 sqlite3.verbose()
 //process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -73,7 +73,7 @@ async function updateDb(dbname, aliasArray) {
     }
 }
 
-async function getDbValue(dbname){
+async function getDbValue(dbname) {
     try {
         const aliasDb = await createDbConnection(dbname);
         const row = await aliasDb.all('SELECT * from alias;');
@@ -86,8 +86,10 @@ async function getDbValue(dbname){
 }
 
 function createDbConnection(filename) {
+    const userDataPath = app.getPath('userData');
+    const filePath = path.join(userDataPath, filename);
     return open({
-        filename,
+        filename: filePath,
         driver: sqlite3.Database
     });
 }
