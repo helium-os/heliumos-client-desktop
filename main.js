@@ -1,4 +1,4 @@
-const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, protocol } = require("electron");
+const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, protocol } = require("electron");
 const path = require("path");
 let { autoUpdater } = require("electron-updater");
 var crypto = require('crypto')
@@ -61,7 +61,9 @@ const F10 = (win) => {
 }
 
 createWindow = async () => {
-
+  //唤起权限配置
+  systemPreferences.askForMediaAccess('microphone');
+  systemPreferences.askForMediaAccess('camera');
   const win = new BrowserWindow({
     width: 800,
     height: 800,
