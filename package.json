@@ -60,6 +60,12 @@
                 "dmg",
                 "zip"
             ],
+            "extendInfo": {
+                "NSCameraUsageDescription": "请允许本程序访问您的摄像头",
+                "NSMicrophoneUsageDescription": "请允许本程序访问您的麦克风",
+                "com.apple.security.device.audio-input": true,
+                "com.apple.security.device.camera": true
+            },
             "icon": "build/icon.icns"
         },
         "win": {
