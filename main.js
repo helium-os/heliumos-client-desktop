@@ -9,8 +9,7 @@ const proxy = require('./proxy/proxy');
 const tools = require('./proxy/tools');
 const util = require('./util/util');
 const log = require('electron-log');
-const { Agent, fetch, ProxyAgent } = require("undici");
-
+const os = require('os');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 //F9双击
@@ -61,9 +60,7 @@ const F10 = (win) => {
 }
 
 createWindow = async () => {
-  //唤起权限配置
-  systemPreferences.askForMediaAccess('microphone');
-  systemPreferences.askForMediaAccess('camera');
+
   const win = new BrowserWindow({
     width: 800,
     height: 800,
@@ -80,6 +77,11 @@ createWindow = async () => {
       // partition:String(new Date())
     },
   })
+  if (os.platform() === 'darwin') {
+    //唤起权限配置
+    systemPreferences.askForMediaAccess('microphone');
+    systemPreferences.askForMediaAccess('camera');
+  }
   //默认浏览器打开链接
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
