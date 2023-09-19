@@ -200,9 +200,7 @@ askForMediaAccess = () => {
         systemPreferences.askForMediaAccess('camera')
       ])
         .then(([microphoneResponse, cameraResponse]) => {
-          if (microphoneResponse === 'granted' && cameraResponse === 'granted') {
-            log.info('microphoneResponse:',microphoneResponse)
-            log.info('cameraResponse:',cameraResponse)
+          if (microphoneResponse == true && cameraResponse == true) {
             resolve(true); // 用户授予了麦克风和摄像头访问权限
           } else {
             resolve(false); // 用户拒绝了其中一个或两者的访问权限
