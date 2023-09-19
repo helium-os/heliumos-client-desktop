@@ -2,11 +2,9 @@ const fs = require('fs')
 const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
-const { app, dialog } = require("electron");
+const { app, dialog, systemPreferences } = require("electron");
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
-const { systemPreferences } = require('electron');
-const log = require('electron-log');
 const os = require('os');
 //存入数据
 setDataSourse = (data, filePath = './data.json', en = true) => {
