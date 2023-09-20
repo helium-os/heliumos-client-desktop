@@ -1,6 +1,7 @@
 const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, protocol } = require("electron");
 const path = require("path");
 let { autoUpdater } = require("electron-updater");
+const storage = require('electron-json-storage');
 var crypto = require('crypto')
 var fs = require('fs')
 const { readFile } = require("node:fs/promises");
@@ -144,7 +145,29 @@ createWindow = async () => {
   //   // 最小化窗口
   //   win.minimize();
   // });
+  //监听页面跳转失败
 
+  // 监听页面加载失败事件
+  win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+    const options = {
+      type: 'question',
+      title: '加载失败',
+      message: '页面加载失败，请确认是否清除所有缓存（ 无论是否取消，都将跳转到登录页面 ）',
+      buttons: ['确认', '取消'],
+    };
+    dialog.showMessageBox(options).then(async (response) => {
+      if (response.response == 0) {
+        await storage.clear(() => win.loadFile("./index.html"))
+      }
+      if (response.response == 1) {
+        await util.setStorageData('data', { _last: { org: null, name: null } })
+        win.loadFile("./index.html");
+      }
+
+    })
+  });
+
+  //监听页面跳转
   win.webContents.on('did-navigate', (event, url) => {
     if (env != 'prod' || (org === 'heliumos' || org === 'easypay-internal')) {
       globalShortcut.register('F9', () => {
