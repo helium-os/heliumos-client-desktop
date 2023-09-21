@@ -1,4 +1,4 @@
-const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, protocol } = require("electron");
+const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, Tray } = require("electron");
 const path = require("path");
 let { autoUpdater } = require("electron-updater");
 var crypto = require('crypto')
@@ -77,6 +77,27 @@ createWindow = async () => {
       // partition:String(new Date())
     },
   })
+  // 监听窗口关闭事件
+  win.on('close', (event) => {
+    // 取消默认关闭行为
+    event.preventDefault();
+    // 隐藏窗口，而不是退出
+    win.hide();
+  });
+  // 创建系统托盘图标
+  tray = new Tray(path.join(__dirname, '/build/icon.png'));
+
+  // 创建托盘菜单
+  const contextMenu = Menu.buildFromTemplate([
+    { label: '显示应用', click: () => win.show() },
+    { label: '退出', click: () => app.quit() }
+  ]);
+
+  // 设置托盘图标的上下文菜单
+  tray.setContextMenu(contextMenu);
+
+  // 双击托盘图标时显示应用
+  tray.on('double-click', () => win.show());
   if (os.platform() === 'darwin') {
     //唤起权限配置
     systemPreferences.askForMediaAccess('microphone');
