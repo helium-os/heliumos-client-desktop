@@ -2,10 +2,10 @@ const fs = require('fs')
 const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
-const { app, dialog } = require("electron");
+const { app, dialog, systemPreferences } = require("electron");
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
-
+const os = require('os');
 //存入数据
 setDataSourse = (data, filePath = './data.json', en = true) => {
 
@@ -47,7 +47,7 @@ function mkdir(filePath) {
 
 //自动更新
 AutoUpdater = (autoUpdater) => {
-   autoUpdater.logger = log
+  autoUpdater.logger = log
   //要想使用自动更新，不能配置DNS解析
   // autoUpdater.setFeedURL("http://127.0.0.1:9005/");
   autoUpdater.autoDownload = false
@@ -59,16 +59,16 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理发现更新事件
   autoUpdater.on('update-available', (info) => {
-      dialog.showMessageBox({
-            type: 'info',
-            title: '软件更新',
-            message: '发现新版本, 确定更新?',
-            buttons: ['确定', '取消']
-        }).then(resp => {
-            if (resp.response == 0) {
-                autoUpdater.downloadUpdate()
-            }
-        })
+    dialog.showMessageBox({
+      type: 'info',
+      title: '软件更新',
+      message: '发现新版本, 确定更新?',
+      buttons: ['确定', '取消']
+    }).then(resp => {
+      if (resp.response == 0) {
+        autoUpdater.downloadUpdate()
+      }
+    })
   });
 
   // 处理没有更新的事件
@@ -83,12 +83,12 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理更新下载完成事件
   autoUpdater.on('update-downloaded', (info) => {
-   dialog.showMessageBox({
-            title: '下载完成',
-            message: '最新版本已下载完成, 退出程序进行安装'
-        }).then(() => {
-            autoUpdater.quitAndInstall()
-        })
+    dialog.showMessageBox({
+      title: '下载完成',
+      message: '最新版本已下载完成, 退出程序进行安装'
+    }).then(() => {
+      autoUpdater.quitAndInstall()
+    })
 
   });
 
@@ -101,28 +101,28 @@ AutoUpdater = (autoUpdater) => {
 macShortcutKeyFailure = (win) => {
   if (process.platform === 'darwin') {
     let contents = win.webContents
-    electronLocalshortcut.register(win,'CommandOrControl+C', () => {
+    electronLocalshortcut.register(win, 'CommandOrControl+C', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册复制快捷键成功')
         contents && contents?.copy()
       }
     })
 
-    electronLocalshortcut.register(win,'CommandOrControl+V', () => {
+    electronLocalshortcut.register(win, 'CommandOrControl+V', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册粘贴快捷键成功')
         contents && contents?.paste()
       }
     })
 
-    electronLocalshortcut.register(win,'CommandOrControl+X', () => {
+    electronLocalshortcut.register(win, 'CommandOrControl+X', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册剪切快捷键成功')
         contents && contents?.cut()
       }
     })
 
-    electronLocalshortcut.register(win,'CommandOrControl+A', () => {
+    electronLocalshortcut.register(win, 'CommandOrControl+A', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册全选快捷键成功')
         contents && contents?.selectAll()
@@ -190,6 +190,32 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
   storage.set(datas, data);
 }
 
+
+askForMediaAccess = () => {
+  return new Promise((resolve, reject) => {
+    if (os.platform() === 'darwin') {
+      // 使用 Promise.all 来等待两个权限请求完成
+      Promise.all([
+        systemPreferences.askForMediaAccess('microphone'),
+        systemPreferences.askForMediaAccess('camera')
+      ])
+        .then(([microphoneResponse, cameraResponse]) => {
+          if (microphoneResponse == true && cameraResponse == true) {
+            resolve(true); // 用户授予了麦克风和摄像头访问权限
+          } else {
+            resolve(false); // 用户拒绝了其中一个或两者的访问权限
+          }
+        })
+        .catch((error) => {
+          reject(error); // 处理错误
+        });
+    } else {
+      // 如果不在 macOS 上，直接返回 true（模拟已授权）
+      resolve(true);
+    }
+  });
+};
+
 module.exports = {
   setDataSourse,
   AutoUpdater,
@@ -197,4 +223,5 @@ module.exports = {
   multipleOpen,
   getStorageData,
   setStorageData,
+  askForMediaAccess
 };

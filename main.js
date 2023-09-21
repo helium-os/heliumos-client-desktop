@@ -8,7 +8,6 @@ const https = require('https');
 const proxy = require('./proxy/proxy');
 const tools = require('./proxy/tools');
 const util = require('./util/util');
-const log = require('electron-log');
 const os = require('os');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
@@ -77,11 +76,7 @@ createWindow = async () => {
       // partition:String(new Date())
     },
   })
-  if (os.platform() === 'darwin') {
-    //唤起权限配置
-    systemPreferences.askForMediaAccess('microphone');
-    systemPreferences.askForMediaAccess('camera');
-  }
+ 
   //默认浏览器打开链接
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
@@ -106,13 +101,12 @@ createWindow = async () => {
     }
     if (arg?.org != null && arg?.name != null) {
       org = arg?.org
-      await util.setStorageData('data', { _last: { ...arg, env } })
+      await util.setStorageData('data', { _last: { env,...arg, },[env]:{[arg?.org]:{[arg?.name]:{...arg}}} })
       app.setLoginItemSettings({
         openAtLogin: data?.[env]?.[arg?.org]?.[arg?.name]?.autoStart || false,
         openAsHidden: false,
         path: process.execPath,
       });
-      await util.setStorageData('data', arg, [env, arg?.org, arg?.name])
       return
     }
 
@@ -258,6 +252,13 @@ app.whenReady().then(async () => {
     }
 
   });
+  //获取麦克风权限和摄像头权限
+  ipcMain.handle("askForMediaAccess", async function (event, arg) {
+    let data = await util.askForMediaAccess()
+    return data
+  });
+  
+   
   //dns配置
   ipcMain.handle("getLogList", async function (event) {
     let envList = await util.getStorageData(env), res = []
