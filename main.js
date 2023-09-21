@@ -13,9 +13,9 @@ const log = require('electron-log');
 const os = require('os');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
-//F9双击
-let f10Presse = false;
-let lastF9PressTime = 0;
+//F10双击,F8双击
+let f10Presse = false,f8Presse = false;
+let lastPressTime = 0;
 const doublePressInterval = 300;
 let org = ''
 let env = 'demo'
@@ -26,7 +26,7 @@ keyList.forEach(item => {
 })
 let datas = {}
 let loading = false
-//双击F10操作
+//双击F10,切换环境
 const F10 = (win) => {
 
   const options = {
@@ -57,6 +57,21 @@ const F10 = (win) => {
       }
       await util.setStorageData('data', { _last: { env: dbName, org: null, name: null } })
     }
+  });
+}
+//双击F8,清除缓存
+const F8 = (win) => {
+  const options = {
+    type: 'question',
+    title: '清除缓存',
+    message: '是否清除缓存',
+    buttons: ['确认', '取消'],
+  };
+  if (loading) { return }
+  dialog.showMessageBox(options).then(async (response) => {
+    if (response.response == 0) {
+       await storage.clear(() => win.loadFile("./index.html"))
+      }
   });
 }
 
@@ -152,18 +167,14 @@ createWindow = async () => {
     const options = {
       type: 'question',
       title: '加载失败',
-      message: '页面加载失败，请确认是否清除所有缓存（ 无论是否取消，都将跳转到登录页面 ）',
-      buttons: ['确认', '取消'],
+      message: '页面加载失败，请跳转到登录页面',
+      buttons: ['确认'],
     };
     dialog.showMessageBox(options).then(async (response) => {
       if (response.response == 0) {
-        await storage.clear(() => win.loadFile("./index.html"))
-      }
-      if (response.response == 1) {
         await util.setStorageData('data', { _last: { org: null, name: null } })
         win.loadFile("./index.html");
       }
-
     })
   });
 
@@ -183,17 +194,34 @@ createWindow = async () => {
         // 第一次按下 F10 键
         if (!f10Presse) {
           f10Presse = true;
-          lastF9PressTime = now;
+          lastPressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
-          if (now - lastF9PressTime < doublePressInterval) {
+          if (now - lastPressTime < doublePressInterval) {
             F10(win)
           }
           f10Presse = false; // 重置状态
         }
       });
+      // 注册全局快捷键 F8
+      globalShortcut.register('F8', () => {
+        const now = Date.now();
+        // 第一次按下 F8 键
+        if (!f8Presse) {
+          f8Presse = true;
+          lastPressTime = now;
+        } else {
+          // 第二次按下 F10 键，检查时间间隔
+          if (now - lastPressTime < doublePressInterval) {
+            F8(win)
+          }
+          f8Presse = false; // 重置状态
+        }
+      });
+
     } else {
       globalShortcut.unregister('F10');
+      globalShortcut.unregister('F8');
     }
   })
   win.webContents.on('before-input-event', (event, input) => {
@@ -216,16 +244,32 @@ createWindow = async () => {
         // 第一次按下 F10 键
         if (!f10Presse) {
           f10Presse = true;
-          lastF9PressTime = now;
+          lastPressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
-          if (now - lastF9PressTime < doublePressInterval) {
+          if (now - lastPressTime < doublePressInterval) {
             F10(win)
           }
           f10Presse = false; // 重置状态
         }
       });
+       // 注册全局快捷键 F8
+      globalShortcut.register('F8', () => {
+        const now = Date.now();
+        // 第一次按下 F8 键
+        if (!f8Presse) {
+          f8Presse = true;
+          lastPressTime = now;
+        } else {
+          // 第二次按下 F10 键，检查时间间隔
+          if (now - lastPressTime < doublePressInterval) {
+            F8(win)
+          }
+          f8Presse = false; // 重置状态
+        }
+      });
     }
+    
   })
   // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
   util.macShortcutKeyFailure(win)
