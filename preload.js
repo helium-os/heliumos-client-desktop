@@ -11,5 +11,8 @@ contextBridge.exposeInMainWorld("versions", {
   getDbValue: () => ipcRenderer.invoke("getDbValue"),
   getMessage:(name,fun)=> ipcRenderer.on(name, fun),
   sendMethod:(name)=>ipcRenderer.send(name),
-  invokMethod:(name,value)=>ipcRenderer.invoke(name, value)
+  //带返回的回调方法
+  invokMethod:(name,value)=>ipcRenderer.invoke(name, value),
+  //传递信息
+  sendMethod:(name,value)=>ipcRenderer.send(name, value)
 });

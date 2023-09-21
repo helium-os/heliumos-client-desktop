@@ -1,9 +1,10 @@
+
 //登录用户选择
 const User = ({ changePage }) => {
   const [userList, setUserList] = React.useState([])
   const onFinish = async (values) => {
-    let List=values.split("@")
-    if (List.length>1) {
+    let List = values.split("@")
+    if (List.length > 1) {
       let orgList = []
       if (window?.versions) {
         orgList = await window?.versions?.getDbValue()
@@ -38,13 +39,13 @@ const User = ({ changePage }) => {
 
     }
   }
-  const autoLogin=async()=>{
+  const autoLogin = async () => {
     if (window?.versions) {
-      let autoLogin = await window?.versions?.invokMethod('getUserValue','autoLogin')
-      let orgId = await window?.versions?.invokMethod('getUserValue','orgId')
-      if(autoLogin==true&&orgId){
-         window.location.href =
-        'https://desktop.system.app.' + orgId;
+      let autoLogin = await window?.versions?.invokMethod('getUserValue', 'autoLogin')
+      let orgId = await window?.versions?.invokMethod('getUserValue', 'orgId')
+      if (autoLogin == true && orgId) {
+        window.location.href =
+          'https://desktop.system.app.' + orgId;
       }
     }
   }
@@ -59,7 +60,26 @@ const User = ({ changePage }) => {
       {userList.map(item => {
         return item?.name ?
           <div className='userInfo' onClick={() => onFinish(item?.name + '@' + item?.org)}>
-            <div className='userImg'><img src={item?.avatar || './img/userInfo.svg'}></img></div>
+            <antd.Badge count={<div className="circle-container">
+              ×
+            </div>} onClick={(event) => {
+              event.stopPropagation();
+              if (window?.versions) {
+               window?.versions?.sendMethod('deleteLogList', {
+                  name: item?.name,
+                  org: item?.org
+                })
+
+              }
+            }}>
+              <antd.Avatar
+                size={60}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onFinish(item?.name + '@' + item?.org)
+                }} src={item?.avatar || './img/userInfo.svg'}></antd.Avatar>
+            </antd.Badge>
+
             <div className='useName'>{item?.display_name}</div>
             <div className='useOrg'>{item?.name}@{item?.org}</div>
           </div> : ''
@@ -82,6 +102,7 @@ const Login = ({ changePage }) => {
       if (window?.versions) {
         orgList = await window?.versions?.getDbValue()
         if (orgList.find(item => item?.alias == values?.usePoint.split("@")[1])) {
+          console.log({ org: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0], orgId: orgList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id })
           await window?.versions?.setuserInfo({ org: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0], orgId: orgList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id });
         } else {
           antd.message.error('没有该组织')

@@ -90,16 +90,12 @@ createWindow = async () => {
   //自动更新
   util.AutoUpdater(autoUpdater)
 
-  ipcMain.on("ping", function (event, arg) {
-    event.returnValue = "pong";
-  });
-
-  ipcMain.on("iframeUP", function (event) {
-    win.setAlwaysOnTop(true);
-  });
-
-  ipcMain.on("iframeDown", function (event) {
-    win.setAlwaysOnTop(false);
+  ipcMain.on("deleteLogList", async function (event, arg) {
+    let envList = await util.getStorageData(env)
+    if (envList && envList?.logList && envList?.logList.length > 0) {
+      await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name && item?.org != arg?.org)], ['logList'])
+      win.webContents.send('change-env', env);
+    }
   });
 
   ipcMain.on("setuserInfo", async function (event, arg) {
