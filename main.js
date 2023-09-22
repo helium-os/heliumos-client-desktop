@@ -44,6 +44,8 @@ const F10 = (win) => {
       win.webContents.send('Loading', loading);
       await proxy.setEnv(dbName)
       loading = false
+      const mainSession = session.defaultSession;
+      mainSession.clearStorageData({ storages: ['cookies'] })
       win.webContents.send('change-env', dbName);
       win.webContents.send('Loading', loading);
       env = dbName
@@ -210,7 +212,7 @@ createWindow = async () => {
     win.loadURL('https://desktop.system.app.' + LastUser.orgId);
   } else {
     const mainSession = session.defaultSession;
-    mainSession.clearStorageData({storages:['cookies']})
+    mainSession.clearStorageData({ storages: ['cookies'] })
     win.loadFile("./index.html");
   }
 
@@ -254,9 +256,6 @@ app.whenReady().then(async () => {
 
   //dns配置
   ipcMain.handle("getUserValue", async function (event, arg) {
-    if (arg == 'env') {
-      return env
-    }
     let data = await util.getStorageData()
     if (data?._last) {
       return data?.[env]?.[data?._last?.org]?.[data?._last?.name]?.[arg] || "";
