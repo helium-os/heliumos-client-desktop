@@ -43,9 +43,10 @@ const F10 = (win) => {
       loading = true
       win.webContents.send('Loading', loading);
       await proxy.setEnv(dbName)
-      loading = false
+       //清空所有缓存
       const mainSession = session.defaultSession;
-      mainSession.clearStorageData({ storages: ['cookies'] })
+      await mainSession.clearStorageData()
+      loading = false
       win.webContents.send('change-env', dbName);
       win.webContents.send('Loading', loading);
       env = dbName
