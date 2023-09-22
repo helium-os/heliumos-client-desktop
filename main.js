@@ -110,13 +110,12 @@ createWindow = async () => {
     }
     if (arg?.org != null && arg?.name != null) {
       org = arg?.org
-      await util.setStorageData('data', { _last: { ...arg, env } })
+      await util.setStorageData('data', { _last: { env,...arg, },[env]:{[arg?.org]:{[arg?.name]:{...arg}}} })
       app.setLoginItemSettings({
         openAtLogin: data?.[env]?.[arg?.org]?.[arg?.name]?.autoStart || false,
         openAsHidden: false,
         path: process.execPath,
       });
-      await util.setStorageData('data', arg, [env, arg?.org, arg?.name])
       return
     }
 
