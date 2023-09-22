@@ -192,9 +192,7 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
 
 
 askForMediaAccess = (data = [true, true]) => {
-  console.log(data)
   let MediaList = ['microphone', 'camera'].filter((item, index) => data[index])
-
   return new Promise((resolve, reject) => {
     if (os.platform() === 'darwin') {
       // 使用 Promise.all 来等待两个权限请求完成
