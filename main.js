@@ -18,6 +18,7 @@ let lastF9PressTime = 0;
 const doublePressInterval = 300;
 let org = ''
 let env = 'demo'
+
 keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
     publicKey = fs.readFileSync(path.join(__dirname, item), 'utf8')
@@ -90,7 +91,7 @@ createWindow = async () => {
   // 创建托盘菜单
   const contextMenu = Menu.buildFromTemplate([
     { label: '显示应用', click: () => win.show() },
-    { label: '退出', click: () => app.quit() }
+    { label: '退出', click: () => app.exit() }
   ]);
 
   // 设置托盘图标的上下文菜单
@@ -314,6 +315,9 @@ app.whenReady().then(async () => {
 });
 
 app.on("window-all-closed", async () => {
-  app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
+
 
