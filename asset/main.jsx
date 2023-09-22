@@ -3,6 +3,7 @@ const User = ({ changePage }) => {
   const [userList, setUserList] = React.useState([])
   const onFinish = async (values) => {
     let List=values.split("@")
+    let env = await window?.versions?.invokMethod('getUserValue','env')
     if (List.length>1) {
       let orgList = []
       if (window?.versions) {
@@ -19,7 +20,7 @@ const User = ({ changePage }) => {
         }
       }
       window.location.href =
-        'https://desktop.system.app.' + orgList.filter(item => item?.alias == List[1])[0]?.id;
+        'https://'+env+'.desktop.system.app.' + orgList.filter(item => item?.alias == List[1])[0]?.id;
     }
   };
 
@@ -38,16 +39,7 @@ const User = ({ changePage }) => {
 
     }
   }
-  const autoLogin=async()=>{
-    if (window?.versions) {
-      let autoLogin = await window?.versions?.invokMethod('getUserValue','autoLogin')
-      let orgId = await window?.versions?.invokMethod('getUserValue','orgId')
-      if(autoLogin==true&&orgId){
-         window.location.href =
-        'https://desktop.system.app.' + orgId;
-      }
-    }
-  }
+  
   React.useEffect(() => {
     getValue()
     addObverser()
@@ -77,6 +69,7 @@ const User = ({ changePage }) => {
 const Login = ({ changePage }) => {
 
   const onFinish = async (values) => {
+    let env = await window?.versions?.invokMethod('getUserValue','env')
     if (values?.usePoint.split("@")[1]) {
       let orgList = []
       if (window?.versions) {
@@ -91,7 +84,7 @@ const Login = ({ changePage }) => {
 
       window.location.href =
         // "http://192.168.50.120:8312/";
-        'https://desktop.system.app.' + orgList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id;
+        'https://'+env+'.desktop.system.app.' + orgList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id;
     }
   };
   const [form] = antd.Form.useForm();

@@ -209,7 +209,7 @@ createWindow = async () => {
 
   let LastUser = datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]
   if (LastUser?.autoLogin == true && LastUser?.orgId) {
-    win.loadURL('https://desktop.system.app.' + LastUser.orgId);
+    win.loadURL('https://'+env+'.desktop.system.app.' + LastUser.orgId);
   } else {
     win.loadFile("./index.html");
   }
@@ -254,6 +254,9 @@ app.whenReady().then(async () => {
 
   //dns配置
   ipcMain.handle("getUserValue", async function (event, arg) {
+    if(arg=='env'){
+      return env
+    }
     let data = await util.getStorageData()
     if (data?._last) {
       return data?.[env]?.[data?._last?.org]?.[data?._last?.name]?.[arg] || "";
