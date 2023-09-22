@@ -197,7 +197,7 @@ askForMediaAccess = (data = [true, true]) => {
     if (os.platform() === 'darwin') {
       // 使用 Promise.all 来等待两个权限请求完成
       Promise.all([
-        ...MediaList.map(item => systemPreferences.askForMediaAccess('microphone'))
+        ...MediaList.map(item => systemPreferences.askForMediaAccess(item))
       ])
         .then((res) => {
           if (res.find(item => item == false)) {
