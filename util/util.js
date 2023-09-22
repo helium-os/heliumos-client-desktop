@@ -191,19 +191,21 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
 }
 
 
-askForMediaAccess = () => {
+askForMediaAccess = (data = [true, true]) => {
+  console.log(data)
+  let MediaList = ['microphone', 'camera'].filter((item, index) => data[index])
+
   return new Promise((resolve, reject) => {
     if (os.platform() === 'darwin') {
       // 使用 Promise.all 来等待两个权限请求完成
       Promise.all([
-        systemPreferences.askForMediaAccess('microphone'),
-        systemPreferences.askForMediaAccess('camera')
+        ...MediaList.map(item => systemPreferences.askForMediaAccess('microphone'))
       ])
-        .then(([microphoneResponse, cameraResponse]) => {
-          if (microphoneResponse == true && cameraResponse == true) {
-            resolve(true); // 用户授予了麦克风和摄像头访问权限
-          } else {
+        .then((res) => {
+          if (res.find(item => item == false)) {
             resolve(false); // 用户拒绝了其中一个或两者的访问权限
+          } else {
+            resolve(true); // 用户授予了麦克风和摄像头访问权限
           }
         })
         .catch((error) => {

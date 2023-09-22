@@ -258,7 +258,7 @@ app.whenReady().then(async () => {
   });
   //获取麦克风权限和摄像头权限
   ipcMain.handle("askForMediaAccess", async function (event, arg) {
-    let data = await util.askForMediaAccess()
+    let data = await util.askForMediaAccess(arg)
     return data
   });
   
