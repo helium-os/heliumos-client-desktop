@@ -1,4 +1,4 @@
-const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, protocol } = require("electron");
+const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, session } = require("electron");
 const path = require("path");
 let { autoUpdater } = require("electron-updater");
 var crypto = require('crypto')
@@ -110,7 +110,7 @@ createWindow = async () => {
     }
     if (arg?.org != null && arg?.name != null) {
       org = arg?.org
-      await util.setStorageData('data', { _last: { env,...arg, },[env]:{[arg?.org]:{[arg?.name]:{...arg}}} })
+      await util.setStorageData('data', { _last: { env, ...arg, }, [env]: { [arg?.org]: { [arg?.name]: { ...arg } } } })
       app.setLoginItemSettings({
         openAtLogin: data?.[env]?.[arg?.org]?.[arg?.name]?.autoStart || false,
         openAsHidden: false,
@@ -205,11 +205,12 @@ createWindow = async () => {
   })
   // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
   util.macShortcutKeyFailure(win)
-
   let LastUser = datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]
   if (LastUser?.autoLogin == true && LastUser?.orgId) {
-    win.loadURL('https://'+env+'.desktop.system.app.' + LastUser.orgId);
+    win.loadURL('https://desktop.system.app.' + LastUser.orgId);
   } else {
+    const mainSession = session.defaultSession;
+    mainSession.clearStorageData({storages:['cookies']})
     win.loadFile("./index.html");
   }
 
@@ -253,7 +254,7 @@ app.whenReady().then(async () => {
 
   //dns配置
   ipcMain.handle("getUserValue", async function (event, arg) {
-    if(arg=='env'){
+    if (arg == 'env') {
       return env
     }
     let data = await util.getStorageData()
