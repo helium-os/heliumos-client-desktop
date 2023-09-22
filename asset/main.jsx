@@ -102,8 +102,7 @@ const Login = ({ changePage }) => {
       if (window?.versions) {
         orgList = await window?.versions?.getDbValue()
         if (orgList.find(item => item?.alias == values?.usePoint.split("@")[1])) {
-          console.log({ org: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0], orgId: orgList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id })
-          await window?.versions?.setuserInfo({ org: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0], orgId: orgList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id });
+         await window?.versions?.setuserInfo({ org: values?.usePoint.split("@")[1], name: values?.usePoint.split("@")[0], orgId: orgList.filter(item => item?.alias == values?.usePoint.split("@")[1])[0]?.id });
         } else {
           antd.message.error('没有该组织')
           return
