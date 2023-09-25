@@ -54,9 +54,7 @@ AutoUpdater = (autoUpdater) => {
   autoUpdater.checkForUpdates();
   // 处理检查更新事件
   autoUpdater.on('checking-for-update', (result) => {
-    if (result) {
-      // 更新成功，执行更新操作
-    } else {
+    if (!result) {
       // 更新失败，切换到 GitHub Releases 的更新
       autoUpdater.setFeedURL({
         provider: 'github',
