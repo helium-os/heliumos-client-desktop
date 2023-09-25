@@ -47,28 +47,31 @@ function mkdir(filePath) {
 
 //自动更新
 AutoUpdater = (autoUpdater) => {
-   autoUpdater.logger = log
+  autoUpdater.logger = log
   //要想使用自动更新，不能配置DNS解析
-  // autoUpdater.setFeedURL("http://127.0.0.1:9005/");
+  autoUpdater.setFeedURL("https://heliumos-client.oss-cn-beijing.aliyuncs.com/desktop/releases/");
   autoUpdater.autoDownload = false
   autoUpdater.checkForUpdates();
   // 处理检查更新事件
-  autoUpdater.on('checking-for-update', () => {
-    log.info('Checking for update...');
+  autoUpdater.on('checking-for-update', (result) => {
+    if (result) {
+      // 更新成功，执行更新操作
+    } else {
+      // 更新失败，切换到 GitHub Releases 的更新
+      autoUpdater.setFeedURL({
+        provider: 'github',
+        owner: 'helium-os',
+        repo: "heliumos-client-desktop",
+        releaseType: "release"
+      });
+      // 再次检查更新
+      autoUpdater.checkForUpdates()
+    }
   });
 
   // 处理发现更新事件
   autoUpdater.on('update-available', (info) => {
-      dialog.showMessageBox({
-            type: 'info',
-            title: '软件更新',
-            message: '发现新版本, 确定更新?',
-            buttons: ['确定', '取消']
-        }).then(resp => {
-            if (resp.response == 0) {
-                autoUpdater.downloadUpdate()
-            }
-        })
+    autoUpdater.downloadUpdate()
   });
 
   // 处理没有更新的事件
@@ -83,13 +86,13 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理更新下载完成事件
   autoUpdater.on('update-downloaded', (info) => {
-   dialog.showMessageBox({
-            title: '下载完成',
-            message: '最新版本已下载完成, 退出程序进行安装'
-        }).then(() => {
-            autoUpdater.quitAndInstall()
-        })
-
+    dialog.showMessageBox({
+      title: '下载完成',
+      message: '最新版本已下载完成, 退出程序进行安装',
+      buttons: ['确定']
+    }).then(() => {
+      autoUpdater.quitAndInstall()
+    })
   });
 
   // 处理更新错误事件
@@ -101,28 +104,28 @@ AutoUpdater = (autoUpdater) => {
 macShortcutKeyFailure = (win) => {
   if (process.platform === 'darwin') {
     let contents = win.webContents
-    electronLocalshortcut.register(win,'CommandOrControl+C', () => {
+    electronLocalshortcut.register(win, 'CommandOrControl+C', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册复制快捷键成功')
         contents && contents?.copy()
       }
     })
 
-    electronLocalshortcut.register(win,'CommandOrControl+V', () => {
+    electronLocalshortcut.register(win, 'CommandOrControl+V', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册粘贴快捷键成功')
         contents && contents?.paste()
       }
     })
 
-    electronLocalshortcut.register(win,'CommandOrControl+X', () => {
+    electronLocalshortcut.register(win, 'CommandOrControl+X', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册剪切快捷键成功')
         contents && contents?.cut()
       }
     })
 
-    electronLocalshortcut.register(win,'CommandOrControl+A', () => {
+    electronLocalshortcut.register(win, 'CommandOrControl+A', () => {
       if (win && !win.isDestroyed()) {
         console.log('注册全选快捷键成功')
         contents && contents?.selectAll()
