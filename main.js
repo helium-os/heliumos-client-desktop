@@ -13,10 +13,9 @@ const log = require('electron-log');
 const os = require('os');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
-//cookies数据
 
 //F10双击,F8双击
-let f10Presse = false,f8Presse = false;
+let f10Press = false,f8Press = false;
 let lastPressTime = 0;
 const doublePressInterval = 300;
 let org = ''
@@ -170,7 +169,7 @@ createWindow = async () => {
     const options = {
       type: 'question',
       title: '加载失败',
-      message: '页面加载失败，请跳转到登录页面',
+      message: '网络连接失败，请重试',
       buttons: ['确认'],
     };
     dialog.showMessageBox(options).then(async (response) => {
@@ -195,15 +194,15 @@ createWindow = async () => {
       globalShortcut.register('F10', () => {
         const now = Date.now();
         // 第一次按下 F10 键
-        if (!f10Presse) {
-          f10Presse = true;
+        if (!f10Press) {
+          f10Press = true;
           lastPressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastPressTime < doublePressInterval) {
             F10(win)
           }
-          f10Presse = false; // 重置状态
+          f10Press = false; // 重置状态
         }
       });
      } else {
@@ -228,15 +227,15 @@ createWindow = async () => {
       globalShortcut.register('F10', () => {
         const now = Date.now();
         // 第一次按下 F10 键
-        if (!f10Presse) {
-          f10Presse = true;
+        if (!f10Press) {
+          f10Press = true;
           lastPressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastPressTime < doublePressInterval) {
             F10(win)
           }
-          f10Presse = false; // 重置状态
+          f10Press = false; // 重置状态
         }
       });
       
@@ -245,15 +244,15 @@ createWindow = async () => {
       globalShortcut.register('F8', () => {
         const now = Date.now();
         // 第一次按下 F8 键
-        if (!f8Presse) {
-          f8Presse = true;
+        if (!f8Press) {
+          f8Press = true;
           lastPressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
           if (now - lastPressTime < doublePressInterval) {
             F8(win)
           }
-          f8Presse = false; // 重置状态
+          f8Press = false; // 重置状态
         }
       });
     
