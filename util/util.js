@@ -200,7 +200,7 @@ askForMediaAccess = (data = [true, true]) => {
         ...MediaList.map(item => systemPreferences.askForMediaAccess(item))
       ])
         .then((res) => {
-          if (res.find(item => item == false)) {
+          if (res.findIndex(item => item == false)!=-1) {
             resolve(false); // 用户拒绝了其中一个或两者的访问权限
           } else {
             resolve(true); // 用户授予了麦克风和摄像头访问权限
