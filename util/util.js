@@ -5,7 +5,7 @@ const _ = require('lodash');
 const { app, dialog } = require("electron");
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
-
+let updateDownloaded = false;
 //存入数据
 setDataSourse = (data, filePath = './data.json', en = true) => {
 
@@ -84,19 +84,45 @@ AutoUpdater = (autoUpdater) => {
 
   // 处理更新下载完成事件
   autoUpdater.on('update-downloaded', (info) => {
-    dialog.showMessageBox({
-      title: '下载完成',
-      message: '最新版本已下载完成, 退出程序进行安装',
-      buttons: ['确定']
-    }).then(() => {
-      autoUpdater.quitAndInstall()
-    })
+    if (!updateDownloaded) {
+      updateDownloaded = true
+      dialog.showMessageBox({
+        title: '下载完成',
+        message: '最新版本已下载完成, 退出程序进行安装',
+        buttons: ['确定']
+      }).then(() => {
+        updateDownloaded = false
+        autoUpdater.quitAndInstall()
+      })
+    }
   });
 
   // 处理更新错误事件
   autoUpdater.on('error', (err) => {
     console.error('Error while checking for updates:', err);
   });
+}
+
+// 定时更新
+function AutoUpdaterInterval(autoUpdater, hour = 6, updateNow = true) {
+  let timerId;
+
+  if (updateNow) {
+    AutoUpdater(autoUpdater);
+  }
+
+  // 定时函数
+  function myTask() {
+    AutoUpdater(autoUpdater);
+  }
+
+  // 设置定时器
+  timerId = setInterval(myTask, hour * 60 * 60 * 1000);
+
+  // 返回一个函数来清除定时器
+  return function clearTimer() {
+    clearInterval(timerId);
+  };
 }
 
 macShortcutKeyFailure = (win) => {
@@ -194,6 +220,7 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
 module.exports = {
   setDataSourse,
   AutoUpdater,
+  AutoUpdaterInterval,
   macShortcutKeyFailure,
   multipleOpen,
   getStorageData,
