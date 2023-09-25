@@ -89,10 +89,12 @@ AutoUpdater = (autoUpdater) => {
       dialog.showMessageBox({
         title: '下载完成',
         message: '最新版本已下载完成, 退出程序进行安装',
-        buttons: ['确定']
-      }).then(() => {
+        buttons: ['确定', '取消']
+      }).then((res) => {
         updateDownloaded = false
-        autoUpdater.quitAndInstall()
+        if (res.response == 0) {
+          autoUpdater.quitAndInstall()
+        }
       })
     }
   });
