@@ -17,8 +17,15 @@ const helloInfo = {"port": ":443", "host":""};
 let dnsMap = new Map();
 let env = "";
 let port = 0;
+const sockets = {};
+let nextSocketId = 0;
 
 async function setEnv(electron_env) {
+    console.log(`destroy all server connections`);
+    for (const socketId in sockets) {
+        sockets[socketId].destroy();
+    }
+
     logger.info(`Start set env: ${electron_env}`);
     env = electron_env;
     await setFirstDNS();
@@ -132,6 +139,17 @@ async function runServer() {
         logger.info(`Server is listening on port ${port}`);
         res(port);
     })
+
+    server.on('connection', function (socket) {
+        // Add a newly connected socket
+        const socketId = nextSocketId++;
+        sockets[socketId] = socket;
+
+        // Remove the socket when it closes
+        socket.on('close', function () {
+            delete sockets[socketId];
+        });
+    });
 
     server.on('connect', (req, clientSocket, head) => {
         logger.info(clientSocket.remoteAddress, clientSocket.remotePort, req.method, req.url)
@@ -253,7 +271,7 @@ async function updateAliasDb() {
         break;
     }
 
-    const url = config.alias_server+org+"/v1/pubcc/organizations"
+    const url = config.alias_server + "heliumos" + "/v1/pubcc/organizations"
     const aliasData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port, __dirname + "/../" +config.cert_file);
 
     try {
