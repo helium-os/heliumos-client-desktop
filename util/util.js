@@ -87,9 +87,9 @@ AutoUpdater = (autoUpdater) => {
     if (!updateDownloaded) {
       updateDownloaded = true
       dialog.showMessageBox({
-        title: '下载完成',
-        message: '最新版本已下载完成, 退出程序进行安装',
-        buttons: ['确定', '取消']
+        title: '更新 Helium OS',
+        message: '发现新版本，重新启动 Helium OS 即可更新完成。',
+        buttons: ['重新启动以更新', '取消']
       }).then((res) => {
         updateDownloaded = false
         if (res.response == 0) {
