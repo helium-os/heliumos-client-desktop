@@ -200,18 +200,14 @@ askForMediaAccess = (data = [true, true]) => {
         ...MediaList.map(item => systemPreferences.askForMediaAccess(item))
       ])
         .then((res) => {
-          if (res.findIndex(item => item == false)!=-1) {
-            resolve(false); // 用户拒绝了其中一个或两者的访问权限
-          } else {
-            resolve(true); // 用户授予了麦克风和摄像头访问权限
-          }
-        })
+            resolve(res); // 用户拒绝了其中一个或两者的访问权限
+          })
         .catch((error) => {
           reject(error); // 处理错误
         });
     } else {
       // 如果不在 macOS 上，直接返回 true（模拟已授权）
-      resolve(true);
+      resolve(data);
     }
   });
 };
