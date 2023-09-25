@@ -1,4 +1,4 @@
-const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, protocol } = require("electron");
+const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, session } = require("electron");
 const path = require("path");
 let { autoUpdater } = require("electron-updater");
 const storage = require('electron-json-storage');
@@ -13,6 +13,8 @@ const log = require('electron-log');
 const os = require('os');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
+//cookies数据
+
 //F10双击,F8双击
 let f10Presse = false,f8Presse = false;
 let lastPressTime = 0;
@@ -70,6 +72,7 @@ const F8 = (win) => {
   if (loading) { return }
   dialog.showMessageBox(options).then(async (response) => {
     if (response.response == 0) {
+       await session.defaultSession.clearStorageData()
        await storage.clear(() => win.loadFile("./index.html"))
       }
   });
@@ -203,25 +206,8 @@ createWindow = async () => {
           f10Presse = false; // 重置状态
         }
       });
-      // 注册全局快捷键 F8
-      globalShortcut.register('F8', () => {
-        const now = Date.now();
-        // 第一次按下 F8 键
-        if (!f8Presse) {
-          f8Presse = true;
-          lastPressTime = now;
-        } else {
-          // 第二次按下 F10 键，检查时间间隔
-          if (now - lastPressTime < doublePressInterval) {
-            F8(win)
-          }
-          f8Presse = false; // 重置状态
-        }
-      });
-
-    } else {
+     } else {
       globalShortcut.unregister('F10');
-      globalShortcut.unregister('F8');
     }
   })
   win.webContents.on('before-input-event', (event, input) => {
@@ -253,7 +239,9 @@ createWindow = async () => {
           f10Presse = false; // 重置状态
         }
       });
-       // 注册全局快捷键 F8
+      
+    }
+     // 注册全局快捷键 F8
       globalShortcut.register('F8', () => {
         const now = Date.now();
         // 第一次按下 F8 键
@@ -268,7 +256,6 @@ createWindow = async () => {
           f8Presse = false; // 重置状态
         }
       });
-    }
     
   })
   // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
