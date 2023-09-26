@@ -5,7 +5,7 @@ var crypto = require('crypto')
 var fs = require('fs')
 const proxy = require('./proxy/proxy');
 const util = require('./util/util');
-const changeClose = require('./src/changeClose');
+const changeClose = require('./app-init/changeClose');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 
