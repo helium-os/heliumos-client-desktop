@@ -219,7 +219,18 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
 
   storage.set(datas, data);
 }
+//判断路径
+findPath = (keyList = []) => {
+  var publicKey
+  keyList.forEach(item => {
+    if (fs.existsSync(path.join(__dirname, item))) {
+      publicKey = item
+    }
+  })
+  return publicKey
+}
 
+//修改关闭
 changeClose = (win) => {
 
   if (process.platform === 'win32') {
@@ -230,8 +241,9 @@ changeClose = (win) => {
       // 隐藏窗口，而不是退出
       win.hide();
     });
+    let iconPath = findPath(["./../icon.png", '../build/icon.png', '../../icon.png'])
     //  创建系统托盘图标
-    tray = new Tray(path.join(__dirname, '../build/icon.png'));
+    tray = new Tray(path.join(__dirname, iconPath));
 
     // 创建托盘菜单
     const contextMenu = Menu.buildFromTemplate([
@@ -241,7 +253,7 @@ changeClose = (win) => {
 
     // 设置托盘图标的上下文菜单
     tray.setContextMenu(contextMenu);
-    
+
     // 双击托盘图标时显示应用
     tray.on('double-click', () => win.show());
 
