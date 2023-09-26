@@ -1,16 +1,10 @@
-const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, Tray, session } = require("electron");
+const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, session } = require("electron");
 const path = require("path");
-let { autoUpdater } = require("electron-updater");
 const storage = require('electron-json-storage');
 var crypto = require('crypto')
 var fs = require('fs')
-const { readFile } = require("node:fs/promises");
-const https = require('https');
 const proxy = require('./proxy/proxy');
-const tools = require('./proxy/tools');
 const util = require('./util/util');
-const log = require('electron-log');
-const os = require('os');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 
@@ -106,17 +100,16 @@ createWindow = async () => {
     return { action: 'deny' };
   });
   //自动更新,可以设置循环时间，默认是六小时,执行回调函数可以清除计时器
-  let deleteUpdaterInterval = util.AutoUpdaterInterval(autoUpdater)
 
-  ipcMain.on("ping", function (event, arg) {
+  ipcMain.on("ping", function (event) {
     event.returnValue = "pong";
   });
 
-  ipcMain.on("iframeUP", function (event) {
+  ipcMain.on("iframeUP", function () {
     win.setAlwaysOnTop(true);
   });
 
-  ipcMain.on("iframeDown", function (event) {
+  ipcMain.on("iframeDown", function () {
     win.setAlwaysOnTop(false);
   });
 
@@ -165,7 +158,7 @@ createWindow = async () => {
   //监听页面跳转失败
 
   // 监听页面加载失败事件
-  win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+  win.webContents.on('did-fail-load', () => {
     const options = {
       type: 'question',
       title: '加载失败',
@@ -296,7 +289,7 @@ app.whenReady().then(async () => {
   env = datas?._last?.env || 'prod'
   org = datas?._last?.org
   //配置proxy
-  let { port, alias } = await proxy.runProxy(env)
+  let { port } = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   //更新不走端口
   app.commandLine.appendSwitch('proxy-bypass-list', '*github.com')
@@ -319,7 +312,7 @@ app.whenReady().then(async () => {
 
   });
   //dns配置
-  ipcMain.handle("getLogList", async function (event) {
+  ipcMain.handle("getLogList", async function () {
     let envList = await util.getStorageData(env), res = []
     if (envList && envList?.logList && envList?.logList.length > 0) {
       let data = await util.getStorageData()
