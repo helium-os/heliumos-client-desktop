@@ -2,7 +2,8 @@ const fs = require('fs')
 const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
-const { app, dialog } = require("electron");
+const { app, dialog, Tray, Menu } = require("electron");
+const path = require("path");
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
 let updateDownloaded = false;
@@ -219,6 +220,53 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
   storage.set(datas, data);
 }
 
+changeClose = (win) => {
+
+  if (process.platform === 'win32') {
+    // 监听窗口关闭事件
+    win.on('close', (event) => {
+      // 取消默认关闭行为
+      event.preventDefault();
+      // 隐藏窗口，而不是退出
+      win.hide();
+    });
+    //  创建系统托盘图标
+    tray = new Tray(path.join(__dirname, '../build/icon.png'));
+
+    // 创建托盘菜单
+    const contextMenu = Menu.buildFromTemplate([
+      { label: '显示应用', click: () => win.show() },
+      { label: '退出', click: () => app.exit() }
+    ]);
+
+    // 设置托盘图标的上下文菜单
+    tray.setContextMenu(contextMenu);
+    
+    // 双击托盘图标时显示应用
+    tray.on('double-click', () => win.show());
+
+  } else if (process.platform === 'darwin') {
+
+    let willQuitApp = false
+
+    // 监听窗口关闭事件
+    win.on('close', (event) => {
+      if (!willQuitApp) {
+        // 取消默认关闭行为
+        event.preventDefault();
+        // 隐藏窗口，而不是退出
+        win.hide();
+      } else {
+        app.exit()
+      }
+    });
+    app.on('before-quit', (event) => {
+      willQuitApp = true
+    })
+    app.on('activate', () => win.show())
+  }
+}
+
 module.exports = {
   setDataSourse,
   AutoUpdater,
@@ -227,4 +275,5 @@ module.exports = {
   multipleOpen,
   getStorageData,
   setStorageData,
+  changeClose
 };

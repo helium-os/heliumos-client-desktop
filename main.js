@@ -97,32 +97,8 @@ createWindow = async () => {
     },
   })
 
-  if (process.platform === 'win32') {
-    // 监听窗口关闭事件
-    win.on('close', (event) => {
-      // 取消默认关闭行为
-      event.preventDefault();
-      // 隐藏窗口，而不是退出
-      win.hide();
-    });
-    // 创建系统托盘图标
-    tray = new Tray(path.join(__dirname, '/build/icon.png'));
-
-    // 创建托盘菜单
-    const contextMenu = Menu.buildFromTemplate([
-      { label: '显示应用', click: () => win.show() },
-      { label: '退出', click: () => app.exit() }
-    ]);
-
-    // 设置托盘图标的上下文菜单
-    tray.setContextMenu(contextMenu);
-
-    // 双击托盘图标时显示应用
-    tray.on('double-click', () => win.show());
-  } else if (process.platform === 'darwin') {
-
-  }
-
+  //修改关闭逻辑
+  util.changeClose(win)
 
   //默认浏览器打开链接
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -372,10 +348,11 @@ app.whenReady().then(async () => {
   util.multipleOpen(app, BrowserWindow, createWindow, false)
 });
 
+
+
 app.on("window-all-closed", async () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
-
 
