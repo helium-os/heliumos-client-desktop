@@ -5,6 +5,7 @@ var crypto = require('crypto')
 var fs = require('fs')
 const proxy = require('./proxy/proxy');
 const util = require('./util/util');
+const changeClose = require('./src/changeClose');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 
@@ -92,7 +93,7 @@ createWindow = async () => {
   })
 
   //修改关闭逻辑
-  util.changeClose(win)
+  changeClose(win)
 
   //默认浏览器打开链接
   win.webContents.setWindowOpenHandler(({ url }) => {

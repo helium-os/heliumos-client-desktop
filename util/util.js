@@ -2,7 +2,7 @@ const fs = require('fs')
 const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
-const { app, dialog, Tray, Menu } = require("electron");
+const { dialog } = require("electron");
 const path = require("path");
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
@@ -69,7 +69,7 @@ AutoUpdater = (autoUpdater) => {
   });
 
   // 处理发现更新事件
-  autoUpdater.on('update-available', (info) => {
+  autoUpdater.on('update-available', () => {
     autoUpdater.downloadUpdate()
   });
 
@@ -84,7 +84,7 @@ AutoUpdater = (autoUpdater) => {
   });
 
   // 处理更新下载完成事件
-  autoUpdater.on('update-downloaded', (info) => {
+  autoUpdater.on('update-downloaded', () => {
     if (!updateDownloaded) {
       updateDownloaded = true
       dialog.showMessageBox({
@@ -180,7 +180,7 @@ multipleOpen = (app, BrowserWindow, createWindow, mul = false) => {
 //获取stroage数据
 getStorageData = (data = 'data') => {
   let res
-  let promise = new Promise((resolve, reject) => {
+  let promise = new Promise((resolve) => {
     res = resolve;
   });
   storage.get(data, function (error, datas) {
@@ -220,64 +220,17 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
   storage.set(datas, data);
 }
 //判断路径
-findPath = (keyList = []) => {
-  var publicKey
+findPath = (keyList = [],filePath = __dirname) => {
+  var res
   keyList.forEach(item => {
-    if (fs.existsSync(path.join(__dirname, item))) {
-      publicKey = item
+    if (fs.existsSync(path.join(filePath, item))) {
+      res = item
     }
   })
-  return publicKey
+  return res
 }
 
-//修改关闭
-changeClose = (win) => {
 
-  if (process.platform === 'win32') {
-    // 监听窗口关闭事件
-    win.on('close', (event) => {
-      // 取消默认关闭行为
-      event.preventDefault();
-      // 隐藏窗口，而不是退出
-      win.hide();
-    });
-    let iconPath = findPath(["./../icon.png", '../build/icon.png', '../../icon.png'])
-    //  创建系统托盘图标
-    tray = new Tray(path.join(__dirname, iconPath));
-
-    // 创建托盘菜单
-    const contextMenu = Menu.buildFromTemplate([
-      { label: '显示应用', click: () => win.show() },
-      { label: '退出', click: () => app.exit() }
-    ]);
-
-    // 设置托盘图标的上下文菜单
-    tray.setContextMenu(contextMenu);
-
-    // 双击托盘图标时显示应用
-    tray.on('double-click', () => win.show());
-
-  } else if (process.platform === 'darwin') {
-
-    let willQuitApp = false
-
-    // 监听窗口关闭事件
-    win.on('close', (event) => {
-      if (!willQuitApp) {
-        // 取消默认关闭行为
-        event.preventDefault();
-        // 隐藏窗口，而不是退出
-        win.hide();
-      } else {
-        app.exit()
-      }
-    });
-    app.on('before-quit', (event) => {
-      willQuitApp = true
-    })
-    app.on('activate', () => win.show())
-  }
-}
 
 module.exports = {
   setDataSourse,
@@ -287,5 +240,5 @@ module.exports = {
   multipleOpen,
   getStorageData,
   setStorageData,
-  changeClose
+  findPath
 };
