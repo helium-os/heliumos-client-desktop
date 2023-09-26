@@ -96,14 +96,15 @@ createWindow = async () => {
       // partition:String(new Date())
     },
   })
-  // 监听窗口关闭事件
-  win.on('close', (event) => {
-    // 取消默认关闭行为
-    event.preventDefault();
-    // 隐藏窗口，而不是退出
-    win.hide();
-  });
+
   if (process.platform === 'win32') {
+    // 监听窗口关闭事件
+    win.on('close', (event) => {
+      // 取消默认关闭行为
+      event.preventDefault();
+      // 隐藏窗口，而不是退出
+      win.hide();
+    });
     // 创建系统托盘图标
     tray = new Tray(path.join(__dirname, '/build/icon.png'));
 
