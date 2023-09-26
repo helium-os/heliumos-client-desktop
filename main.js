@@ -15,7 +15,7 @@ var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 
 //F10双击,F8双击
-let f10Press = false,f8Press = false;
+let f10Press = false, f8Press = false;
 let lastPressTime = 0;
 const doublePressInterval = 300;
 let org = ''
@@ -72,9 +72,9 @@ const F8 = (win) => {
   if (loading) { return }
   dialog.showMessageBox(options).then(async (response) => {
     if (response.response == 0) {
-       await session.defaultSession.clearStorageData()
-       await storage.clear(() => win.loadFile("./index.html"))
-      }
+      await session.defaultSession.clearStorageData()
+      await storage.clear(() => win.loadFile("./index.html"))
+    }
   });
 }
 
@@ -103,28 +103,33 @@ createWindow = async () => {
     // 隐藏窗口，而不是退出
     win.hide();
   });
-  // 创建系统托盘图标
-  tray = new Tray(path.join(__dirname, '/build/icon.png'));
+  if (process.platform === 'win32') {
+    // 创建系统托盘图标
+    tray = new Tray(path.join(__dirname, '/build/icon.png'));
 
-  // 创建托盘菜单
-  const contextMenu = Menu.buildFromTemplate([
-    { label: '显示应用', click: () => win.show() },
-    { label: '退出', click: () => app.exit() }
-  ]);
+    // 创建托盘菜单
+    const contextMenu = Menu.buildFromTemplate([
+      { label: '显示应用', click: () => win.show() },
+      { label: '退出', click: () => app.exit() }
+    ]);
 
-  // 设置托盘图标的上下文菜单
-  tray.setContextMenu(contextMenu);
+    // 设置托盘图标的上下文菜单
+    tray.setContextMenu(contextMenu);
 
-  // 双击托盘图标时显示应用
-  tray.on('double-click', () => win.show());
-  
+    // 双击托盘图标时显示应用
+    tray.on('double-click', () => win.show());
+  } else if (process.platform === 'darwin') {
+
+  }
+
+
   //默认浏览器打开链接
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
   //自动更新,可以设置循环时间，默认是六小时,执行回调函数可以清除计时器
-  let deleteUpdaterInterval= util.AutoUpdaterInterval(autoUpdater)
+  let deleteUpdaterInterval = util.AutoUpdaterInterval(autoUpdater)
 
   ipcMain.on("ping", function (event, arg) {
     event.returnValue = "pong";
@@ -223,7 +228,7 @@ createWindow = async () => {
           f10Press = false; // 重置状态
         }
       });
-     } else {
+    } else {
       globalShortcut.unregister('F10');
     }
   })
@@ -256,24 +261,24 @@ createWindow = async () => {
           f10Press = false; // 重置状态
         }
       });
-      
+
     }
-     // 注册全局快捷键 F8
-      globalShortcut.register('F8', () => {
-        const now = Date.now();
-        // 第一次按下 F8 键
-        if (!f8Press) {
-          f8Press = true;
-          lastPressTime = now;
-        } else {
-          // 第二次按下 F10 键，检查时间间隔
-          if (now - lastPressTime < doublePressInterval) {
-            F8(win)
-          }
-          f8Press = false; // 重置状态
+    // 注册全局快捷键 F8
+    globalShortcut.register('F8', () => {
+      const now = Date.now();
+      // 第一次按下 F8 键
+      if (!f8Press) {
+        f8Press = true;
+        lastPressTime = now;
+      } else {
+        // 第二次按下 F10 键，检查时间间隔
+        if (now - lastPressTime < doublePressInterval) {
+          F8(win)
         }
-      });
-    
+        f8Press = false; // 重置状态
+      }
+    });
+
   })
   // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
   util.macShortcutKeyFailure(win)

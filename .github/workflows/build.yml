@@ -29,8 +29,7 @@ jobs:
       - name: Export version to variable
         run: |
           npm install npm@8.15.0 -g
-          npm config set electron_mirror "https://npm.taobao.org/mirrors/electron/"
-          npm install --registry=https://registry.npm.taobao.org/
+          npm install --registry=https://registry.npmjs.org/
           node getVersion.js
           export VERSION=$(cat version)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
