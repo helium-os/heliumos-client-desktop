@@ -1,6 +1,7 @@
-const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, Tray } = require("electron");
+const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, Tray, session } = require("electron");
 const path = require("path");
 let { autoUpdater } = require("electron-updater");
+const storage = require('electron-json-storage');
 var crypto = require('crypto')
 var fs = require('fs')
 const { readFile } = require("node:fs/promises");
@@ -12,9 +13,10 @@ const log = require('electron-log');
 const os = require('os');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
-//F9双击
-let f10Presse = false;
-let lastF9PressTime = 0;
+
+//F10双击,F8双击
+let f10Press = false,f8Press = false;
+let lastPressTime = 0;
 const doublePressInterval = 300;
 let org = ''
 let env = 'demo'
@@ -26,7 +28,7 @@ keyList.forEach(item => {
 })
 let datas = {}
 let loading = false
-//双击F10操作
+//双击F10,切换环境
 const F10 = (win) => {
 
   const options = {
@@ -57,6 +59,22 @@ const F10 = (win) => {
       }
       await util.setStorageData('data', { _last: { env: dbName, org: null, name: null } })
     }
+  });
+}
+//双击F8,清除缓存
+const F8 = (win) => {
+  const options = {
+    type: 'question',
+    title: '清除缓存',
+    message: '是否清除缓存',
+    buttons: ['确认', '取消'],
+  };
+  if (loading) { return }
+  dialog.showMessageBox(options).then(async (response) => {
+    if (response.response == 0) {
+       await session.defaultSession.clearStorageData()
+       await storage.clear(() => win.loadFile("./index.html"))
+      }
   });
 }
 
@@ -99,18 +117,14 @@ createWindow = async () => {
 
   // 双击托盘图标时显示应用
   tray.on('double-click', () => win.show());
-  if (os.platform() === 'darwin') {
-    //唤起权限配置
-    systemPreferences.askForMediaAccess('microphone');
-    systemPreferences.askForMediaAccess('camera');
-  }
+  
   //默认浏览器打开链接
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
-  //自动更新
-  util.AutoUpdater(autoUpdater)
+  //自动更新,可以设置循环时间，默认是六小时,执行回调函数可以清除计时器
+  let deleteUpdaterInterval= util.AutoUpdaterInterval(autoUpdater)
 
   ipcMain.on("ping", function (event, arg) {
     event.returnValue = "pong";
@@ -166,7 +180,25 @@ createWindow = async () => {
   //   // 最小化窗口
   //   win.minimize();
   // });
+  //监听页面跳转失败
 
+  // 监听页面加载失败事件
+  win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+    const options = {
+      type: 'question',
+      title: '加载失败',
+      message: '网络连接失败，请重试',
+      buttons: ['确认'],
+    };
+    dialog.showMessageBox(options).then(async (response) => {
+      if (response.response == 0) {
+        await util.setStorageData('data', { _last: { org: null, name: null } })
+        win.loadFile("./index.html");
+      }
+    })
+  });
+
+  //监听页面跳转
   win.webContents.on('did-navigate', (event, url) => {
     if (env != 'prod' || (org === 'heliumos' || org === 'easypay-internal')) {
       globalShortcut.register('F9', () => {
@@ -180,18 +212,18 @@ createWindow = async () => {
       globalShortcut.register('F10', () => {
         const now = Date.now();
         // 第一次按下 F10 键
-        if (!f10Presse) {
-          f10Presse = true;
-          lastF9PressTime = now;
+        if (!f10Press) {
+          f10Press = true;
+          lastPressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
-          if (now - lastF9PressTime < doublePressInterval) {
+          if (now - lastPressTime < doublePressInterval) {
             F10(win)
           }
-          f10Presse = false; // 重置状态
+          f10Press = false; // 重置状态
         }
       });
-    } else {
+     } else {
       globalShortcut.unregister('F10');
     }
   })
@@ -213,18 +245,35 @@ createWindow = async () => {
       globalShortcut.register('F10', () => {
         const now = Date.now();
         // 第一次按下 F10 键
-        if (!f10Presse) {
-          f10Presse = true;
-          lastF9PressTime = now;
+        if (!f10Press) {
+          f10Press = true;
+          lastPressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
-          if (now - lastF9PressTime < doublePressInterval) {
+          if (now - lastPressTime < doublePressInterval) {
             F10(win)
           }
-          f10Presse = false; // 重置状态
+          f10Press = false; // 重置状态
         }
       });
+      
     }
+     // 注册全局快捷键 F8
+      globalShortcut.register('F8', () => {
+        const now = Date.now();
+        // 第一次按下 F8 键
+        if (!f8Press) {
+          f8Press = true;
+          lastPressTime = now;
+        } else {
+          // 第二次按下 F10 键，检查时间间隔
+          if (now - lastPressTime < doublePressInterval) {
+            F8(win)
+          }
+          f8Press = false; // 重置状态
+        }
+      });
+    
   })
   // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
   util.macShortcutKeyFailure(win)
@@ -248,7 +297,10 @@ app.on(
   (event, webContents, url, error, cert, callback) => {
     let a = new crypto.X509Certificate(publicKey);
     let b = new crypto.X509Certificate(cert.data);
-    if (a.issuer.split('OU=')[1].split('\n')[0] == b.issuer.split('OU=')[1].split('\n')[0]) {
+    if (b && b.issuer && b.issuer.split('OU=')
+      && b.issuer.split('OU=')[1]
+      && b.issuer.split('OU=')[1].split('\n')
+      && a.issuer.split('OU=')[1].split('\n')[0] == b.issuer.split('OU=')[1].split('\n')[0]) {
       event.preventDefault()
       callback(true)
     } else {
