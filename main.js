@@ -122,13 +122,12 @@ createWindow = async () => {
     }
     if (arg?.org != null && arg?.name != null) {
       org = arg?.org
-      await util.setStorageData('data', { _last: { ...arg, env } })
+      await util.setStorageData('data', { _last: { env,...arg, },[env]:{[arg?.org]:{[arg?.name]:{...arg}}} })
       app.setLoginItemSettings({
         openAtLogin: data?.[env]?.[arg?.org]?.[arg?.name]?.autoStart || false,
         openAsHidden: false,
         path: process.execPath,
       });
-      await util.setStorageData('data', arg, [env, arg?.org, arg?.name])
       return
     }
 
@@ -312,6 +311,13 @@ app.whenReady().then(async () => {
     }
 
   });
+  //获取麦克风权限和摄像头权限
+  ipcMain.handle("askForMediaAccess", async function (event, arg) {
+    let data = await util.askForMediaAccess(arg)
+    return data
+  });
+  
+   
   //dns配置
   ipcMain.handle("getLogList", async function () {
     let envList = await util.getStorageData(env), res = []

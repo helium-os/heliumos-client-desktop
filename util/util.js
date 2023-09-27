@@ -232,6 +232,28 @@ findPath = (keyList = [],filePath = __dirname) => {
 
 
 
+
+askForMediaAccess = (data = [true, true]) => {
+  let MediaList = ['microphone', 'camera'].filter((item, index) => data[index])
+  return new Promise((resolve, reject) => {
+    if (os.platform() === 'darwin') {
+      // 使用 Promise.all 来等待两个权限请求完成
+      Promise.all([
+        ...MediaList.map(item => systemPreferences.askForMediaAccess(item))
+      ])
+        .then((res) => {
+            resolve(res); // 用户拒绝了其中一个或两者的访问权限
+          })
+        .catch((error) => {
+          reject(error); // 处理错误
+        });
+    } else {
+      // 如果不在 macOS 上，直接返回 true（模拟已授权）
+      resolve(data);
+    }
+  });
+};
+
 module.exports = {
   setDataSourse,
   AutoUpdater,
@@ -240,5 +262,6 @@ module.exports = {
   multipleOpen,
   getStorageData,
   setStorageData,
+  askForMediaAccess,
   findPath
 };
