@@ -2,7 +2,8 @@ const fs = require('fs')
 const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
-const { app, dialog } = require("electron");
+const { dialog } = require("electron");
+const path = require("path");
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
 let updateDownloaded = false;
@@ -68,7 +69,7 @@ AutoUpdater = (autoUpdater) => {
   });
 
   // 处理发现更新事件
-  autoUpdater.on('update-available', (info) => {
+  autoUpdater.on('update-available', () => {
     autoUpdater.downloadUpdate()
   });
 
@@ -83,7 +84,7 @@ AutoUpdater = (autoUpdater) => {
   });
 
   // 处理更新下载完成事件
-  autoUpdater.on('update-downloaded', (info) => {
+  autoUpdater.on('update-downloaded', () => {
     if (!updateDownloaded) {
       updateDownloaded = true
       dialog.showMessageBox({
@@ -179,7 +180,7 @@ multipleOpen = (app, BrowserWindow, createWindow, mul = false) => {
 //获取stroage数据
 getStorageData = (data = 'data') => {
   let res
-  let promise = new Promise((resolve, reject) => {
+  let promise = new Promise((resolve) => {
     res = resolve;
   });
   storage.get(data, function (error, datas) {
@@ -218,6 +219,18 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
 
   storage.set(datas, data);
 }
+//判断路径
+findPath = (keyList = [],filePath = __dirname) => {
+  var res
+  keyList.forEach(item => {
+    if (fs.existsSync(path.join(filePath, item))) {
+      res = item
+    }
+  })
+  return res
+}
+
+
 
 module.exports = {
   setDataSourse,
@@ -227,4 +240,5 @@ module.exports = {
   multipleOpen,
   getStorageData,
   setStorageData,
+  findPath
 };
