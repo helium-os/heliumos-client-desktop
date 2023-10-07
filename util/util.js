@@ -48,23 +48,23 @@ function mkdir(filePath) {
 
 //自动更新
 AutoUpdater = (autoUpdater) => {
+  let checkingForUpdate = false;
   autoUpdater.logger = log
   //要想使用自动更新，不能配置DNS解析
   autoUpdater.setFeedURL("https://heliumos-client.oss-cn-beijing.aliyuncs.com/desktop/releases/");
   autoUpdater.autoDownload = false
   autoUpdater.checkForUpdates();
-  // 处理检查更新事件
-  autoUpdater.on('checking-for-update', (result) => {
-    if (!result) {
-      // 更新失败，切换到 GitHub Releases 的更新
+  autoUpdater.on('update-not-available', () => {
+    if (!checkingForUpdate) {
+    // 原分支没有更新，切换到 GitHub Releases 的更新
+      checkingForUpdate = true;
       autoUpdater.setFeedURL({
         provider: 'github',
         owner: 'helium-os',
         repo: "heliumos-client-desktop",
         releaseType: "release"
       });
-      // 再次检查更新
-      autoUpdater.checkForUpdates()
+      setTimeout(()=>autoUpdater.checkForUpdates(),5000)
     }
   });
 
@@ -103,6 +103,18 @@ AutoUpdater = (autoUpdater) => {
   // 处理更新错误事件
   autoUpdater.on('error', (err) => {
     console.error('Error while checking for updates:', err);
+    if (!checkingForUpdate) {
+      // 更新失败，切换到 GitHub Releases 的更新
+      checkingForUpdate = true;
+      autoUpdater.setFeedURL({
+        provider: 'github',
+        owner: 'helium-os',
+        repo: "heliumos-client-desktop",
+        releaseType: "release"
+      });
+      // 再次检查更新
+      autoUpdater.checkForUpdates()
+    }
   });
 }
 
@@ -220,7 +232,7 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
   storage.set(datas, data);
 }
 //判断路径
-findPath = (keyList = [],filePath = __dirname) => {
+findPath = (keyList = [], filePath = __dirname) => {
   var res
   keyList.forEach(item => {
     if (fs.existsSync(path.join(filePath, item))) {
@@ -242,8 +254,8 @@ askForMediaAccess = (data = [true, true]) => {
         ...MediaList.map(item => systemPreferences.askForMediaAccess(item))
       ])
         .then((res) => {
-            resolve(res); // 用户拒绝了其中一个或两者的访问权限
-          })
+          resolve(res); // 用户拒绝了其中一个或两者的访问权限
+        })
         .catch((error) => {
           reject(error); // 处理错误
         });
