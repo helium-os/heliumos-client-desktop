@@ -6,6 +6,7 @@ var fs = require('fs')
 const proxy = require('./proxy/proxy');
 const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
+let { autoUpdater } = require("electron-updater");
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 
@@ -101,6 +102,7 @@ createWindow = async () => {
     return { action: 'deny' };
   });
   //自动更新,可以设置循环时间，默认是六小时,执行回调函数可以清除计时器
+  let deleteUpdaterInterval= util.AutoUpdaterInterval(autoUpdater)
 
   ipcMain.on("deleteLogList", async function (event, arg) {
     let envList = await util.getStorageData(env)
