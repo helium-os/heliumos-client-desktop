@@ -101,6 +101,7 @@ createWindow = async () => {
     return { action: 'deny' };
   });
   //自动更新,可以设置循环时间，默认是六小时,执行回调函数可以清除计时器
+  let deleteUpdaterInterval= util.AutoUpdaterInterval(autoUpdater)
 
   ipcMain.on("ping", function (event) {
     event.returnValue = "pong";
