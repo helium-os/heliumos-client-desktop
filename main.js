@@ -6,6 +6,7 @@ var fs = require('fs')
 const proxy = require('./proxy/proxy');
 const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
+let { autoUpdater } = require("electron-updater");
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
 
