@@ -1,22 +1,21 @@
-const { systemPreferences, ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, protocol } = require("electron");
+const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, session } = require("electron");
 const path = require("path");
-let { autoUpdater } = require("electron-updater");
+const storage = require('electron-json-storage');
 var crypto = require('crypto')
 var fs = require('fs')
-const { readFile } = require("node:fs/promises");
-const https = require('https');
 const proxy = require('./proxy/proxy');
-const tools = require('./proxy/tools');
 const util = require('./util/util');
-const os = require('os');
+const changeClose = require('./app-init/changeClose');
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
-//F9双击
-let f10Presse = false;
-let lastF9PressTime = 0;
+
+//F10双击,F8双击
+let f10Press = false, f8Press = false;
+let lastPressTime = 0;
 const doublePressInterval = 300;
 let org = ''
 let env = 'demo'
+
 keyList.forEach(item => {
   if (fs.existsSync(path.join(__dirname, item))) {
     publicKey = fs.readFileSync(path.join(__dirname, item), 'utf8')
@@ -24,7 +23,7 @@ keyList.forEach(item => {
 })
 let datas = {}
 let loading = false
-//双击F10操作
+//双击F10,切换环境
 const F10 = (win) => {
 
   const options = {
@@ -57,6 +56,22 @@ const F10 = (win) => {
     }
   });
 }
+//双击F8,清除缓存
+const F8 = (win) => {
+  const options = {
+    type: 'question',
+    title: '清除缓存',
+    message: '是否清除缓存',
+    buttons: ['确认', '取消'],
+  };
+  if (loading) { return }
+  dialog.showMessageBox(options).then(async (response) => {
+    if (response.response == 0) {
+      await session.defaultSession.clearStorageData()
+      await storage.clear(() => win.loadFile("./index.html"))
+    }
+  });
+}
 
 createWindow = async () => {
 
@@ -76,14 +91,16 @@ createWindow = async () => {
       // partition:String(new Date())
     },
   })
- 
+
+  //修改关闭逻辑
+  changeClose(win)
+
   //默认浏览器打开链接
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
-  //自动更新
-  util.AutoUpdater(autoUpdater)
+  //自动更新,可以设置循环时间，默认是六小时,执行回调函数可以清除计时器
 
   ipcMain.on("deleteLogList", async function (event, arg) {
     let envList = await util.getStorageData(env)
@@ -91,6 +108,17 @@ createWindow = async () => {
       await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name && item?.org != arg?.org)], ['logList'])
       win.webContents.send('change-env', env);
     }
+  })
+  ipcMain.on("ping", function (event) {
+    event.returnValue = "pong";
+  });
+
+  ipcMain.on("iframeUP", function () {
+    win.setAlwaysOnTop(true);
+  });
+
+  ipcMain.on("iframeDown", function () {
+    win.setAlwaysOnTop(false);
   });
 
   ipcMain.on("setuserInfo", async function (event, arg) {
@@ -134,7 +162,25 @@ createWindow = async () => {
   //   // 最小化窗口
   //   win.minimize();
   // });
+  //监听页面跳转失败
 
+  // 监听页面加载失败事件
+  win.webContents.on('did-fail-load', () => {
+    const options = {
+      type: 'question',
+      title: '加载失败',
+      message: '网络连接失败，请重试',
+      buttons: ['确认'],
+    };
+    dialog.showMessageBox(options).then(async (response) => {
+      if (response.response == 0) {
+        await util.setStorageData('data', { _last: { org: null, name: null } })
+        win.loadFile("./index.html");
+      }
+    })
+  });
+
+  //监听页面跳转
   win.webContents.on('did-navigate', (event, url) => {
     if (env != 'prod' || (org === 'heliumos' || org === 'easypay-internal')) {
       globalShortcut.register('F9', () => {
@@ -148,15 +194,15 @@ createWindow = async () => {
       globalShortcut.register('F10', () => {
         const now = Date.now();
         // 第一次按下 F10 键
-        if (!f10Presse) {
-          f10Presse = true;
-          lastF9PressTime = now;
+        if (!f10Press) {
+          f10Press = true;
+          lastPressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
-          if (now - lastF9PressTime < doublePressInterval) {
+          if (now - lastPressTime < doublePressInterval) {
             F10(win)
           }
-          f10Presse = false; // 重置状态
+          f10Press = false; // 重置状态
         }
       });
     } else {
@@ -181,18 +227,35 @@ createWindow = async () => {
       globalShortcut.register('F10', () => {
         const now = Date.now();
         // 第一次按下 F10 键
-        if (!f10Presse) {
-          f10Presse = true;
-          lastF9PressTime = now;
+        if (!f10Press) {
+          f10Press = true;
+          lastPressTime = now;
         } else {
           // 第二次按下 F10 键，检查时间间隔
-          if (now - lastF9PressTime < doublePressInterval) {
+          if (now - lastPressTime < doublePressInterval) {
             F10(win)
           }
-          f10Presse = false; // 重置状态
+          f10Press = false; // 重置状态
         }
       });
+
     }
+    // 注册全局快捷键 F8
+    globalShortcut.register('F8', () => {
+      const now = Date.now();
+      // 第一次按下 F8 键
+      if (!f8Press) {
+        f8Press = true;
+        lastPressTime = now;
+      } else {
+        // 第二次按下 F10 键，检查时间间隔
+        if (now - lastPressTime < doublePressInterval) {
+          F8(win)
+        }
+        f8Press = false; // 重置状态
+      }
+    });
+
   })
   // mac下快捷键失效的问题以及阻止shift+enter打开新页面问题
   util.macShortcutKeyFailure(win)
@@ -216,7 +279,10 @@ app.on(
   (event, webContents, url, error, cert, callback) => {
     let a = new crypto.X509Certificate(publicKey);
     let b = new crypto.X509Certificate(cert.data);
-    if (a.issuer.split('OU=')[1].split('\n')[0] == b.issuer.split('OU=')[1].split('\n')[0]) {
+    if (b && b.issuer && b.issuer.split('OU=')
+      && b.issuer.split('OU=')[1]
+      && b.issuer.split('OU=')[1].split('\n')
+      && a.issuer.split('OU=')[1].split('\n')[0] == b.issuer.split('OU=')[1].split('\n')[0]) {
       event.preventDefault()
       callback(true)
     } else {
@@ -230,7 +296,7 @@ app.whenReady().then(async () => {
   env = datas?._last?.env || 'prod'
   org = datas?._last?.org
   //配置proxy
-  let { port, alias } = await proxy.runProxy(env)
+  let { port } = await proxy.runProxy(env)
   app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
   //更新不走端口
   app.commandLine.appendSwitch('proxy-bypass-list', '*github.com')
@@ -254,13 +320,13 @@ app.whenReady().then(async () => {
   });
   //获取麦克风权限和摄像头权限
   ipcMain.handle("askForMediaAccess", async function (event, arg) {
-    let data = await util.askForMediaAccess()
+    let data = await util.askForMediaAccess(arg)
     return data
   });
   
    
   //dns配置
-  ipcMain.handle("getLogList", async function (event) {
+  ipcMain.handle("getLogList", async function () {
     let envList = await util.getStorageData(env), res = []
     if (envList && envList?.logList && envList?.logList.length > 0) {
       let data = await util.getStorageData()
@@ -289,7 +355,11 @@ app.whenReady().then(async () => {
   util.multipleOpen(app, BrowserWindow, createWindow, false)
 });
 
+
+
 app.on("window-all-closed", async () => {
-  app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 

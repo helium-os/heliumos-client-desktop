@@ -2,10 +2,11 @@ const fs = require('fs')
 const storage = require("electron-json-storage");
 const dirCache = {};
 const _ = require('lodash');
-const { app, dialog, systemPreferences } = require("electron");
+const { dialog } = require("electron");
+const path = require("path");
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
-const os = require('os');
+let updateDownloaded = false;
 //存入数据
 setDataSourse = (data, filePath = './data.json', en = true) => {
 
@@ -49,26 +50,27 @@ function mkdir(filePath) {
 AutoUpdater = (autoUpdater) => {
   autoUpdater.logger = log
   //要想使用自动更新，不能配置DNS解析
-  // autoUpdater.setFeedURL("http://127.0.0.1:9005/");
+  autoUpdater.setFeedURL("https://heliumos-client.oss-cn-beijing.aliyuncs.com/desktop/releases/");
   autoUpdater.autoDownload = false
   autoUpdater.checkForUpdates();
   // 处理检查更新事件
-  autoUpdater.on('checking-for-update', () => {
-    log.info('Checking for update...');
+  autoUpdater.on('checking-for-update', (result) => {
+    if (!result) {
+      // 更新失败，切换到 GitHub Releases 的更新
+      autoUpdater.setFeedURL({
+        provider: 'github',
+        owner: 'helium-os',
+        repo: "heliumos-client-desktop",
+        releaseType: "release"
+      });
+      // 再次检查更新
+      autoUpdater.checkForUpdates()
+    }
   });
 
   // 处理发现更新事件
-  autoUpdater.on('update-available', (info) => {
-    dialog.showMessageBox({
-      type: 'info',
-      title: '软件更新',
-      message: '发现新版本, 确定更新?',
-      buttons: ['确定', '取消']
-    }).then(resp => {
-      if (resp.response == 0) {
-        autoUpdater.downloadUpdate()
-      }
-    })
+  autoUpdater.on('update-available', () => {
+    autoUpdater.downloadUpdate()
   });
 
   // 处理没有更新的事件
@@ -82,20 +84,48 @@ AutoUpdater = (autoUpdater) => {
   });
 
   // 处理更新下载完成事件
-  autoUpdater.on('update-downloaded', (info) => {
-    dialog.showMessageBox({
-      title: '下载完成',
-      message: '最新版本已下载完成, 退出程序进行安装'
-    }).then(() => {
-      autoUpdater.quitAndInstall()
-    })
-
+  autoUpdater.on('update-downloaded', () => {
+    if (!updateDownloaded) {
+      updateDownloaded = true
+      dialog.showMessageBox({
+        title: '更新 Helium OS',
+        message: '发现新版本，重新启动 Helium OS 即可更新完成。',
+        buttons: ['重新启动以更新', '取消']
+      }).then((res) => {
+        updateDownloaded = false
+        if (res.response == 0) {
+          autoUpdater.quitAndInstall()
+        }
+      })
+    }
   });
 
   // 处理更新错误事件
   autoUpdater.on('error', (err) => {
     console.error('Error while checking for updates:', err);
   });
+}
+
+// 定时更新
+function AutoUpdaterInterval(autoUpdater, hour = 6, updateNow = true) {
+  let timerId;
+
+  if (updateNow) {
+    AutoUpdater(autoUpdater);
+  }
+
+  // 定时函数
+  function myTask() {
+    AutoUpdater(autoUpdater);
+  }
+
+  // 设置定时器
+  timerId = setInterval(myTask, hour * 60 * 60 * 1000);
+
+  // 返回一个函数来清除定时器
+  return function clearTimer() {
+    clearInterval(timerId);
+  };
 }
 
 macShortcutKeyFailure = (win) => {
@@ -150,7 +180,7 @@ multipleOpen = (app, BrowserWindow, createWindow, mul = false) => {
 //获取stroage数据
 getStorageData = (data = 'data') => {
   let res
-  let promise = new Promise((resolve, reject) => {
+  let promise = new Promise((resolve) => {
     res = resolve;
   });
   storage.get(data, function (error, datas) {
@@ -189,29 +219,37 @@ setStorageData = async (datas = 'data', arg, routeList = []) => {
 
   storage.set(datas, data);
 }
+//判断路径
+findPath = (keyList = [],filePath = __dirname) => {
+  var res
+  keyList.forEach(item => {
+    if (fs.existsSync(path.join(filePath, item))) {
+      res = item
+    }
+  })
+  return res
+}
 
 
-askForMediaAccess = () => {
+
+
+askForMediaAccess = (data = [true, true]) => {
+  let MediaList = ['microphone', 'camera'].filter((item, index) => data[index])
   return new Promise((resolve, reject) => {
     if (os.platform() === 'darwin') {
       // 使用 Promise.all 来等待两个权限请求完成
       Promise.all([
-        systemPreferences.askForMediaAccess('microphone'),
-        systemPreferences.askForMediaAccess('camera')
+        ...MediaList.map(item => systemPreferences.askForMediaAccess(item))
       ])
-        .then(([microphoneResponse, cameraResponse]) => {
-          if (microphoneResponse == true && cameraResponse == true) {
-            resolve(true); // 用户授予了麦克风和摄像头访问权限
-          } else {
-            resolve(false); // 用户拒绝了其中一个或两者的访问权限
-          }
-        })
+        .then((res) => {
+            resolve(res); // 用户拒绝了其中一个或两者的访问权限
+          })
         .catch((error) => {
           reject(error); // 处理错误
         });
     } else {
       // 如果不在 macOS 上，直接返回 true（模拟已授权）
-      resolve(true);
+      resolve(data);
     }
   });
 };
@@ -219,9 +257,11 @@ askForMediaAccess = () => {
 module.exports = {
   setDataSourse,
   AutoUpdater,
+  AutoUpdaterInterval,
   macShortcutKeyFailure,
   multipleOpen,
   getStorageData,
   setStorageData,
-  askForMediaAccess
+  askForMediaAccess,
+  findPath
 };
