@@ -48,34 +48,38 @@ function mkdir(filePath) {
 
 //自动更新
 AutoUpdater = (autoUpdater) => {
-  let checkingForUpdate = false;
-  autoUpdater.logger = log
+  // 创建 update-not-available 事件的回调函数
+  function onUpdateNotAvailable() {
+    log.info('onUpdateNotAvailable')
+    autoUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'helium-os',
+      repo: "heliumos-client-desktop",
+      releaseType: "release"
+    });
+    autoUpdater.removeListener('update-not-available', onUpdateNotAvailable);
+    autoUpdater.removeListener('error', onUpdateNotAvailable);
+    setTimeout(() => autoUpdater.checkForUpdates(), 5000)
+  }
+
+  // 添加事件监听器
+  autoUpdater.on('update-not-available', onUpdateNotAvailable);
+  // 处理更新错误事件
+  autoUpdater.on('error',onUpdateNotAvailable);
   //要想使用自动更新，不能配置DNS解析
   autoUpdater.setFeedURL("https://heliumos-client.oss-cn-beijing.aliyuncs.com/desktop/releases/");
-  autoUpdater.autoDownload = false
   autoUpdater.checkForUpdates();
-  autoUpdater.on('update-not-available', () => {
-    if (!checkingForUpdate) {
-    // 原分支没有更新，切换到 GitHub Releases 的更新
-      checkingForUpdate = true;
-      autoUpdater.setFeedURL({
-        provider: 'github',
-        owner: 'helium-os',
-        repo: "heliumos-client-desktop",
-        releaseType: "release"
-      });
-      setTimeout(()=>autoUpdater.checkForUpdates(),5000)
-    }
-  });
+  
+}
 
-  // 处理发现更新事件
+// 定时更新
+function AutoUpdaterInterval(autoUpdater, hour = 6, updateNow = true) {
+  autoUpdater.logger = log
+  let timerId;
+  autoUpdater.autoDownload = false
+   // 处理发现更新事件
   autoUpdater.on('update-available', () => {
     autoUpdater.downloadUpdate()
-  });
-
-  // 处理没有更新的事件
-  autoUpdater.on('update-not-available', () => {
-    log.info('No update available.');
   });
 
   // 处理更新下载进度事件
@@ -99,29 +103,6 @@ AutoUpdater = (autoUpdater) => {
       })
     }
   });
-
-  // 处理更新错误事件
-  autoUpdater.on('error', (err) => {
-    console.error('Error while checking for updates:', err);
-    if (!checkingForUpdate) {
-      // 更新失败，切换到 GitHub Releases 的更新
-      checkingForUpdate = true;
-      autoUpdater.setFeedURL({
-        provider: 'github',
-        owner: 'helium-os',
-        repo: "heliumos-client-desktop",
-        releaseType: "release"
-      });
-      // 再次检查更新
-      autoUpdater.checkForUpdates()
-    }
-  });
-}
-
-// 定时更新
-function AutoUpdaterInterval(autoUpdater, hour = 6, updateNow = true) {
-  let timerId;
-
   if (updateNow) {
     AutoUpdater(autoUpdater);
   }
