@@ -57,8 +57,8 @@ AutoUpdater = (autoUpdater) => {
     //   repo: "heliumos-client-desktop",
     //   releaseType: "release"
     // });
-    // autoUpdater.removeListener('update-not-available', onUpdateNotAvailable);
-    // autoUpdater.removeListener('error', onUpdateNotAvailable);
+    autoUpdater.removeListener('update-not-available', onUpdateNotAvailable);
+    autoUpdater.removeListener('error', onUpdateNotAvailable);
     // setTimeout(() => autoUpdater.checkForUpdates(), 5000)
   }
 
