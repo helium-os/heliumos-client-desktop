@@ -1,4 +1,4 @@
-const { app, Tray, Menu } = require("electron");
+const { app } = require("electron");
 const setTray = require('./setTray')
 //修改关闭
 changeClose = (win) => {

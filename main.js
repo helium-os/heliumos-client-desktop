@@ -102,7 +102,7 @@ createWindow = async () => {
     return { action: 'deny' };
   });
   //自动更新,可以设置循环时间，默认是六小时,执行回调函数可以清除计时器
-  let deleteUpdaterInterval= util.AutoUpdaterInterval(autoUpdater)
+  let deleteUpdaterInterval = util.AutoUpdaterInterval(autoUpdater)
 
   ipcMain.on("ping", function (event) {
     event.returnValue = "pong";
@@ -124,7 +124,7 @@ createWindow = async () => {
     }
     if (arg?.org != null && arg?.name != null) {
       org = arg?.org
-      await util.setStorageData('data', { _last: { env,...arg, },[env]:{[arg?.org]:{[arg?.name]:{...arg}}} })
+      await util.setStorageData('data', { _last: { env, ...arg, }, [env]: { [arg?.org]: { [arg?.name]: { ...arg } } } })
       app.setLoginItemSettings({
         openAtLogin: data?.[env]?.[arg?.org]?.[arg?.name]?.autoStart || false,
         openAsHidden: false,
@@ -260,6 +260,9 @@ createWindow = async () => {
     win.loadURL('https://desktop.system.app.' + LastUser.orgId);
   } else {
     win.loadFile("./index.html");
+     session.defaultSession.clearStorageData({
+      storages: ['cookies']
+    });
   }
 
   win.on('blur', () => {
@@ -318,8 +321,8 @@ app.whenReady().then(async () => {
     let data = await util.askForMediaAccess(arg)
     return data
   });
-  
-   
+
+
   //dns配置
   ipcMain.handle("getLogList", async function () {
     let envList = await util.getStorageData(env), res = []
