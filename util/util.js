@@ -51,15 +51,15 @@ AutoUpdater = (autoUpdater) => {
   // 创建 update-not-available 事件的回调函数
   function onUpdateNotAvailable() {
     log.info('onUpdateNotAvailable')
-    autoUpdater.setFeedURL({
-      provider: 'github',
-      owner: 'helium-os',
-      repo: "heliumos-client-desktop",
-      releaseType: "release"
-    });
-    autoUpdater.removeListener('update-not-available', onUpdateNotAvailable);
-    autoUpdater.removeListener('error', onUpdateNotAvailable);
-    setTimeout(() => autoUpdater.checkForUpdates(), 5000)
+    // autoUpdater.setFeedURL({
+    //   provider: 'github',
+    //   owner: 'helium-os',
+    //   repo: "heliumos-client-desktop",
+    //   releaseType: "release"
+    // });
+    // autoUpdater.removeListener('update-not-available', onUpdateNotAvailable);
+    // autoUpdater.removeListener('error', onUpdateNotAvailable);
+    // setTimeout(() => autoUpdater.checkForUpdates(), 5000)
   }
 
   // 添加事件监听器
