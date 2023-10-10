@@ -79,7 +79,7 @@
         }
     },
     "devDependencies": {
-        "electron": "^25.8.0",
+        "electron": "^26.3.0",
         "electron-builder": "^23.6.0"
     },
     "win": {
