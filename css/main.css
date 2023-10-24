@@ -1,4 +1,4 @@
-#app{
+#app {
   margin: 0;
   padding: 0;
   width: 100vw;
@@ -7,19 +7,21 @@
   background-color: #e8eaed;
   /* overflow-y: auto; */
 }
-.panel{
+
+.panel {
   margin-right: 10%;
- }
- .form {
+}
+
+.form {
   flex: 2 0 500px;
   width: 400px;
-    min-height: 478px;
-    padding: 22px 40px 22px 40px;
-    background: #fff;
-    box-shadow: 0 10px 20px 0 rgba(0,0,0,.2);
-    box-sizing: border-box;
-    border-radius: 6px;
-  }
+  min-height: 478px;
+  padding: 22px 40px 22px 40px;
+  background: #fff;
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .2);
+  box-sizing: border-box;
+  border-radius: 6px;
+}
 
 .form .formTitle {
   margin-bottom: 50px;
@@ -39,77 +41,128 @@
   line-height: 40px;
   letter-spacing: 1px;
 }
-/* .loginButton {
-  width: 100%;
-  height: 40px !important;
-} */
-.login{
+
+.login {
   width: 100vw;
   height: 100vh;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  background:  url('../img/background.jpg') no-repeat center center fixed;
-    background-size: cover;
+  background: url('../img/background.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
-.loginButton{
-  border: 0px solid black!important;
-    padding: 0;
-    margin: 0;
-    background-color: rgba(0,0,0,0) !important;
-    width: 25px;
-    height: 30px;
-    border-radius: 50%;
-    z-index: 10;
-    cursor: default;
-    box-shadow: none;
+
+.loginButton {
+  margin-top: 236px;
+  border: 0px solid black !important;
+  background: rgba(255, 255, 255, 1) !important;
+  width: 335px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  z-index: 10;
+  cursor: default;
+  box-shadow: none;
+  color: #000;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
 }
-.loginButton img{
-  padding: 3px 0px;
-  height: 24px;
+
+.ant-btn[disabled] {
+  background: rgba(255, 255, 255, 0.2) !important;
 }
-.account{
+
+
+
+.account {
   font-size: 18px;
   color: #414b55;
   line-height: 28px;
-  width: 240px;
+  width: 335px;
 }
 
-.ant-input{
-  border: 0px solid black;
-  /* border-bottom: 1px solid #d9d9d9; */
-  border-right: none !important;
-  background-color: rgba(0,0,0,0) !important;
+.accountTitle {
+  color: #E6E6E6;
+  margin-bottom: 4px;
+  font-family: PingFang SC;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  mix-blend-mode: plus-lighter;
+}
+
+.accountContent {
+  color: #E6E6E6;
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: lighter;
+  line-height: normal;
+  mix-blend-mode: plus-lighter;
+  margin-bottom: 42px;
+
+}
+
+.embedded {
+  border-radius: 10px;
+  border: 0.5px solid #FFF;
+  background: rgba(30, 29, 29, 0.10);
+}
+
+.account .ant-select-selector {
+  border: none!important;
+  background: rgba(30, 29, 29, 0.10);
+  background-color: rgba(0, 0, 0, 0) !important;
   color: #FFF !important;
-  height: 30px;
- 
+  height: 22px !important;
+  flex-shrink: 0;
   font-size: 14px;
 }
-.ant-input-affix-wrapper{
-  background-color: rgba(0,0,0,.5) !important;
-   padding: 0 10px 0 15px;
-  border-radius: 15px;
-  border: 0px solid black !important;
-}
-#usePoint::placeholder {
-  color: #ffffff; /* 设置占位符文本颜色 */
-}
-.ant-input:focus {
-     border: 0px solid black;
-    /* box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2) !important; */
-    border-right: none !important;
-    outline: 0;
-}
-.ant-form-item-required {
-   font-size: 16px !important;
-    height: 30px;
+
+.ant-select-selector .ant-select-selection-search-input {
+  height: 22px !important;
 }
 
-.userInfo{
+.account .ant-select-selector:focus {
+  border: none;
+  box-shadow: none;
+}
+
+/* .ant-input-affix-wrapper {
+  background-color: rgba(0, 0, 0, .5) !important;
+  padding: 0 10px 0 15px;
+  border-radius: 15px;
+  border: none !important;
+} */
+
+.ant-select-selection-placeholder {
+  color: #FFF;
+  line-height: 56px !important;
+}
+
+
+.ant-input:focus {
+  border: 0px solid black;
+  /* box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2) !important; */
+  border-right: none !important;
+  outline: 0;
+}
+
+.ant-form-item-required {
+  font-size: 16px !important;
+  height: 30px;
+}
+
+.userInfo {
   margin: 0px 45px;
   width: 60px;
   height: 180px;
@@ -120,27 +173,109 @@
   justify-content: flex-start;
 
 }
-.userImg{
-  width: 60px;
-  height: 60px;
+
+.userImg {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: #FFF;
   overflow: hidden;
 }
-.userImg img{
+
+.userImg img {
   width: 100%;
   height: 100%;
 }
-.useName{
-  color:#a5817c;
-  font-size: 18px;
-  font-weight: bolder;
+
+.useName {
+  margin-top: 16px;
+  color: #FFF;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
 }
-.useOrg{
-  visibility: hidden;
-  color: #8d8989;
-  font-size: 13px;
+
+.useOrg {
+  margin-top: 2px;
+  color: #fff;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+
 }
-.userInfo:hover .useOrg{
+
+.userInfo:hover .useOrg {
   visibility: visible;
+}
+
+.goBack {
+  color: #FFF;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration-line: underline;
+  position: fixed;
+  bottom: 40px;
+  left: calc( 50% - 14px );
+}
+
+.myInput {
+  width: 335px;
+  height: 56px;
+  margin: 2px;
+  padding: 17px 12px;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 0.5px solid #D5D5D5;
+  background: rgba(213, 213, 213, 0.04);
+
+  
+
+  
+}
+.myInputTitle {
+  color: #020202;
+  font-family: PingFang SC;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  height: 16px;
+  width: 100%;
+  display: none;
+}
+.inputTitleHeight {
+  display: block;
+}
+
+.myInputContent {
+  height: 22px;
+  width: 100%;
+  background-color: rgba(213, 213, 213, 0);
+}
+.errBorder {
+  border-color: #FF2424 !important;
+}
+
+.focusBorder {
+  padding: 8px 12px;
+  border-width: 2px;
+}
+
+.valuePadding {
+  padding: 8px 12px;
+}
+
+.errColor {
+  color: #FF2424 !important;
 }
