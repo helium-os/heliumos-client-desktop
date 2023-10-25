@@ -81,7 +81,7 @@ function AutoUpdaterInterval(autoUpdater, hour = 6, updateNow = true) {
   autoUpdater.on('update-available', () => {
     autoUpdater.downloadUpdate()
   });
-
+  autoUpdater.requestHeaders = {'Cache-Control' : 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'};
   // 处理更新下载进度事件
   autoUpdater.on('download-progress', (progressObj) => {
     log.info('Download progress:', progressObj);
