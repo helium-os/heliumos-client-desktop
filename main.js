@@ -118,36 +118,51 @@ createWindow = async () => {
 
   ipcMain.on("setuserInfo", async function (event, arg) {
     let data = await util.getStorageData()
-    if (arg?.name && (arg.autoLogin === true || arg.autoLogin === false)) {
-      let envList = await util.getStorageData(env)
-      await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, org: data?._last?.org }].slice(-3), ['logList'])
-    }
+
     if (arg?.org != null && arg?.name != null) {
       org = arg?.org
-      await util.setStorageData('data', { _last: { env, ...arg, }, [env]: { [arg?.org]: { [arg?.name]: { ...arg } } } })
-      app.setLoginItemSettings({
-        openAtLogin: data?.[env]?.[arg?.org]?.[arg?.name]?.autoStart || false,
-        openAsHidden: false,
-        path: process.execPath,
-      });
+      await util.setStorageData('data', { _last: { env, ...arg, }, [env]: { [arg?.org]: { [arg?.name]: { ...arg, orgId: data?._last?.orgId } } } })
+
+      if (arg?.name && (arg.autoLogin === true || arg.autoLogin === false)) {
+        let envList = await util.getStorageData(env)
+        await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, org: arg?.org }], ['logList'])
+      }
+
+      if (arg.autoStart === true || arg.autoStart === false) {
+        app.setLoginItemSettings({
+          // 设置为true注册开机自起
+          openAtLogin: arg?.autoStart,
+          openAsHidden: false,
+          path: process.execPath,
+        });
+      }
       return
     }
-
-    if (arg.autoStart === true || arg.autoStart === false) {
-      app.setLoginItemSettings({
-        // 设置为true注册开机自起
-        openAtLogin: arg?.autoStart,
-        openAsHidden: false,
-        path: process.execPath,
-      });
+    if (arg?.org != null && arg?.name === null) {
+      org = arg?.org
+      await util.setStorageData('data', { _last: { env, ...arg, } })
+      let envList = await util.getStorageData(env)
+      await util.setStorageData(env, [...(envList?.orgList || []).filter(item => item?.value != arg.org), { value: arg?.org }], ['orgList'])
+      return
     }
     await util.setStorageData('data', arg, [env, data?._last?.org, data?._last?.name])
 
   });
 
-  ipcMain.on('clearInfo', async () => {
-    await util.setStorageData('data', { _last: { org: null, name: null } })
-    win.loadFile("./index.html")
+  ipcMain.on('clearInfo', async (event, arg) => {
+    if (arg) {
+      if (arg == 'second') {
+        await util.setStorageData('data', { _last: { org: null, name: null } })
+      }
+      await win.loadFile("./index.html")
+      setTimeout(() => { win.webContents.send('setPage', arg); }, 10)
+
+    } else {
+      await util.setStorageData('data', { _last: { org: null, name: null } })
+      win.loadFile("./index.html")
+    }
+
+
   })
 
   // win.on('close', (event) => {
@@ -160,20 +175,20 @@ createWindow = async () => {
   //监听页面跳转失败
 
   // 监听页面加载失败事件
-  win.webContents.on('did-fail-load', () => {
-    const options = {
-      type: 'question',
-      title: '加载失败',
-      message: '网络连接失败，请重试',
-      buttons: ['确认'],
-    };
-    dialog.showMessageBox(options).then(async (response) => {
-      if (response.response == 0) {
-        await util.setStorageData('data', { _last: { org: null, name: null } })
-        win.loadFile("./index.html");
-      }
-    })
-  });
+  // win.webContents.on('did-fail-load', (event) => {
+  //   const options = {
+  //     type: 'question',
+  //     title: '加载失败',
+  //     message: '网络连接失败，请重试',
+  //     buttons: ['确认', '取消'],
+  //   };
+  //   dialog.showMessageBox(options).then(async (response) => {
+  //     if (response.response == 0) {
+  //       await util.setStorageData('data', { _last: { org: null, name: null } })
+  //       win.loadFile("./index.html");
+  //     }
+  //   })
+  // });
 
   //监听页面跳转
   win.webContents.on('did-navigate', (event, url) => {
@@ -260,7 +275,7 @@ createWindow = async () => {
     win.loadURL('https://desktop.system.app.' + LastUser.orgId);
   } else {
     win.loadFile("./index.html");
-     session.defaultSession.clearStorageData({
+    session.defaultSession.clearStorageData({
       storages: ['cookies']
     });
   }
@@ -310,7 +325,11 @@ app.whenReady().then(async () => {
   ipcMain.handle("getUserValue", async function (event, arg) {
     let data = await util.getStorageData()
     if (data?._last) {
-      return data?.[env]?.[data?._last?.org]?.[data?._last?.name]?.[arg] || "";
+      if (data?._last?.name) {
+        return data?.[env]?.[data?._last?.org]?.[data?._last?.name]?.[arg] || "";
+      } else {
+        return data?._last?.[arg] || "";
+      }
     } else {
       return "";
     }
@@ -339,6 +358,11 @@ app.whenReady().then(async () => {
     } else {
       return res
     }
+  });
+
+  ipcMain.handle("getOrgList", async function () {
+    let envList = await util.getStorageData(env)
+    return  envList.orgList || []
   });
 
   ipcMain.handle('getDbValue', async function () {
