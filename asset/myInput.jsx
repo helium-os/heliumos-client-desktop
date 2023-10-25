@@ -7,31 +7,38 @@ const MyInput = ({
   onChange,
   style
 }) => {
+  const customStyle = {
+  border: 'none', // 去掉边框
+  boxShadow: 'none', // 去掉阴影
+  // 其他自定义样式
+};
   const [error, setError] = React.useState(null);
   const [fieldValue, setFieldValue] = React.useState("");
   const [focus, setFocus] = React.useState(false);
   const [options, setOptions] = React.useState([]);
-   const onSelect = (data) => {
+  const [searchText, setSearchText] = React.useState('');
+  const onSelect = (data) => {
     console.log('onSelect', data);
   };
-  const mockVal = (str, repeat = 1) => ({
-    value: str.repeat(repeat),
-  });
   const onSearch = (searchText) => {
-    setOptions(
-      !searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)],
-    );
+    setSearchText(searchText||'');
   };
+  const getList=async()=>{
+    if(window?.versions){
+    let values= await window?.versions?.invokMethod('getOrgList')
+    setOptions(values)
+  }
+  }
   // 使用 useEffect 监听字段值的变化
   React.useEffect(() => {
-    console.log(fieldValue, form.getFieldValue(name));
     if (fieldValue !== form.getFieldValue(name)) {
-
       setFieldValue(form.getFieldValue(name));
     }
   }, [form]);
+  React.useEffect(()=>{
+     getList()
+  },[])
   const handleInputChange = (e) => {
-    console.log(e)
     onChange && onChange(e);
     const value = e;
     setFieldValue(value); // 更新子组件内部的值
@@ -78,7 +85,7 @@ const MyInput = ({
         <antd.AutoComplete
           className={`myInputContent  ${focus ? "inputContentHeight" : ""}`}
           value={fieldValue}
-          options={options}
+          options={options.filter(item=>  item?.value.indexOf(searchText)!==-1)}
           onSelect={onSelect}
           onSearch={onSearch}
           onFocus={() => setFocus(true)}
@@ -86,15 +93,15 @@ const MyInput = ({
           onBlur={handleBlur}
           style={
             allowclear && fieldValue
-              ? { width: "calc( 100% - 16px )" }
-              : {}
+              ? { width: "calc( 100% - 16px )",...customStyle }
+              : {...customStyle}
           }
           placeholder={placeholder}
         ></antd.AutoComplete >
         {allowclear && fieldValue && (
           <>
             <img
-              src="/img/icon/allowClear.png"
+              src="./img/allowClear.png"
               width={16}
               height={16}
               style={{ marginBottom: 3 }}

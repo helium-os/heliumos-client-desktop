@@ -2,6 +2,7 @@
 //登录用户选择
 const User = ({ changePage }) => {
   const [userList, setUserList] = React.useState([])
+  const [pageno, setPageno] = React.useState(1)
   const onFinish = async (values) => {
     let List = values.split("@")
     if (List.length > 1) {
@@ -20,6 +21,7 @@ const User = ({ changePage }) => {
         }
       }
       window.location.href =
+      // "http://localhost:3000/";
         'https://desktop.system.app.' + orgList.filter(item => item?.alias == List[1])[0]?.id;
     }
   };
@@ -27,6 +29,9 @@ const User = ({ changePage }) => {
   const getValue = async () => {
     if (window?.versions) {
       let List = await window?.versions?.invokMethod('getLogList')
+      if (List?.length == 0) {
+        changePage('first')
+      }
       setUserList(List)
     }
   }
@@ -35,6 +40,9 @@ const User = ({ changePage }) => {
       await window?.versions?.getMessage('change-env', async (event, arg) => {
         let List = await window?.versions?.invokMethod('getLogList')
         setUserList(List)
+        if (List?.length == 0) {
+          changePage('first')
+        }
       })
 
     }
@@ -48,20 +56,24 @@ const User = ({ changePage }) => {
 
   return (
     <>
-      {userList.map(item => {
-        return item?.name ?
-          <div className='userInfo' onClick={() => onFinish(item?.name + '@' + item?.org)}>
-            <div className='userImg'><img src={item?.avatar || './img/userInfo.svg'}></img></div>
-            <div className='useName'>{item?.display_name}</div>
-            <div className='useOrg'>{item?.org}</div>
-          </div> : ''
+      <img src={'./img/left.png'} style={pageno == 1 ? { visibility: 'hidden' } : {}} onClick={() => setPageno(pageno - 1)}></img>
+      <div className="userList">
+        {userList.slice((pageno - 1) * 10, pageno * 10).map(item => {
+          return item?.name ?
+            <div className='userInfo' onClick={() => onFinish(item?.name + '@' + item?.org)}>
+              <div className='userImg'><img src={item?.avatar || './img/userInfo.svg'}></img></div>
+              <div className='useName'>{item?.display_name||item?.name}</div>
+              <div className='useOrg'>{item?.org}{pageno}</div>
+            </div> : ''
 
-      })}
+        })}
 
-      <div className='userInfo' onClick={() => changePage('first')}>
+        {/* <div className='userInfo' onClick={() => changePage('first')}>
         <div className='userImg'><img src={'./img/addUser.png'}></img></div>
 
+      </div> */}
       </div>
+      <img src={'./img/right.png'} style={pageno * 10 >= userList.length ? { visibility: 'hidden' } : {}} onClick={() => setPageno(pageno + 1)}></img>
     </>
   );
 };
@@ -69,23 +81,7 @@ const User = ({ changePage }) => {
 //登录(输入账号密码)
 const Login = ({ changePage }) => {
   const [value, setValue] = React.useState('');
-  const [options, setOptions] = React.useState([]);
-  const onChange = (data) => {
-    setValue(data);
-  };
-  const onSelect = (data) => {
-    console.log('onSelect', data);
-  };
-  const mockVal = (str, repeat = 1) => ({
-    value: str.repeat(repeat),
-  });
-  const onSearch = (searchText) => {
-    setOptions(
-      !searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)],
-    );
-  };
-
-
+  const [back, setBack] = React.useState(true);
   const onFinish = async (values) => {
     if (values?.usePoint) {
       let orgList = []
@@ -100,7 +96,7 @@ const Login = ({ changePage }) => {
       }
 
       window.location.href =
-        // "http://192.168.50.120:8312/";
+        // "http://localhost:3000/";
         'https://desktop.system.app.' + orgList.filter(item => item?.alias == values?.usePoint)[0]?.id;
     }
   };
@@ -109,8 +105,10 @@ const Login = ({ changePage }) => {
     if (window?.versions) {
       await window?.versions?.getMessage('change-env', (event, arg) => {
         form.setFieldsValue({ usePoint: '' });
+        setBack(false)
       })
-
+      let name = await window?.versions?.invokMethod('getUserValue','name')
+      setBack(!!name)
     }
   }
   React.useEffect(() => {
@@ -131,23 +129,23 @@ const Login = ({ changePage }) => {
             ]}
           >
             <MyInput
-              onChange={(e)=>{
-                console.log('1',e)
-                setValue(e)}}
+              onChange={(e) => {
+                setValue(e)
+              }}
               form={form}
               name="usePoint"
               title="组织别名"
               allowclear={true}
               placeholder="请输入组织别名!"
             />
-            </antd.Form.Item>
+          </antd.Form.Item>
           <antd.Button className="loginButton" htmlType="submit" disabled={!value}>
             登录
           </antd.Button>
         </div>
       </antd.Form>
       {
-        window.history.length > 1 && <a className="goBack" onClick={() => {
+        window.history.length > 1 && back && <a className="goBack" onClick={() => {
           console.log(window.history.length)
           window.history.back()
         }}>返回</a>
@@ -158,18 +156,24 @@ const Login = ({ changePage }) => {
 
 
 const MessageBox = () => {
-  const [page, setPage] = React.useState('second')
+  const [page, setPage] = React.useState('first')
   const [spinning, setSpinning] = React.useState(false)
   const addObverser = async () => {
     if (window?.versions) {
       await window?.versions?.getMessage('Loading', async (event, arg) => {
         setSpinning(arg)
       })
+      await window?.versions?.getMessage('setPage', async (event, arg) => {
+        setPage(arg)
+      })
+      setSpinning(false)
 
     }
   }
   React.useEffect(() => {
+    setSpinning(true)
     addObverser()
+
   }, []);
 
   return (<>
