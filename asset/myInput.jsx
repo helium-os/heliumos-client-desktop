@@ -5,7 +5,8 @@ const MyInput = ({
   placeholder,
   allowclear,
   onChange,
-  style
+  style,
+  spinning
 }) => {
   const customStyle = {
   border: 'none', // 去掉边框
@@ -37,7 +38,7 @@ const MyInput = ({
   }, [form]);
   React.useEffect(()=>{
      getList()
-  },[])
+  },[spinning])
   const handleInputChange = (e) => {
     onChange && onChange(e);
     const value = e;
