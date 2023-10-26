@@ -21,7 +21,7 @@ const User = ({ changePage }) => {
         }
       }
       window.location.href =
-      // "http://localhost:3000/";
+        // "http://localhost:3000/";
         'https://desktop.system.app.' + orgList.filter(item => item?.alias == List[1])[0]?.id;
     }
   };
@@ -57,12 +57,12 @@ const User = ({ changePage }) => {
   return (
     <>
       <img src={'./img/left.png'} style={pageno == 1 ? { visibility: 'hidden' } : {}} onClick={() => setPageno(pageno - 1)}></img>
-      <div className="userList">
+      <div className="userList" style={userList.length > 5 ? { justifyContent: 'flex-start' } : {}}>
         {userList.slice((pageno - 1) * 10, pageno * 10).map(item => {
           return item?.name ?
             <div className='userInfo' onClick={() => onFinish(item?.name + '@' + item?.org)}>
               <div className='userImg'><img src={item?.avatar || './img/userInfo.svg'}></img></div>
-              <div className='useName'>{item?.display_name||item?.name}</div>
+              <div className='useName'>{item?.display_name || item?.name}</div>
               <div className='useOrg'>{item?.org}{pageno}</div>
             </div> : ''
 
@@ -107,7 +107,7 @@ const Login = ({ spinning }) => {
         form.setFieldsValue({ usePoint: '' });
         setBack(false)
       })
-      let name = await window?.versions?.invokMethod('getUserValue','name')
+      let name = await window?.versions?.invokMethod('getUserValue', 'name')
       setBack(!!name)
     }
   }
@@ -180,7 +180,7 @@ const MessageBox = () => {
   return (<>
     <antd.Spin spinning={spinning}>
       <div className="login">
-        {page == 'first' && <Login changePage={(res) => setPage(res)} spinning={spinning}/>}
+        {page == 'first' && <Login changePage={(res) => setPage(res)} spinning={spinning} />}
         {page == 'second' && <User changePage={(res) => setPage(res)} />}
       </div>
     </antd.Spin>

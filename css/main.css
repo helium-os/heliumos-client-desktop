@@ -143,10 +143,9 @@
   width: 750px;
   height: 360px;
   display: flex;
-  flex-direction: column;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-start;
+  justify-content:space-evenly;
 }
 
 .userInfo {
