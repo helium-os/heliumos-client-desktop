@@ -124,14 +124,14 @@ const Login = ({ spinning }) => {
           <antd.Form.Item
             name="usePoint"
             label={''}
-            rules={[
-              { required: true, message: "请输入组织别名!" },
-            ]}
           >
             <MyInput
               onChange={(e) => {
                 setValue(e)
               }}
+              rules={
+                { required: true, message: "请输入组织别名!" }
+              }
               spinning={spinning}
               form={form}
               name="usePoint"
