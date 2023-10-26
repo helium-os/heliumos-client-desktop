@@ -63,7 +63,7 @@ const User = ({ changePage }) => {
             <div className='userInfo' onClick={() => onFinish(item?.name + '@' + item?.org)}>
               <div className='userImg'><img src={item?.avatar || './img/userInfo.svg'}></img></div>
               <div className='useName'>{item?.display_name || item?.name}</div>
-              <div className='useOrg'>{item?.org}{pageno}</div>
+              <div className='useOrg'>{item?.org}</div>
             </div> : ''
 
         })}
