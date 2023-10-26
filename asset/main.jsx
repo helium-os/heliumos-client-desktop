@@ -79,7 +79,7 @@ const User = ({ changePage }) => {
 };
 
 //登录(输入账号密码)
-const Login = ({ changePage }) => {
+const Login = ({ spinning }) => {
   const [value, setValue] = React.useState('');
   const [back, setBack] = React.useState(true);
   const onFinish = async (values) => {
@@ -132,6 +132,7 @@ const Login = ({ changePage }) => {
               onChange={(e) => {
                 setValue(e)
               }}
+              spinning={spinning}
               form={form}
               name="usePoint"
               title="组织别名"
@@ -179,7 +180,7 @@ const MessageBox = () => {
   return (<>
     <antd.Spin spinning={spinning}>
       <div className="login">
-        {page == 'first' && <Login changePage={(res) => setPage(res)} />}
+        {page == 'first' && <Login changePage={(res) => setPage(res)} spinning={spinning}/>}
         {page == 'second' && <User changePage={(res) => setPage(res)} />}
       </div>
     </antd.Spin>
