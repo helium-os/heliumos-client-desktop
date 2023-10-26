@@ -57,7 +57,7 @@
 }
 
 .loginButton {
-  margin-top: 236px;
+  margin-top: 220px;
   border: 0px solid black !important;
   background: rgba(255, 255, 255, 1) !important;
   width: 335px;
@@ -145,7 +145,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content:space-evenly;
+  justify-content: space-evenly;
 }
 
 .userInfo {
@@ -307,4 +307,15 @@
   right: 0px;
   bottom: 0;
   left: 0px;
+}
+
+.errorMessage {
+  height: 16px;
+  color: #FF2424;
+  font-family: PingFang SC;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  /* 133.333% */
 }
