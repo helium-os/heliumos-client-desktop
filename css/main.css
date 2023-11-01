@@ -251,6 +251,7 @@
 
 .errBorder {
   border-color: #FF2424 !important;
+  border-width: 1px !important;
 }
 
 .focusBorder {
@@ -272,9 +273,11 @@
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px;
+  line-height: 12px;
   /* 137.5% */
 }
+
+
 
 .ant-form-item-has-error .ant-select:not(.ant-select-disabled):not(.ant-select-customize-input).ant-select-focused .ant-select-selector {
   border-color: transparent !important;
@@ -317,5 +320,5 @@
   font-style: normal;
   font-weight: 400;
   line-height: 16px;
-  /* 133.333% */
+  margin-left: 12px;
 }

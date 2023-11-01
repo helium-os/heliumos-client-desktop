@@ -130,14 +130,14 @@ const Login = ({ spinning }) => {
                 setValue(e)
               }}
               rules={
-                { required: true, message: "请输入组织别名!" }
+                { required: true, message: "请输入组织别名" }
               }
               spinning={spinning}
               form={form}
               name="usePoint"
               title="组织别名"
               allowclear={true}
-              placeholder="请输入组织别名!"
+              placeholder="请输入组织别名"
             />
           </antd.Form.Item>
           <antd.Button className="loginButton" htmlType="submit" disabled={!value}>
