@@ -1,3 +1,17 @@
+@font-face {
+  font-family: 'PingFang SC';
+  src: url('../ttf/PingFang-SC-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: url('../ttf/PingFang-SC-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
 #app {
   margin: 0;
   padding: 0;
@@ -63,7 +77,7 @@
   width: 335px;
   height: 48px;
   flex-shrink: 0;
-  border-radius: 5px;
+  border-radius: 10px;
   z-index: 10;
   cursor: default;
   box-shadow: none;
@@ -74,6 +88,15 @@
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+}
+
+.loginButton:disabled {
+  
+  opacity: 0.3;
+  background: #FFF;
+  color: #151515;
+  text-align: center;
+  /* 150% */
 }
 
 .ant-btn[disabled] {
@@ -90,24 +113,21 @@
 }
 
 .accountTitle {
-  color: #E6E6E6;
-  margin-bottom: 4px;
+  color: #FFF;
   font-family: PingFang SC;
   font-size: 24px;
   font-style: normal;
   font-weight: 500;
-  line-height: normal;
-  mix-blend-mode: plus-lighter;
+  line-height: 32px;
 }
 
 .accountContent {
-  color: #E6E6E6;
+  color: rgba(255, 255, 255, 0.80);
   font-family: PingFang SC;
   font-size: 16px;
   font-style: normal;
-  font-weight: lighter;
-  line-height: normal;
-  mix-blend-mode: plus-lighter;
+  font-weight: 400;
+  line-height: 24px;
   margin-bottom: 42px;
 
 }
@@ -186,7 +206,7 @@
 
 .useOrg {
   margin-top: 2px;
-  color: #fff;
+  color: rgba(255, 255, 255, .5);
   text-align: center;
   font-family: PingFang SC;
   font-size: 12px;
@@ -214,16 +234,21 @@
   left: calc(50% - 14px);
 }
 
+.goBack:hover{
+  color: #FFF;
+}
+
 .myInput {
   width: 335px;
   height: 56px;
-  margin: 2px;
-  padding: 17px 12px;
+  padding: 14px 12px;
   align-items: center;
   flex-shrink: 0;
   border-radius: 10px;
-  border: 0.5px solid #D5D5D5;
-  background: rgba(213, 213, 213, 0.04);
+  border: 0.5px solid #FFF;
+  background: rgba(255, 255, 255, 0.10);
+  position: relative;
+  left: -0.5px;
 }
 
 .myInputTitle {
@@ -236,6 +261,7 @@
   height: 16px;
   width: 100%;
   display: none;
+
 }
 
 .inputTitleHeight {
@@ -247,16 +273,18 @@
   width: 100%;
   border: 0px solid white;
   background-color: rgba(213, 213, 213, 0);
+  
 }
 
 .errBorder {
-  border-color: #FF2424 !important;
+  border-color: #FE5F56 !important;
   border-width: 1px !important;
 }
 
 .focusBorder {
   padding: 8px 12px;
   border-width: 2px;
+  left: -1px;
 }
 
 .valuePadding {
@@ -264,17 +292,16 @@
 }
 
 .errColor {
-  color: #FF2424 !important;
+  color: #FE5F56 !important;
 }
 
 .ant-select-selection-placeholder {
-  color: #E6E6E6;
+  color: rgba(255, 255, 255, 0.40);
   font-family: PingFang SC;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 12px;
-  /* 137.5% */
+  line-height: 24px;
 }
 
 
@@ -302,6 +329,13 @@
 
 .ant-select-single:not(.act-select-customize-input) .ant-select-selector .ant-select-selection-search-input {
   height: 22px !important;
+  color: #FFF;
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 150% */
 }
 
 .ant-select-single .ant-select-selector .ant-select-selection-search {
@@ -314,11 +348,12 @@
 
 .errorMessage {
   height: 16px;
-  color: #FF2424;
+  color: #FE5F56;
   font-family: PingFang SC;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
   line-height: 16px;
   margin-left: 12px;
+  margin-top: 4px;
 }
