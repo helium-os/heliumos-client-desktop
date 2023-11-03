@@ -139,10 +139,10 @@ const Login = ({ spinning }) => {
         </div>
       </antd.Form>
       {
-        window.history.length > 1 && back && <a className="goBack" onClick={() => {
+        window.history.length > 1 && back && <div className="goBack" onClick={() => {
           console.log(window.history.length)
           window.history.back()
-        }}>返回</a>
+        }}>返回</div>
       }
     </div>
   );

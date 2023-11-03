@@ -234,10 +234,6 @@
   left: calc(50% - 14px);
 }
 
-.goBack:hover{
-  color: #FFF;
-}
-
 .myInput {
   width: 335px;
   height: 56px;
