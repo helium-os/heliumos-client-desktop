@@ -58,20 +58,15 @@ const User = ({ changePage }) => {
     <>
       <img src={'./img/left.png'} style={pageno == 1 ? { visibility: 'hidden' } : {}} onClick={() => setPageno(pageno - 1)}></img>
       <div className="userList" style={userList.length > 5 ? { justifyContent: 'flex-start' } : {}}>
-        {userList.slice((pageno - 1) * 10, pageno * 10).map(item => {
+        {userList.slice((pageno - 1) * 10, pageno * 10).map((item, index) => {
           return item?.name ?
-            <div className='userInfo' onClick={() => onFinish(item?.name + '@' + item?.org)}>
+            <div className='userInfo' onClick={() => onFinish(item?.name + '@' + item?.org)} key={index}>
               <div className='userImg'><img src={item?.avatar || './img/userInfo.svg'}></img></div>
               <div className='useName'>{item?.display_name || item?.name}</div>
               <div className='useOrg'>{item?.org}</div>
             </div> : ''
 
         })}
-
-        {/* <div className='userInfo' onClick={() => changePage('first')}>
-        <div className='userImg'><img src={'./img/addUser.png'}></img></div>
-
-      </div> */}
       </div>
       <img src={'./img/right.png'} style={pageno * 10 >= userList.length ? { visibility: 'hidden' } : {}} onClick={() => setPageno(pageno + 1)}></img>
     </>
@@ -130,26 +125,24 @@ const Login = ({ spinning }) => {
                 setValue(e)
               }}
               rules={
-                { required: true, message: "请输入组织别名!" }
+                { required: true, message: "请输入组织别名" }
               }
               spinning={spinning}
               form={form}
               name="usePoint"
               title="组织别名"
               allowclear={true}
-              placeholder="请输入组织别名!"
+              placeholder="请输入组织别名"
             />
           </antd.Form.Item>
-          <antd.Button className="loginButton" htmlType="submit" disabled={!value}>
-            登录
-          </antd.Button>
+          <input className="loginButton" type="submit" disabled={!value} value={'登录'} />
         </div>
       </antd.Form>
       {
-        window.history.length > 1 && back && <a className="goBack" onClick={() => {
+        window.history.length > 1 && back && <div className="goBack" onClick={() => {
           console.log(window.history.length)
           window.history.back()
-        }}>返回</a>
+        }}>返回</div>
       }
     </div>
   );
@@ -157,31 +150,26 @@ const Login = ({ spinning }) => {
 
 
 const MessageBox = () => {
-  const [page, setPage] = React.useState('first')
+  const [page, setPage] = React.useState(window.location.hash.split('#')?.[1] || 'second')
   const [spinning, setSpinning] = React.useState(false)
   const addObverser = async () => {
     if (window?.versions) {
       await window?.versions?.getMessage('Loading', async (event, arg) => {
         setSpinning(arg)
       })
-      await window?.versions?.getMessage('setPage', async (event, arg) => {
-        setPage(arg)
-      })
       setSpinning(false)
-
     }
   }
   React.useEffect(() => {
     setSpinning(true)
     addObverser()
-
   }, []);
 
   return (<>
     <antd.Spin spinning={spinning}>
       <div className="login">
-        {page == 'first' && <Login changePage={(res) => setPage(res)} spinning={spinning} />}
-        {page == 'second' && <User changePage={(res) => setPage(res)} />}
+        {page == 'first' && <Login changePage={(res) => setPage(res)} spinning={spinning} key='first' />}
+        {page == 'second' && <User changePage={(res) => setPage(res)} key='User' />}
       </div>
     </antd.Spin>
   </>

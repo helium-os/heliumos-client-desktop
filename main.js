@@ -69,7 +69,7 @@ const F8 = (win) => {
   dialog.showMessageBox(options).then(async (response) => {
     if (response.response == 0) {
       await session.defaultSession.clearStorageData()
-      await storage.clear(() => win.loadFile("./index.html"))
+      await storage.clear(() => util.loadFile(win))
     }
   });
 }
@@ -154,15 +154,12 @@ createWindow = async () => {
       if (arg == 'second') {
         await util.setStorageData('data', { _last: { org: null, name: null } })
       }
-      await win.loadFile("./index.html")
-      setTimeout(() => { win.webContents.send('setPage', arg); }, 10)
+      util.loadFile(win,'./index.html',arg)
 
     } else {
       await util.setStorageData('data', { _last: { org: null, name: null } })
-      win.loadFile("./index.html")
+      util.loadFile(win)
     }
-
-
   })
 
   // win.on('close', (event) => {
@@ -185,7 +182,7 @@ createWindow = async () => {
   //   dialog.showMessageBox(options).then(async (response) => {
   //     if (response.response == 0) {
   //       await util.setStorageData('data', { _last: { org: null, name: null } })
-  //       win.loadFile("./index.html");
+  //       util.loadFile(win);
   //     }
   //   })
   // });
@@ -274,7 +271,7 @@ createWindow = async () => {
   if (LastUser?.autoLogin == true && LastUser?.orgId) {
     win.loadURL('https://desktop.system.app.' + LastUser.orgId);
   } else {
-    win.loadFile("./index.html");
+    util.loadFile(win);
     session.defaultSession.clearStorageData({
       storages: ['cookies']
     });
