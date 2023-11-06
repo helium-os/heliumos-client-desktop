@@ -1,5 +1,5 @@
 const request = require('request');
-const logger = require('./logger').getLogger('Node-heliumos-proxy-tools');
+const logger = require('electron-log');
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const fs = require('fs');

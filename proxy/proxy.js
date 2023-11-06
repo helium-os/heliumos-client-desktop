@@ -7,7 +7,7 @@ const crypto = require("crypto");
 const tools = require('./tools');
 const config = require('./config');
 
-const logger = require('./logger').getLogger('Node-heliumos-proxy');
+const logger = require('electron-log');
 
 const curve = 'prime256v1';
 const algorithm = 'aes-256-ctr';
