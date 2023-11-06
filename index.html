@@ -16,13 +16,25 @@
   <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon" />
   <link rel="stylesheet" type="text/css" href="css/antd.compact.min.css" />
   <link rel="stylesheet" type="text/css" href="css/main.css" />
+  <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" type="text/css" href="css/loading.css" />
 </head>
 
 <body>
    <script>
      document.title = '\u200E'
    </script>
-  <div id="app"></div>
+  <div id="app">
+     <div class="bootscreen">
+       <div>
+         <div id="loader">
+           <svg class="progressRing" style="height: 48px;width:48px;" viewBox="0 0 16 16">
+             <circle cx="8px" cy="8px" r="7px"></circle>
+           </svg>
+         </div>
+       </div>
+     </div>
+  </div>
  
 </body>
 
