@@ -84,7 +84,7 @@ const MyInput = ({
               ? { width: "calc( 100% - 16px )", ...customStyle }
               : { ...customStyle }
           }
-          placeholder={placeholder}
+          placeholder={focus?'':placeholder}
         ></antd.AutoComplete >
         {allowclear && fieldValue && (
           <>
