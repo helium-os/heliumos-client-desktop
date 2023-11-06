@@ -9,7 +9,7 @@ const changeClose = require('./app-init/changeClose');
 let { autoUpdater } = require("electron-updater");
 var keyList = ["heliumos.crt", '../heliumos.crt']
 var publicKey
-
+app.setName('Helium OS');
 //F10双击,F8双击
 let f10Press = false, f8Press = false;
 let lastPressTime = 0;
