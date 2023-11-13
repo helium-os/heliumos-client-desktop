@@ -74,14 +74,14 @@
   margin-top: 220px;
   border: 0px solid black !important;
   background: rgba(255, 255, 255, 1) !important;
-  width: 335px;
+  width: 295px;
   height: 48px;
   flex-shrink: 0;
   border-radius: 10px;
   z-index: 10;
   cursor: default;
   box-shadow: none;
-  color: #000;
+  color: #151515;
   text-align: center;
   font-family: PingFang SC;
   font-size: 16px;
@@ -91,7 +91,7 @@
 }
 
 .loginButton:disabled {
-  
+
   opacity: 0.3;
   background: #FFF;
   color: #151515;
@@ -109,7 +109,7 @@
   font-size: 18px;
   color: #414b55;
   line-height: 28px;
-  width: 335px;
+  width: 295px;
 }
 
 .accountTitle {
@@ -235,13 +235,13 @@
 }
 
 .myInput {
-  width: 335px;
-  height: 56px;
-  padding: 14px 12px;
+  width: 295px;
+  height: 52px;
+  border: 0 solid black;
+  padding: 12px 12px;
   align-items: center;
   flex-shrink: 0;
   border-radius: 10px;
-  border: 0.5px solid #FFF;
   background: rgba(255, 255, 255, 0.10);
   position: relative;
   left: -0.5px;
@@ -269,20 +269,19 @@
   width: 100%;
   border: 0px solid white;
   background-color: rgba(213, 213, 213, 0);
-  
-}
 
+}
+.coverInput {
+  border: 0.5px solid #FFF;
+  border-radius: 10px;
+}
 .errBorder {
   border-color: #FE5F56 !important;
   border-width: 1px !important;
 }
-
 .focusBorder {
-  padding: 8px 12px;
   border-width: 2px;
-  left: -1px;
 }
-
 .valuePadding {
   padding: 8px 12px;
 }
@@ -352,4 +351,20 @@
   line-height: 16px;
   margin-left: 12px;
   margin-top: 4px;
+}
+.whiteShadow{
+  text-shadow: 0px 2px 3px rgba(48, 48, 48, 0.06);
+}
+
+.userBackgroundFont {
+  width: 100%;
+  height: 100%;
+  color: #FFF;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 38px;
+  font-style: normal;
+  font-weight: bold;
+  line-height: 100px;
+  user-select: none;
 }

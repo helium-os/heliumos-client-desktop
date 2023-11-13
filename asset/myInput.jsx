@@ -53,11 +53,13 @@ const MyInput = ({
     setError(!e)
   };
 
-  return (<>
+  return (<div style={{height:'80px',padding: focus && !error ? '0px':'1px'}}><div className={`
+  coverInput
+  ${error ? "errBorder" : ""}
+  ${focus ? "focusBorder" : ""}`}>
     <div
-      className={`myInput ${error ? "errBorder" : ""} 
-      ${focus ? "focusBorder" : ""}
-      ${fieldValue && "valuePadding"}
+      className={`myInput 
+      ${focus || fieldValue ? "valuePadding" : ''}
       `}
       style={style ? { ...style } : {}}
     >
@@ -71,6 +73,7 @@ const MyInput = ({
       )}
       <div>
         <antd.AutoComplete
+          // dropdownMatchSelectWidth={295}
           className={`myInputContent  ${focus ? "inputContentHeight" : ""}`}
           value={fieldValue}
           options={options.filter(item => item?.value.indexOf(searchText) !== -1)}
@@ -84,7 +87,7 @@ const MyInput = ({
               ? { width: "calc( 100% - 16px )", ...customStyle }
               : { ...customStyle }
           }
-          placeholder={focus?'':placeholder}
+          placeholder={focus ? '' : placeholder}
         ></antd.AutoComplete >
         {allowclear && fieldValue && (
           <>
@@ -99,8 +102,9 @@ const MyInput = ({
         )}
       </div>
     </div>
+  </div>
     <div className="errorMessage">{rules?.required && error ? (rules?.message || '请填写' + name) : ''}</div>
-  </>
+  </div>
   );
 };
 
