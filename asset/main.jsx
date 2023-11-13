@@ -1,3 +1,28 @@
+const userBackgoundColor = [
+  "#7E7CE3",
+  "#E37C7C",
+  "#E3A17C",
+  "#E3C67C",
+  "#7CE38C",
+  "#7CE3BE",
+  "#B07CE3",
+  "#E37CD9",
+  "#E37C88",
+  "#7CD7E3",
+  "#7CB8E3",
+  "#7CABE3",
+];
+function getColorForCharacter(char) {
+  const charCode = char.charAt(0).codePointAt(0); // 使用codePointAt处理Unicode字符
+
+  // 自定义的映射规则，这只是一个示例，你可以根据自己的需求进行调整
+  const colorCount = 12;
+  const colorIndex = charCode % colorCount;
+
+  return userBackgoundColor[colorIndex];
+}
+
+
 
 //登录用户选择
 const User = ({ changePage }) => {
@@ -61,9 +86,25 @@ const User = ({ changePage }) => {
         {userList.slice((pageno - 1) * 10, pageno * 10).map((item, index) => {
           return item?.name ?
             <div className='userInfo' onClick={() => onFinish(item?.name + '@' + item?.org)} key={index}>
-              <div className='userImg'><img src={item?.avatar || './img/userInfo.svg'}></img></div>
-              <div className='useName'>{item?.display_name || item?.name}</div>
-              <div className='useOrg'>{item?.org}</div>
+              <div className='userImg' style={
+                item?.display_name && !item?.avatar
+                  ? {
+                    background: getColorForCharacter(
+                      item?.display_name
+                    ),
+                  }
+                  : {}
+              } >   {item?.avatar ? (
+                <img src={item?.avatar || './img/userInfo.svg'}></img>
+              ) : (
+                <div
+                  className="userBackgroundFont"
+                >
+                  {item?.display_name?.[0]}
+                </div>
+              )}</div>
+              <div className='useName textOverflow' title={item?.display_name || item?.name}>{item?.display_name || item?.name}</div>
+              <div className='useOrg textOverflow' title={item?.org}>{item?.org}</div>
             </div> : ''
 
         })}
@@ -167,7 +208,7 @@ const MessageBox = () => {
 
   return (<>
     <antd.Spin spinning={spinning}>
-      <div className="login">
+      <div className="login whiteShadow">
         {page == 'first' && <Login changePage={(res) => setPage(res)} spinning={spinning} key='first' />}
         {page == 'second' && <User changePage={(res) => setPage(res)} key='User' />}
       </div>
