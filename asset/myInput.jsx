@@ -19,8 +19,10 @@ const MyInput = ({
   const [focus, setFocus] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
+  const [open, setOpen] = React.useState(false);
   const onSelect = (data) => {
-    console.log('onSelect', data);
+    handleInputChange(data)
+    setOpen(false)
   };
   const onSearch = (searchText) => {
     setSearchText(searchText || '');
@@ -45,65 +47,76 @@ const MyInput = ({
     const value = e;
     setFieldValue(value); // 更新子组件内部的值
     form.setFieldsValue({ [name]: value }); // 将值传递给 Antd Form
+    onSearch(e)
     setError(!e)
   };
 
   const handleBlur = () => {
-    setFocus(false);
-    setError(!e)
+    setTimeout(() => {
+      setFocus(false);
+    }, 100)
   };
 
-  return (<div style={{height:'80px',padding: focus && !error ? '0px':'1px'}}><div className={`
+  return (<div style={{ height: '80px', padding: focus && !error ? '0px' : '1px' }}>
+    <div className={`
   coverInput
   ${error ? "errBorder" : ""}
   ${focus ? "focusBorder" : ""}`}>
-    <div
-      className={`myInput 
+      <div
+        className={`myInput 
       ${focus || fieldValue ? "valuePadding" : ''}
       `}
-      style={style ? { ...style } : {}}
-    >
-      {title && (
-        <div
-          className={`myInputTitle ${error ? "errColor" : ""} ${focus || fieldValue ? "inputTitleHeight" : ""
-            }`}
-        >
-          {title}
-        </div>
-      )}
-      <div>
-        <antd.AutoComplete
-          // dropdownMatchSelectWidth={295}
-          className={`myInputContent  ${focus ? "inputContentHeight" : ""}`}
-          value={fieldValue}
-          options={options.filter(item => item?.value.indexOf(searchText) !== -1)}
-          onSelect={onSelect}
-          onSearch={onSearch}
-          onFocus={() => setFocus(true)}
-          onChange={handleInputChange}
-          onBlur={handleBlur}
-          style={
-            allowclear && fieldValue
-              ? { width: "calc( 100% - 16px )", ...customStyle }
-              : { ...customStyle }
-          }
-          placeholder={focus ? '' : placeholder}
-        ></antd.AutoComplete >
-        {allowclear && fieldValue && (
-          <>
-            <img
-              src="./img/allowClear.png"
-              width={16}
-              height={16}
-              style={{ marginBottom: 3 }}
-              onClick={() => handleInputChange(null)}
-            ></img>
-          </>
+        style={style ? { ...style } : {}}
+      >
+        {title && (
+          <div
+            className={`myInputTitle ${error ? "errColor" : ""} ${focus || fieldValue ? "inputTitleHeight" : ""
+              }`}
+          >
+            {title}
+          </div>
         )}
+        <div>
+          <input
+            placeholder={focus ? '' : placeholder}
+            style={
+              allowclear && fieldValue
+                ? { width: "calc( 100% - 16px )", }
+                : { ...customStyle }
+            }
+
+            onFocus={() => setFocus(true)}
+            onBlur={handleBlur}
+            className={`myInputContent  ${focus ? "inputContentHeight" : ""}`}
+            value={fieldValue} onChange={(e) => handleInputChange(e?.target?.value || '')}></input>
+
+          {allowclear && fieldValue && (
+            <>
+              <img
+                src="./img/allowClear.png"
+                width={16}
+                height={16}
+                style={{ marginBottom: 3 }}
+                onClick={() => handleInputChange('')}
+              ></img>
+            </>
+          )}
+        </div>
       </div>
+
     </div>
-  </div>
     <div className="errorMessage">{rules?.required && error ? (rules?.message || '请填写' + name) : ''}</div>
+    <antd.AutoComplete
+      value={fieldValue}
+      options={options.filter(item => item?.value.indexOf(searchText) !== -1)}
+      onSelect={onSelect}
+      onSearch={onSearch}
+      onChange={handleInputChange}
+      open={(options.filter(item => item?.value.indexOf(searchText) !== -1)).length > 0 && focus}
+      style={{ height: '0px', overflow: 'hidden' }}
+      placeholder={focus ? '' : placeholder}
+    >
+    </antd.AutoComplete >
   </div>
   );
 };
