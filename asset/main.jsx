@@ -103,8 +103,8 @@ const User = ({ changePage }) => {
                   {item?.display_name?.[0]}
                 </div>
               )}</div>
-              <div className='useName'>{item?.display_name || item?.name}</div>
-              <div className='useOrg'>{item?.org}</div>
+              <div className='useName textOverflow' title={item?.display_name || item?.name}>{item?.display_name || item?.name}</div>
+              <div className='useOrg textOverflow' title={item?.org}>{item?.org}</div>
             </div> : ''
 
         })}

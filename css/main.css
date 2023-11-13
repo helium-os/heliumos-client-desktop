@@ -177,6 +177,7 @@
   flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-start;
+  cursor: pointer;
 
 }
 
@@ -367,4 +368,13 @@
   font-weight: bold;
   line-height: 100px;
   user-select: none;
+}
+
+.textOverflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  max-width: 150px;
+ 
 }
