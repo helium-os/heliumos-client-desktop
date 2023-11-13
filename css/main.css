@@ -139,11 +139,12 @@
 }
 
 .account .ant-select-selector {
+  margin-top: -35px;
   border: 0px solid white !important;
   background: rgba(30, 29, 29, 0.10);
   background-color: rgba(0, 0, 0, 0) !important;
   color: #FFF !important;
-  height: 22px !important;
+  height: 0px !important;
   flex-shrink: 0;
   font-size: 14px;
   padding: 0px !important;
@@ -239,7 +240,7 @@
   width: 295px;
   height: 52px;
   border: 0 solid black;
-  padding: 12px 12px;
+  padding: 14px 12px;
   align-items: center;
   flex-shrink: 0;
   border-radius: 10px;
@@ -266,13 +267,33 @@
 }
 
 .myInputContent {
+  border: none !important;
+  color: #FFF;
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
   height: 22px;
   width: 100%;
-  border: 0px solid white;
   background-color: rgba(213, 213, 213, 0);
+}
 
+input::placeholder {
+  color: rgba(255, 255, 255, 0.40);
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 150% */
+}
+.myInputContent:focus {
+  outline: none;
+    /* 移除选中时的轮廓样式 */
 }
 .coverInput {
+  width: 295px;
   border: 0.5px solid #FFF;
   border-radius: 10px;
 }
@@ -377,4 +398,12 @@
   word-break: break-all;
   max-width: 150px;
  
+}
+.inputPopup{
+  margin-left: -10px;
+  height: 190px;
+}
+
+.ant-select-dropdown{
+  border-radius: 8px;
 }
