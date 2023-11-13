@@ -121,7 +121,7 @@ createWindow = async () => {
 
     if (arg?.org != null && arg?.name != null) {
       org = arg?.org
-      await util.setStorageData('data', { _last: { env, ...arg, }, [env]: { [arg?.org]: { [arg?.name]: { ...arg, orgId: data?._last?.orgId } } } })
+      await util.setStorageData('data', { _last: { env, ...arg, }, [env]: { [arg?.org]: { [arg?.name.toLocaleLowerCase()]: { ...arg, orgId: data?._last?.orgId } } } })
 
       if (arg?.name && (arg.autoLogin === true || arg.autoLogin === false)) {
         let envList = await util.getStorageData(env)
