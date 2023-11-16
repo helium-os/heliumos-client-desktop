@@ -1,3 +1,25 @@
+function getUserAgent() {
+  var userAgent = navigator.userAgent.toLowerCase();
+
+  // 判断操作系统
+  if (userAgent.indexOf("win") != -1) {
+    return "win";
+  } else if (userAgent.indexOf("mac") != -1) {
+    return "mac";
+  } else if (userAgent.indexOf("linux") != -1) {
+    return "linux";
+  } else if (userAgent.indexOf("android") != -1) {
+    return "android";
+  } else if (
+    userAgent.indexOf("iphone") != -1 ||
+    userAgent.indexOf("ipad") != -1
+  ) {
+    return "mac";
+  } else {
+    return "";
+  }
+}
+const agent = getUserAgent();
 const MyInput = ({
   form,
   name,
@@ -87,21 +109,21 @@ const MyInput = ({
                 width: style?.width
                   ? !error && focus
                     ? style?.width + 4
-                    : style?.width + 2
+                    : style?.width + (agent == "mac" ? 1 : 2)
                   : !error && focus
                     ? 299
-                    : 297,
+                    : (agent == "mac" ? 296 : 297),
                 height: style?.height
                   ? !error && focus
                     ? style?.height + 4
-                    : style?.height + 2
+                    : style?.height + (agent == "mac" ? 1 : 2)
                   : !error && focus
                     ? 56
-                    : 54,
+                    : (agent == "mac" ? 53 : 54),
               }
               : {
-                width: !error && focus ? 299 : 297,
-                height: !error && focus ? 56 : 54,
+                width: !error && focus ? 299 : agent == "mac" ? 296 : 297,
+                height: !error && focus ? 56 : agent == "mac" ? 53 : 54,
               }
           }
         >
