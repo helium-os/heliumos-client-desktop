@@ -20,10 +20,7 @@ const MyInput = ({
   const [options, setOptions] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
   const [open, setOpen] = React.useState(false);
-  const onSelect = (data) => {
-    handleInputChange(data)
-    setOpen(false)
-  };
+  
   const onSearch = (searchText) => {
     setSearchText(searchText || '');
   };
@@ -50,74 +47,121 @@ const MyInput = ({
     onSearch(e)
     setError(!e)
   };
-
-  const handleBlur = () => {
-    setTimeout(() => {
-      setFocus(false);
-    }, 100)
+  
+  const onSelect = (data) => {
+    handleInputChange(data)
+    setOpen(false)
   };
 
-  return (<div style={{ height: '80px', padding: focus && !error ? '0px' : '1px' }}>
-    <div className={`
-  coverInput
-  ${error ? "errBorder" : ""}
-  ${focus ? "focusBorder" : ""}`}>
-      <div
-        className={`myInput 
-      ${focus || fieldValue ? "valuePadding" : ''}
-      `}
-        style={style ? { ...style } : {}}
-      >
-        {title && (
-          <div
-            className={`myInputTitle ${error ? "errColor" : ""} ${focus || fieldValue ? "inputTitleHeight" : ""
-              }`}
-          >
-            {title}
-          </div>
-        )}
-        <div>
-          <input
-            placeholder={focus ? '' : placeholder}
-            style={
-              allowclear && fieldValue
-                ? { width: "calc( 100% - 16px )", }
-                : { ...customStyle }
+  const handleBlur = () => {
+      setFocus(false);
+  };
+
+  return (
+     <div
+      className="cover">
+    <div
+      className="cover"
+      style={
+        style
+          ? {
+            height: style?.height ? style?.height + 4 : 60,
+             width: style?.width ? style?.width + 4 : 299,
+          }
+          : {
+            height: 60,
+             width: 299,
+          }
+      }
+    >
+      <div className={`
+        coverInput
+        ${!error && focus ? "focusBorder" : ""}
+        ${error ? "errBorder" : ""}
+        `}
+        style={
+          style
+            ? {
+              ...style,
+              width: style?.width
+                ? !error && focus
+                  ? style?.width + 4
+                  : style?.width + 2
+                : !error && focus
+                  ? 299
+                  : 297,
+              height: style?.height
+                ? !error && focus
+                  ? style?.height + 4
+                  : style?.height + 2
+                : !error && focus
+                  ? 56
+                  : 54,
             }
+            : {
+              width: !error && focus ? 299 : 297,
+              height: !error && focus ? 56 : 54,
+            }
+        }
+        >
+          <div
+            className={`myInput 
+            ${focus || fieldValue ? "valuePadding" : ''}
+            `}
+            style={style ? { ...style } : {}}
+          >
+            {title && (
+              <div
+                className={`myInputTitle ${error ? "errColor" : ""} ${focus || fieldValue ? "inputTitleHeight" : ""
+                  }`}
+              >
+                {title}
+              </div>
+            )}
+            <div>
+              <input
+                placeholder={focus ? '' : placeholder}
+                style={
+                  allowclear && fieldValue
+                    ? { width: "calc( 100% - 16px )", }
+                    : { ...customStyle }
+                }
+                onFocus={() => {setFocus(true);setOpen(true);}}
+                onBlur={handleBlur}
+                className={`myInputContent  ${focus ? "inputContentHeight" : ""}`}
+                value={fieldValue} 
+                onChange={(e) => handleInputChange(e?.target?.value || '')}></input>
 
-            onFocus={() => setFocus(true)}
-            onBlur={handleBlur}
-            className={`myInputContent  ${focus ? "inputContentHeight" : ""}`}
-            value={fieldValue} onChange={(e) => handleInputChange(e?.target?.value || '')}></input>
+              {allowclear && fieldValue && (
+                <>
+                  <img
+                    src="./img/allowClear.png"
+                    width={16}
+                    height={16}
+                    style={{ marginBottom: 3 }}
+                    onClick={() => handleInputChange('')}
+                  ></img>
+                </>
+              )}
+            </div>
+          </div>
 
-          {allowclear && fieldValue && (
-            <>
-              <img
-                src="./img/allowClear.png"
-                width={16}
-                height={16}
-                style={{ marginBottom: 3 }}
-                onClick={() => handleInputChange('')}
-              ></img>
-            </>
-          )}
         </div>
-      </div>
-
+        
     </div>
     <div className="errorMessage">{rules?.required && error ? (rules?.message || '请填写' + name) : ''}</div>
-    <antd.AutoComplete
-      value={fieldValue}
-      options={options.filter(item => item?.value.indexOf(searchText) !== -1)}
-      onSelect={onSelect}
-      onSearch={onSearch}
-      onChange={handleInputChange}
-      open={(options.filter(item => item?.value.indexOf(searchText) !== -1)).length > 0 && focus}
-      style={{ height: '0px', overflow: 'hidden' }}
-      placeholder={focus ? '' : placeholder}
-    >
-    </antd.AutoComplete >
-  </div>
+        <antd.AutoComplete
+          value={fieldValue}
+          options={options.filter(item => item?.value.indexOf(searchText) !== -1)}
+          onSelect={onSelect}
+          onSearch={onSearch}
+          onChange={handleInputChange}
+          open={(options.filter(item => item?.value.indexOf(searchText) !== -1)).length > 0 && open}
+          style={{ height: '0px', overflow: 'hidden',marginTop:17 }}
+          placeholder={focus ? '' : placeholder}
+        >
+        </antd.AutoComplete >
+    </div>
   );
 };
 
