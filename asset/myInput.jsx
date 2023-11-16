@@ -55,6 +55,7 @@ const MyInput = ({
 
   const handleBlur = () => {
       setFocus(false);
+      setTimeout(()=>setOpen(false),500)
   };
 
   return (
@@ -127,7 +128,7 @@ const MyInput = ({
                     : { ...customStyle }
                 }
                 onFocus={() => {setFocus(true);setOpen(true);}}
-                onBlur={handleBlur}
+                onBlur={()=>handleBlur()}
                 className={`myInputContent  ${focus ? "inputContentHeight" : ""}`}
                 value={fieldValue} 
                 onChange={(e) => handleInputChange(e?.target?.value || '')}></input>
