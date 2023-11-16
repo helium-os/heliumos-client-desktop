@@ -1,3 +1,25 @@
+function getUserAgent() {
+  var userAgent = navigator.userAgent.toLowerCase();
+
+  // 判断操作系统
+  if (userAgent.indexOf("win") != -1) {
+    return "win";
+  } else if (userAgent.indexOf("mac") != -1) {
+    return "mac";
+  } else if (userAgent.indexOf("linux") != -1) {
+    return "linux";
+  } else if (userAgent.indexOf("android") != -1) {
+    return "android";
+  } else if (
+    userAgent.indexOf("iphone") != -1 ||
+    userAgent.indexOf("ipad") != -1
+  ) {
+    return "mac";
+  } else {
+    return "";
+  }
+}
+const agent = getUserAgent();
 const MyInput = ({
   form,
   name,
@@ -47,63 +69,63 @@ const MyInput = ({
     onSearch(e)
     setError(!e)
   };
-  
+
   const onSelect = (data) => {
     handleInputChange(data)
     setOpen(false)
   };
 
   const handleBlur = () => {
-      setFocus(false);
-      setTimeout(()=>setOpen(false),500)
+    setFocus(false);
+    setTimeout(() => setOpen(false), 500)
   };
 
   return (
-     <div
-      className="cover">
     <div
-      className="cover"
-      style={
-        style
-          ? {
-            height: style?.height ? style?.height + 4 : 60,
-             width: style?.width ? style?.width + 4 : 299,
-          }
-          : {
-            height: 60,
-             width: 299,
-          }
-      }
-    >
-      <div className={`
+      className="cover">
+      <div
+        className="cover"
+        style={
+          style
+            ? {
+              height: style?.height ? style?.height + 4 : 60,
+              width: style?.width ? style?.width + 4 : 299,
+            }
+            : {
+              height: 60,
+              width: 299,
+            }
+        }
+      >
+        <div className={`
         coverInput
         ${!error && focus ? "focusBorder" : ""}
         ${error ? "errBorder" : ""}
         `}
-        style={
-          style
-            ? {
-              ...style,
-              width: style?.width
-                ? !error && focus
-                  ? style?.width + 4
-                  : style?.width + 2
-                : !error && focus
-                  ? 299
-                  : 297,
-              height: style?.height
-                ? !error && focus
-                  ? style?.height + 4
-                  : style?.height + 2
-                : !error && focus
-                  ? 56
-                  : 54,
-            }
-            : {
-              width: !error && focus ? 299 : 297,
-              height: !error && focus ? 56 : 54,
-            }
-        }
+          style={
+            style
+              ? {
+                ...style,
+                width: style?.width
+                  ? !error && focus
+                    ? style?.width + 4
+                    : style?.width + (agent == "mac" ? 1 : 2)
+                  : !error && focus
+                    ? 299
+                    : (agent == "mac" ? 296 : 297),
+                height: style?.height
+                  ? !error && focus
+                    ? style?.height + 4
+                    : style?.height + (agent == "mac" ? 1 : 2)
+                  : !error && focus
+                    ? 56
+                    : (agent == "mac" ? 53 : 54),
+              }
+              : {
+                width: !error && focus ? 299 : agent == "mac" ? 296 : 297,
+                height: !error && focus ? 56 : agent == "mac" ? 53 : 54,
+              }
+          }
         >
           <div
             className={`myInput 
@@ -127,10 +149,10 @@ const MyInput = ({
                     ? { width: "calc( 100% - 16px )", }
                     : { ...customStyle }
                 }
-                onFocus={() => {setFocus(true);setOpen(true);}}
-                onBlur={()=>handleBlur()}
+                onFocus={() => { setFocus(true); setOpen(true); }}
+                onBlur={() => handleBlur()}
                 className={`myInputContent  ${focus ? "inputContentHeight" : ""}`}
-                value={fieldValue} 
+                value={fieldValue}
                 onChange={(e) => handleInputChange(e?.target?.value || '')}></input>
 
               {allowclear && fieldValue && (
@@ -148,20 +170,20 @@ const MyInput = ({
           </div>
 
         </div>
-        
-    </div>
-    <div className="errorMessage">{rules?.required && error ? (rules?.message || '请填写' + name) : ''}</div>
-        <antd.AutoComplete
-          value={fieldValue}
-          options={options.filter(item => item?.value.indexOf(searchText) !== -1)}
-          onSelect={onSelect}
-          onSearch={onSearch}
-          onChange={handleInputChange}
-          open={(options.filter(item => item?.value.indexOf(searchText) !== -1)).length > 0 && open}
-          style={{ height: '0px', overflow: 'hidden',marginTop:17 }}
-          placeholder={focus ? '' : placeholder}
-        >
-        </antd.AutoComplete >
+
+      </div>
+      <div className="errorMessage">{rules?.required && error ? (rules?.message || '请填写' + name) : ''}</div>
+      <antd.AutoComplete
+        value={fieldValue}
+        options={options.filter(item => item?.value.indexOf(searchText) !== -1).map(item => ({ value: item.value, label: (<div>{item.value}</div>) }))}
+        onSelect={onSelect}
+        onSearch={onSearch}
+        onChange={handleInputChange}
+        open={(options.filter(item => item?.value.indexOf(searchText) !== -1)).length > 0 && open }
+        style={{ height: '0px', overflow: 'hidden', marginTop: 17 }}
+        placeholder={focus ? '' : placeholder}
+      >
+      </antd.AutoComplete >
     </div>
   );
 };
