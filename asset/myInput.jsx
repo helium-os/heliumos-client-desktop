@@ -175,7 +175,7 @@ const MyInput = ({
       <div className="errorMessage">{rules?.required && error ? (rules?.message || '请填写' + name) : ''}</div>
       <antd.AutoComplete
         value={fieldValue}
-        options={options.filter(item => item?.value.indexOf(searchText) !== -1).map(item => ({ value: item.value, label: (<div>{item.value}</div>) }))}
+        options={options.filter(item => item?.value.indexOf(searchText) !== -1).map(item => ({ value: item.value, label: (<div >{item.value}</div>) }))}
         onSelect={onSelect}
         onSearch={onSearch}
         onChange={handleInputChange}

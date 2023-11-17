@@ -435,3 +435,8 @@ input::placeholder {
 .ant-select-item-option-selected:not(.ant-select-item-option-disabled){
    background-color: rgba(238, 238, 238, 1);
 }
+
+.ant-select-item{
+  margin: 1px 8px;
+  border-radius: 4px;
+}
