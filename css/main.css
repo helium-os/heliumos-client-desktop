@@ -230,6 +230,7 @@
 }
 
 .goBack {
+  cursor: pointer;
   color: #FFF;
   text-align: center;
   font-family: PingFang SC;
@@ -434,6 +435,7 @@ input::placeholder {
 
 .ant-select-item-option-selected:not(.ant-select-item-option-disabled){
    background-color: rgba(238, 238, 238, 1);
+   font-weight: normal;
 }
 
 .ant-select-item{
