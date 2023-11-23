@@ -107,14 +107,7 @@ createWindow = async () => {
 
   win.webContents.on('will-navigate', (event, url) => {
     win.setMovable(false);
-    const {
-      height,
-      width,
-      x,
-      y
-    } = win.getContentBounds();
-    loadingWindow.setSize(width, height);
-    loadingWindow.setPosition(x, y);
+    loadingWindow.setBounds(win.getContentBounds())
     loadingWindow.show()
   });
   win.webContents.on('did-finish-load', () => {
@@ -183,15 +176,8 @@ createWindow = async () => {
   });
 
   ipcMain.on('clearInfo', async (event, arg) => {
-    const {
-      height,
-      width,
-      x,
-      y
-    } = win.getContentBounds();
     win.setMovable(false);
-    loadingWindow.setSize(width, height);
-    loadingWindow.setPosition(x, y);
+    loadingWindow.setBounds(win.getContentBounds())
     loadingWindow.show()
     if (arg) {
       if (arg == 'second') {
