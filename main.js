@@ -88,11 +88,41 @@ createWindow = async () => {
       nativeWindowOpen: true, //是否使用原生的window.open()
       webviewTag: true, //是否启用 <webview> tag标签
       sandbox: true, //沙盒选项,这个很重要
-      preload: path.join(__dirname, "preload.js"),
-      // partition:String(new Date())
+      preload: path.join(__dirname, "preload.js")
     },
   })
+  // 创建加载动画窗口
+  const loadingWindow = new BrowserWindow({
+    show: false,
+    width: 300,
+    height: 300,
+    frame: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
 
+  loadingWindow.loadFile(path.join(__dirname, 'loading.html'));
+
+  win.webContents.on('will-navigate', (event, url) => {
+    const {
+      height,
+      width,
+      x,
+      y
+    } = win.getContentBounds();
+    loadingWindow.setSize(width, height);
+    loadingWindow.setPosition(x, y);
+    loadingWindow.show()
+  });
+  win.webContents.on('did-finish-load', () => {
+    setTimeout(() => {
+      loadingWindow.hide()
+    }, 100);
+  });
+  loadingWindow.on('closed', () => {
+    loadingWindow = null;
+  });
   //修改关闭逻辑
   changeClose(win)
 
@@ -154,7 +184,7 @@ createWindow = async () => {
       if (arg == 'second') {
         await util.setStorageData('data', { _last: { org: null, name: null } })
       }
-      util.loadFile(win,'./index.html',arg)
+      util.loadFile(win, './index.html', arg)
 
     } else {
       await util.setStorageData('data', { _last: { org: null, name: null } })
@@ -359,7 +389,7 @@ app.whenReady().then(async () => {
 
   ipcMain.handle("getOrgList", async function () {
     let envList = await util.getStorageData(env)
-    return  envList.orgList || []
+    return envList.orgList || []
   });
 
   ipcMain.handle('getDbValue', async function () {
@@ -371,7 +401,7 @@ app.whenReady().then(async () => {
 
   Menu.setApplicationMenu(emptyMenu);
   //多开配置
-  util.multipleOpen(app, BrowserWindow, createWindow, false)
+  util.multipleOpen(app, BrowserWindow, createWindow, true)
 });
 
 
