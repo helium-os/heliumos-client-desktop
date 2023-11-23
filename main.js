@@ -97,6 +97,7 @@ createWindow = async () => {
     width: 300,
     height: 300,
     frame: false,
+    alwaysOnTop:true,
     webPreferences: {
       nodeIntegration: true
     }
@@ -105,6 +106,8 @@ createWindow = async () => {
   loadingWindow.loadFile(path.join(__dirname, 'loading.html'));
 
   win.webContents.on('will-navigate', (event, url) => {
+    win.setResizable(false);
+    win.setMovable(false);
     const {
       height,
       width,
@@ -117,6 +120,8 @@ createWindow = async () => {
   });
   win.webContents.on('did-finish-load', () => {
     setTimeout(() => {
+      win.setResizable(true);
+      win.setMovable(true);
       loadingWindow.hide()
     }, 100);
   });
@@ -180,6 +185,17 @@ createWindow = async () => {
   });
 
   ipcMain.on('clearInfo', async (event, arg) => {
+    const {
+      height,
+      width,
+      x,
+      y
+    } = win.getContentBounds();
+    win.setResizable(false);
+    win.setMovable(false);
+    loadingWindow.setSize(width, height);
+    loadingWindow.setPosition(x, y);
+    loadingWindow.show()
     if (arg) {
       if (arg == 'second') {
         await util.setStorageData('data', { _last: { org: null, name: null } })
