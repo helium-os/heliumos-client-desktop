@@ -176,7 +176,7 @@ const Login = ({ spinning }) => {
               placeholder="请输入组织别名"
             />
           </antd.Form.Item>
-          <input className="loginButton" type="submit" disabled={!value} value={'登录'} />
+          <input className="loginButton" type="submit" disabled={!value} value={'下一步'} />
         </div>
       </antd.Form>
       {
