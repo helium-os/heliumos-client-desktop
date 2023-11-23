@@ -97,7 +97,8 @@ createWindow = async () => {
     width: 300,
     height: 300,
     frame: false,
-    alwaysOnTop:true,
+    enableLargerThanScreen:true,
+    movable:false,
     webPreferences: {
       nodeIntegration: true
     }
