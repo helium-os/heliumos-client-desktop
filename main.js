@@ -401,7 +401,7 @@ app.whenReady().then(async () => {
 
   Menu.setApplicationMenu(emptyMenu);
   //多开配置
-  util.multipleOpen(app, BrowserWindow, createWindow, true)
+  util.multipleOpen(app, BrowserWindow, createWindow, false)
 });
 
 
