@@ -106,7 +106,6 @@ createWindow = async () => {
   loadingWindow.loadFile(path.join(__dirname, 'loading.html'));
 
   win.webContents.on('will-navigate', (event, url) => {
-    win.setResizable(false);
     win.setMovable(false);
     const {
       height,
@@ -120,7 +119,6 @@ createWindow = async () => {
   });
   win.webContents.on('did-finish-load', () => {
     setTimeout(() => {
-      win.setResizable(true);
       win.setMovable(true);
       loadingWindow.hide()
     }, 100);
@@ -191,7 +189,6 @@ createWindow = async () => {
       x,
       y
     } = win.getContentBounds();
-    win.setResizable(false);
     win.setMovable(false);
     loadingWindow.setSize(width, height);
     loadingWindow.setPosition(x, y);
