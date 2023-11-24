@@ -91,37 +91,39 @@ createWindow = async () => {
       preload: path.join(__dirname, "preload.js")
     },
   })
-  if (process.platform !== 'linux') {
-    // 创建加载动画窗口
-    const loadingWindow = new BrowserWindow({
-      show: false,
-      width: 300,
-      height: 300,
-      frame: false,
-      enableLargerThanScreen: true,
-      movable: false,
-      webPreferences: {
-        nodeIntegration: true
-      }
-    });
+  // 创建加载动画窗口
+  const loadingWindow = new BrowserWindow({
+    show: false,
+    width: 300,
+    height: 300,
+    frame: false,
+    enableLargerThanScreen: true,
+    movable: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
 
-    loadingWindow.loadFile(path.join(__dirname, 'loading.html'));
+  loadingWindow.loadFile(path.join(__dirname, 'loading.html'));
 
-    win.webContents.on('will-navigate', (event, url) => {
+  win.webContents.on('will-navigate', (event, url) => {
+    if (process.platform !== 'linux') {
       win.setMovable(false);
       loadingWindow.setBounds(win.getContentBounds())
       loadingWindow.show()
-    });
-    win.webContents.on('did-finish-load', () => {
+    }
+  });
+  win.webContents.on('did-finish-load', () => {
+    if (process.platform !== 'linux') {
       setTimeout(() => {
         win.setMovable(true);
         loadingWindow.hide()
       }, 100);
-    });
-    loadingWindow.on('closed', () => {
-      loadingWindow = null;
-    });
-  }
+    }
+  });
+  loadingWindow.on('closed', () => {
+    loadingWindow = null;
+  });
   //修改关闭逻辑
   changeClose(win)
 
@@ -179,9 +181,11 @@ createWindow = async () => {
   });
 
   ipcMain.on('clearInfo', async (event, arg) => {
-    win.setMovable(false);
-    loadingWindow.setBounds(win.getContentBounds())
-    loadingWindow.show()
+    if (process.platform !== 'linux') {
+      win.setMovable(false);
+      loadingWindow.setBounds(win.getContentBounds())
+      loadingWindow.show()
+    }
     if (arg) {
       if (arg == 'second') {
         await util.setStorageData('data', { _last: { org: null, name: null } })
