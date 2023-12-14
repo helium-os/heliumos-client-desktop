@@ -11,5 +11,6 @@ contextBridge.exposeInMainWorld("versions", {
   getDbValue: () => ipcRenderer.invoke("getDbValue"),
   getMessage: (name, fun) => ipcRenderer.on(name, fun),
   sendMethod: (name) => ipcRenderer.send(name),
-  invokMethod: (name, value) => ipcRenderer.invoke(name, value)
+  invokMethod: (name, value) => ipcRenderer.invoke(name, value),
+  loadLocalFont: () => ipcRenderer.invoke("loadLocalFont")
 });
