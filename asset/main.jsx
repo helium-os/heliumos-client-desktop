@@ -100,7 +100,7 @@ const User = ({ changePage }) => {
                 <div
                   className="userBackgroundFont"
                 >
-                  {item?.display_name?.[0]}
+                  {item?.display_name?.[0].toUpperCase()}
                 </div>
               )}</div>
               <div className='useName textOverflow' title={item?.display_name || item?.name}>{item?.display_name || item?.name}</div>
