@@ -8,18 +8,53 @@
   <script src="asset/babel.min.js"></script>
   <script src="asset/antd.min.js"></script>
   <script src="asset/ahooks.js"></script>
+  <script src="asset/myInput.jsx" type="text/babel" ></script>
   <script src="asset/main.jsx" type="text/babel"></script>
+  
+  
   <!-- <script src="asset/fetch.js"></script> -->
   <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon" />
   <link rel="stylesheet" type="text/css" href="css/antd.compact.min.css" />
   <link rel="stylesheet" type="text/css" href="css/main.css" />
+  <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" type="text/css" href="css/loading.css" />
 </head>
+  <style>
+    #app {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+    }
 
-<body>
+    #loading-spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #3498db;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+<body >
    <script>
      document.title = '\u200E'
    </script>
-  <div id="app"></div>
+  <div id="app" style="background-color: #000000;">
+     <div id="loading-spinner"></div>
+  </div>
  
 </body>
 

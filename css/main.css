@@ -1,4 +1,18 @@
-#app{
+@font-face {
+  font-family: 'PingFang SC';
+  src: url('../ttf/PingFang-SC-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: url('../ttf/PingFang-SC-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+#app {
   margin: 0;
   padding: 0;
   width: 100vw;
@@ -7,19 +21,21 @@
   background-color: #e8eaed;
   /* overflow-y: auto; */
 }
-.panel{
+
+.panel {
   margin-right: 10%;
- }
- .form {
+}
+
+.form {
   flex: 2 0 500px;
   width: 400px;
-    min-height: 478px;
-    padding: 22px 40px 22px 40px;
-    background: #fff;
-    box-shadow: 0 10px 20px 0 rgba(0,0,0,.2);
-    box-sizing: border-box;
-    border-radius: 6px;
-  }
+  min-height: 478px;
+  padding: 22px 40px 22px 40px;
+  background: #fff;
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .2);
+  box-sizing: border-box;
+  border-radius: 6px;
+}
 
 .form .formTitle {
   margin-bottom: 50px;
@@ -39,11 +55,8 @@
   line-height: 40px;
   letter-spacing: 1px;
 }
-/* .loginButton {
-  width: 100%;
-  height: 40px !important;
-} */
-.login{
+
+.login {
   width: 100vw;
   height: 100vh;
   margin: 0;
@@ -53,63 +66,118 @@
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  background:  url('../img/background.jpg') no-repeat center center fixed;
-    background-size: cover;
+  background: url('../img/background.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
-.loginButton{
-  border: 0px solid black!important;
-    padding: 0;
-    margin: 0;
-    background-color: rgba(0,0,0,0) !important;
-    width: 25px;
-    height: 30px;
-    border-radius: 50%;
-    z-index: 10;
-    cursor: default;
-    box-shadow: none;
+
+.loginButton {
+  margin-top: 214px;
+  margin-bottom: 74px;
+  border: 0px solid black !important;
+  background: rgba(255, 255, 255, 1) !important;
+  width: 295px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  z-index: 10;
+  cursor: default;
+  box-shadow: none;
+  color: #151515;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
 }
-.loginButton img{
-  padding: 3px 0px;
-  height: 24px;
+
+.loginButton:disabled {
+
+  opacity: 0.3;
+  background: #FFF;
+  color: #151515;
+  text-align: center;
+  /* 150% */
 }
-.account{
+
+.ant-btn[disabled] {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+
+
+.account {
   font-size: 18px;
   color: #414b55;
   line-height: 28px;
-  width: 240px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
 }
 
-.ant-input{
-  border: 0px solid black;
-  /* border-bottom: 1px solid #d9d9d9; */
-  border-right: none !important;
-  background-color: rgba(0,0,0,0) !important;
+.accountTitle {
+  width: 100%;
+  color: #FFF;
+  font-family: PingFang SC;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 32px;
+}
+
+.accountContent {
+  width: 100%;
+  color: rgba(255, 255, 255, 0.80);
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  margin-bottom: 29px;
+
+}
+
+.embedded {
+  border-radius: 10px;
+  border: 0.5px solid #FFF;
+  background: rgba(30, 29, 29, 0.10);
+}
+
+.account .ant-select-selector {
+  margin-top: -35px;
+  border: 0px solid white !important;
+  background: rgba(30, 29, 29, 0.10);
+  background-color: rgba(0, 0, 0, 0) !important;
   color: #FFF !important;
-  height: 30px;
- 
+  height: 0px !important;
+  flex-shrink: 0;
   font-size: 14px;
-}
-.ant-input-affix-wrapper{
-  background-color: rgba(0,0,0,.5) !important;
-   padding: 0 10px 0 15px;
-  border-radius: 15px;
-  border: 0px solid black !important;
-}
-#usePoint::placeholder {
-  color: #ffffff; /* 设置占位符文本颜色 */
-}
-.ant-input:focus {
-     border: 0px solid black;
-    /* box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2) !important; */
-    border-right: none !important;
-    outline: 0;
-}
-.ant-form-item-required {
-   font-size: 16px !important;
-    height: 30px;
+  padding: 0px !important;
 }
 
-.userInfo{
+.ant-select-focused .ant-select-selector {
+  border-color: rgba(0, 0, 0, 0) !important;
+}
+
+
+.ant-form-item-required {
+  font-size: 16px !important;
+  height: 30px;
+}
+
+.userList {
+  width: 750px;
+  height: 360px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.userInfo {
   margin: 0px 45px;
   width: 60px;
   height: 180px;
@@ -118,29 +186,260 @@
   flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-start;
+  cursor: pointer;
 
 }
-.userImg{
-  width: 60px;
-  height: 60px;
+
+.userImg {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: #FFF;
   overflow: hidden;
 }
-.userImg img{
+
+.userImg img {
   width: 100%;
   height: 100%;
 }
-.useName{
-  color:#a5817c;
-  font-size: 18px;
-  font-weight: bolder;
+
+.useName {
+  margin-top: 16px;
+  color: #FFF;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
 }
-.useOrg{
-  visibility: hidden;
-  color: #8d8989;
-  font-size: 13px;
+
+.useOrg {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, .5);
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+
 }
-.userInfo:hover .useOrg{
+
+.userInfo:hover .useOrg {
   visibility: visible;
+}
+
+.goBack {
+  cursor: pointer;
+  color: #FFF;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration-line: underline;
+  position: fixed;
+  bottom: 40px;
+  left: calc(50% - 14px);
+}
+
+.myInput {
+  width: 295px;
+  height: 52px;
+  border: 0 solid black;
+  padding: 14px 12px;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.10);
+  position: relative;
+  left: -0.5px;
+}
+
+.myInputTitle {
+  color: #E5E5E5;
+  font-family: PingFang SC;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  height: 16px;
+  width: 100%;
+  display: none;
+
+}
+
+.inputTitleHeight {
+  display: block;
+}
+
+.myInputContent {
+  border: none !important;
+  color: #FFF;
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  height: 22px;
+  width: 100%;
+  background-color: rgba(213, 213, 213, 0);
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.40);
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 150% */
+}
+
+.myInputContent:focus {
+  outline: none;
+  /* 移除选中时的轮廓样式 */
+}
+
+.coverInput {
+  border: 0.5px solid #FFF;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.errBorder {
+  border-color: #FE5F56 !important;
+  border-width: 0.5px !important;
+}
+
+.focusBorder {
+  border-width: 2px;
+}
+
+.valuePadding {
+  padding: 8px 12px;
+}
+
+.errColor {
+  /* color: #FE5F56 !important; */
+}
+
+.ant-select-selection-placeholder {
+  color: rgba(255, 255, 255, 0.40);
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+
+
+.ant-form-item-has-error .ant-select:not(.ant-select-disabled):not(.ant-select-customize-input).ant-select-focused .ant-select-selector {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.ant-form-item-has-error .ant-select:not(.ant-select-disabled):not(.ant-select-customize-input) .ant-select-selector {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input).ant-select-focused .ant-select-selector {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.ant-select:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  height: 22px;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.ant-select-single:not(.act-select-customize-input) .ant-select-selector .ant-select-selection-search-input {
+  height: 22px !important;
+  color: #FFF;
+  font-family: PingFang SC;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 150% */
+}
+
+.ant-select-single .ant-select-selector .ant-select-selection-search {
+  position: absolute;
+  top: 0;
+  right: 0px;
+  bottom: 0;
+  left: 0px;
+}
+
+.errorMessage {
+  width: 100%;
+  height: 16px;
+  color: #FE5F56;
+  font-family: PingFang SC;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  padding-left: 12px;
+  padding-top: 4px;
+}
+
+.whiteShadow {
+  text-shadow: 0px 2px 3px rgba(48, 48, 48, 0.06);
+}
+
+.userBackgroundFont {
+  width: 100%;
+  height: 100%;
+  color: #FFF;
+  text-align: center;
+  font-family: PingFang SC;
+  font-size: 38px;
+  font-style: normal;
+  font-weight: bold;
+  line-height: 100px;
+  user-select: none;
+}
+
+.textOverflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  max-width: 150px;
+
+}
+
+.inputPopup {
+  margin-left: -10px;
+  height: 190px;
+}
+
+.ant-select-dropdown {
+  border-radius: 8px;
+}
+
+.cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled){
+   background-color: rgba(238, 238, 238, 1);
+   font-weight: normal;
+}
+
+.ant-select-item{
+  margin: 1px 8px;
+  border-radius: 4px;
 }

@@ -1,6 +1,6 @@
 {
     "name": "Helium-OS",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "main": "main.js",
     "scripts": {
         "electron-start": "cross-env NODE_ENV=testinner electron . --icon=favicon.ico ",
@@ -43,7 +43,7 @@
             "perMachine": false
         },
         "publish": [
-            {
+             {
                 "provider": "github",
                 "owner": "helium-os",
                 "repo": "heliumos-client-desktop",

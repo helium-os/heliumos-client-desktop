@@ -1,23 +1,45 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>&lrm;</title>
-  <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon" />
-  <link rel="stylesheet" type="text/css" href="css/loading.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #loading-spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #3498db;
+      width: 42px;
+      height: 42px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
 
-<body>
-  <div class="bootscreen">
-    <div >
-      <div id="loader">
-        <svg class="progressRing" style="height: 48px;width:48px;" viewBox="0 0 16 16">
-          <circle cx="8px" cy="8px" r="7px"></circle>
-        </svg>
-      </div>
-    </div>
-  </div>
+<body style="background-color: #000000;">
+  <script>
+    document.title = '\u200E'
+  </script>
+  <div id="loading-spinner"></div>
 </body>
-
 
 </html>

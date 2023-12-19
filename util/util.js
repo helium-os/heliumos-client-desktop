@@ -65,11 +65,11 @@ AutoUpdater = (autoUpdater) => {
   // 添加事件监听器
   autoUpdater.on('update-not-available', onUpdateNotAvailable);
   // 处理更新错误事件
-  autoUpdater.on('error',onUpdateNotAvailable);
+  autoUpdater.on('error', onUpdateNotAvailable);
   //要想使用自动更新，不能配置DNS解析
   autoUpdater.setFeedURL("https://heliumos-client.oss-cn-beijing.aliyuncs.com/desktop/releases/");
   autoUpdater.checkForUpdates();
-  
+
 }
 
 // 定时更新
@@ -77,11 +77,11 @@ function AutoUpdaterInterval(autoUpdater, hour = 6, updateNow = true) {
   autoUpdater.logger = log
   let timerId;
   autoUpdater.autoDownload = false
-   // 处理发现更新事件
+  // 处理发现更新事件
   autoUpdater.on('update-available', () => {
     autoUpdater.downloadUpdate()
   });
-
+  autoUpdater.requestHeaders = { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' };
   // 处理更新下载进度事件
   autoUpdater.on('download-progress', (progressObj) => {
     log.info('Download progress:', progressObj);
@@ -247,6 +247,14 @@ askForMediaAccess = (data = [true, true]) => {
   });
 };
 
+//
+loadFile = async (win, url = './index.html', arg = 'second') => {
+  const options = {
+    hash: arg
+  };
+  win.loadFile(url, options)
+}
+
 module.exports = {
   setDataSourse,
   AutoUpdater,
@@ -256,5 +264,6 @@ module.exports = {
   getStorageData,
   setStorageData,
   askForMediaAccess,
-  findPath
+  findPath,
+  loadFile
 };
