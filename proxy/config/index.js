@@ -1,6 +1,6 @@
 const yaml = require('js-yaml');
 const fs = require('fs');
-const logger = require('../logger').getLogger('Node-heliumos-proxy-config');
+const logger = require('electron-log');
 
 
 function loadConfig() {
