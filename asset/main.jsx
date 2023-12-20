@@ -42,6 +42,7 @@ const User = ({ changePage }) => {
           });
         } else {
           antd.message.error('没有该组织');
+          changePage('first')
           return
         }
       }
