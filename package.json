@@ -43,7 +43,7 @@
             "perMachine": false
         },
         "publish": [
-             {
+            {
                 "provider": "github",
                 "owner": "slmsty",
                 "repo": "heliumos-client-desktop",
@@ -61,7 +61,10 @@
                 "com.apple.security.device.audio-input": true,
                 "com.apple.security.device.camera": true
             },
-            "icon": "build/icon.icns"
+            "icon": "build/icon.icns",
+            "permissions": [
+                "systemPreferences"
+            ]
         },
         "win": {
             "target": [
