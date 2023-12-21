@@ -1,4 +1,4 @@
-const { app, Tray, Menu, nativeImage, systemPreferences } = require("electron");
+const { app, Tray, Menu, nativeImage, nativeTheme } = require("electron");
 const util = require('../util/util');
 const path = require("path");
 //创建系统托盘 
@@ -25,17 +25,16 @@ let setTray = (win) => {
     let darkModeTrayIcon = util.findPath(["./../darkModeTrayIcon.png", '../build/darkModeTrayIcon.png', '../../darkModeTrayIcon.png'], __dirname)
     function updateTrayIcon() {
       // 检测操作系统的外观设置
-      const isDarkMode = systemPreferences.isDarkMode();
       // 根据外观设置选择相应的托盘图标
-      const trayIconPath = isDarkMode
+      const trayIconPath = nativeTheme.shouldUseDarkColors
         ? path.join(__dirname, darkModeTrayIcon)
         : path.join(__dirname, lightModeTrayIcon);
-
+        let changeImage=nativeImage.createFromPath(trayIconPath)
       // 设置托盘图标
-      tray.setImage(trayIconPath);
+      tray.setImage(changeImage.resize({ width: 16, height: 16 }));
     }
     // 检测外观设置变化
-    systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () => {
+    nativeTheme.on('updated', () => {
       updateTrayIcon();
     });
 
