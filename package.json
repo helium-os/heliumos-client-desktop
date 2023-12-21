@@ -37,6 +37,14 @@
             {
                 "from": "build/icon.png",
                 "to": "icon.png"
+            },
+            {
+                "from": "build/lightModeTrayIcon.png",
+                "to": "lightModeTrayIcon.png"
+            },
+            {
+                "from": "build/darkModeTrayIcon.png",
+                "to": "darkModeTrayIcon.png"
             }
         ],
         "nsis": {
