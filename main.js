@@ -441,9 +441,6 @@ app.whenReady().then(async () => {
     }  
     `;
   })
-  const emptyMenu = Menu.buildFromTemplate([]);
-
-  Menu.setApplicationMenu(emptyMenu);
   //多开配置
   util.multipleOpen(app, BrowserWindow, createWindow, false)
 });
