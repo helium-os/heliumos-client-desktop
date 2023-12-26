@@ -1,4 +1,4 @@
-const { app, Tray, Menu, nativeImage } = require("electron");
+const { app, Tray, Menu, nativeImage, nativeTheme } = require("electron");
 const util = require('../util/util');
 const path = require("path");
 //创建系统托盘 
@@ -20,6 +20,28 @@ let setTray = (win) => {
 
   // 双击托盘图标时显示应用
   tray.on('double-click', () => win.show());
+  if (process.platform === 'darwin') {
+    let lightModeTrayIcon = util.findPath(["./../lightModeTrayIcon.png", '../build/lightModeTrayIcon.png', '../../lightModeTrayIcon.png'], __dirname)
+    let darkModeTrayIcon = util.findPath(["./../darkModeTrayIcon.png", '../build/darkModeTrayIcon.png', '../../darkModeTrayIcon.png'], __dirname)
+    function updateTrayIcon() {
+      // 检测操作系统的外观设置
+      // 根据外观设置选择相应的托盘图标
+      const trayIconPath = nativeTheme.shouldUseDarkColors
+        ? path.join(__dirname, darkModeTrayIcon)
+        : path.join(__dirname, lightModeTrayIcon);
+        let changeImage=nativeImage.createFromPath(trayIconPath)
+      // 设置托盘图标
+      tray.setImage(changeImage.resize({ width: 16, height: 16 }));
+    }
+    // 检测外观设置变化
+    nativeTheme.on('updated', () => {
+      updateTrayIcon();
+    });
+
+    // 初始化时更新托盘图标
+    updateTrayIcon();
+
+  }
 }
 
 module.exports = setTray
