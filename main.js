@@ -24,20 +24,6 @@ keyList.forEach(item => {
 })
 let datas = {}
 let loading = false
-// 返回字体内容，用于注入到页面中
-    let fontkeyList = ["./ttf", '../ttf']
-    let font = { 'PingFang-SC-Bold': '', 'PingFang-SC-Light': '', 'PingFang-SC-Regular': '' }
-    for (let key in font) {
-      console.log(key)
-      fontkeyList.forEach(item => {
-        if (fs.existsSync(path.join(__dirname, item + '/' + key+'.ttf'))) {
-          console.log(item + '/' + key)
-          font[key] = fs.readFileSync(path.join(__dirname, item + '/' + key+'.ttf'), 'base64')
-        }
-      })
-
-    }
-
 
 //双击F10,切换环境
 const F10 = (win) => {
@@ -417,33 +403,29 @@ app.whenReady().then(async () => {
     let res = await proxy.getAlias(env)
     return res
   })
-  ipcMain.handle('loadLocalFont', async function () {
-    // 返回字体内容，用于注入到页面中
+  const template = process.platform === 'darwin' ? [{
+    label: 'Helium OS',
+    submenu: [{ role: 'about' },
+    { type: 'separator' },
+    { role: 'services', submenu: [] },
+    { type: 'separator' },
+    { role: 'hide' },
+    { role: 'hideothers' },
+    { role: 'unhide' },
+    { type: 'separator' },
+    { role: 'quit', accelerator: 'CmdOrCtrl+Q' },],
+},
+{
+    label: '窗口',
+    submenu: [{ role: 'minimize', accelerator: 'CmdOrCtrl+M' },
+    { role: 'close', accelerator: 'CmdOrCtrl+W' },
+    { role: 'zoom' },
+    { type: 'separator' },
+    { role: 'togglefullscreen', accelerator: 'CmdOrCtrl+F' },],
+},] : [];
+const menu = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(menu);
 
-    return `
-    @font-face {
-      font-family: 'PingFang SC';
-      src: url(data:font/ttf;base64,${font['PingFang-SC-Light']}) format('truetype');
-      font-weight: lighter;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'PingFang SC';
-      src: url(data:font/ttf;base64,${font['PingFang-SC-Regular']}) format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'PingFang SC';
-      src: url(data:font/ttf;base64,${font['PingFang-SC-Bold']}) format('truetype');
-      font-weight: bold;
-      font-style: normal;
-    }  
-    `;
-  })
-  const emptyMenu = Menu.buildFromTemplate([]);
-
-  Menu.setApplicationMenu(emptyMenu);
   //多开配置
   util.multipleOpen(app, BrowserWindow, createWindow, false)
 });
