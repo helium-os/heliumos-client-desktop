@@ -8,6 +8,7 @@ const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
 let { autoUpdater } = require("electron-updater");
 var keyList = ["heliumos.crt", '../heliumos.crt']
+const log = require('electron-log');
 var publicKey
 app.setName('Helium OS');
 //F10双击,F8双击
@@ -58,6 +59,10 @@ const F10 = (win) => {
     }
   });
 }
+// 监听 uncaughtException 事件
+process.on('uncaughtException', (value) => {
+ log.info(value)
+});
 //双击F8,清除缓存
 const F8 = (win) => {
   const options = {
@@ -157,7 +162,7 @@ createWindow = async () => {
 
       if (arg?.name && (arg.autoLogin === true || arg.autoLogin === false)) {
         let envList = await util.getStorageData(env)
-        await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, org: arg?.org }], ['logList'])
+        await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name||(item?.name == arg.name&&item?.org != arg.org)), { name: arg?.name, org: arg?.org }], ['logList'])
       }
 
       if (arg.autoStart === true || arg.autoStart === false) {
@@ -414,20 +419,20 @@ app.whenReady().then(async () => {
     { role: 'unhide' },
     { type: 'separator' },
     { role: 'quit', accelerator: 'CmdOrCtrl+Q' },],
-},
-{
+  },
+  {
     label: '窗口',
     submenu: [{ role: 'minimize', accelerator: 'CmdOrCtrl+M' },
     { role: 'close', accelerator: 'CmdOrCtrl+W' },
     { role: 'zoom' },
     { type: 'separator' },
     { role: 'togglefullscreen', accelerator: 'CmdOrCtrl+F' },],
-},] : [];
-const menu = Menu.buildFromTemplate(template);
-Menu.setApplicationMenu(menu);
+  },] : [];
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 
   //多开配置
-  util.multipleOpen(app, BrowserWindow, createWindow, false)
+  util.multipleOpen(app, BrowserWindow, createWindow, true)
 });
 
 
