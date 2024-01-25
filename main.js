@@ -162,7 +162,7 @@ createWindow = async () => {
 
       if (arg?.name && (arg.autoLogin === true || arg.autoLogin === false)) {
         let envList = await util.getStorageData(env)
-        await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name), { name: arg?.name, org: arg?.org }], ['logList'])
+        await util.setStorageData(env, [...(envList?.logList || []).filter(item => item?.name != arg.name||(item?.name == arg.name&&item?.org != arg.org)), { name: arg?.name, org: arg?.org }], ['logList'])
       }
 
       if (arg.autoStart === true || arg.autoStart === false) {
@@ -432,7 +432,7 @@ app.whenReady().then(async () => {
   Menu.setApplicationMenu(menu);
 
   //多开配置
-  util.multipleOpen(app, BrowserWindow, createWindow, false)
+  util.multipleOpen(app, BrowserWindow, createWindow, true)
 });
 
 

@@ -53,7 +53,7 @@
         "publish": [
             {
                 "provider": "github",
-                "owner": "helium-os",
+                "owner": "slmsty",
                 "repo": "heliumos-client-desktop",
                 "releaseType": "release"
             }
