@@ -51,8 +51,9 @@ $ npm run dev
   
 
 ## 发布
-```javascript
 需要先看[wiki](https://easypayx.coding.net/p/easypay/wiki/6781)
+```javascript
+
 // 开发时先将分支切换到master
 git  pull  //拉取master最新代码
 git checkout -b  users/songlm( 开发人员姓名简拼 )/6735( 项目任务号 )/changeUI( 项目英文简称 ) //切换到相应任务分支
