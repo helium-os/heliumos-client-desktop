@@ -46,12 +46,14 @@ export default function Page() {
             <div className={styles.avatarBox}>
                 <Image fill alt="" src="/guide-avatar-bg.svg" />
                 <div className={styles.avatar}>
-                    <Image fill alt="" src="" />
+                    <Image fill alt="" src="/logo.svg" />
                 </div>
             </div>
             <h2>欢迎来到安装模式</h2>
             <p>你可以在这里安装最新版的HeliumOS系统</p>
-            <Button onClick={onStart}>开始安装</Button>
+            <Button className={styles.installBtn} onClick={onStart}>
+                开始安装
+            </Button>
             <div className={styles.switchModeType}>
                 <Select
                     style={{ width: '120px' }}

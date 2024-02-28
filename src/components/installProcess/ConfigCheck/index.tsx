@@ -37,19 +37,6 @@ const ConfigCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
             oamConfigStorage[id] = value || defaultValue;
         });
 
-        console.log('installHeliumos', {
-            storageClass,
-            expose: serverExpose,
-            serverIp,
-            orgId,
-            adminPw: adminPassword,
-            baseConfig: {
-                storage: baseConfigStorage,
-            },
-            oamConfig: {
-                storage: oamConfigStorage,
-            },
-        });
         return installHeliumos({
             storageClass,
             expose: serverExpose,
@@ -76,7 +63,11 @@ const ConfigCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
                     text: '安装',
                     onClick: async () => {
                         try {
-                            await onInstall();
+                            const orgId = await onInstall();
+                            console.log('安装接口调用完成 orgId = ', orgId);
+                            if (!orgId) {
+                                throw new Error('安装失败，没有返回orgId');
+                            }
                             onStep?.(Step.Next);
                         } catch (error: any) {
                             console.error('安装失败', error);

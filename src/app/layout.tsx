@@ -9,6 +9,7 @@ import '@/css/main.css';
 import '@/css/loading.css';
 import StyleRegistry from '@/app/StyleRegistry';
 import StoreProvider from '@/app/StoreProvider';
+import SpinLayout from './SpinLayout';
 type Props = {
     children: ReactNode;
     params: { locale: Locale };
@@ -27,7 +28,9 @@ export default function RootLayout({ children, params: { locale } }: Props) {
             <body>
                 <StoreProvider>
                     <ConfigProvider theme={theme}>
-                        <StyleRegistry>{children}</StyleRegistry>
+                        <StyleRegistry>
+                            <SpinLayout>{children}</SpinLayout>
+                        </StyleRegistry>
                     </ConfigProvider>
                 </StoreProvider>
             </body>

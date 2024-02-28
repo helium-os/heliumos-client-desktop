@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 import PanelLayout from '@/components/installProcess/PanelLayout';
 import { Step, TabContentProps } from '@/app/[locale]/install-process/page';
 import DownOutlinedIcon from '@/components/common/icon/DownOutlined';
@@ -17,22 +17,27 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
     const orgId = useAppSelector((state: RootState) => state.installConfig.orgId);
 
     const { styles } = useStyles();
-
     const [messageApi, contextHolder] = message.useMessage();
+
+    const timerRef = useRef<any>(null);
 
     const [progress, setProgress] = useState<number>(0); // 安装进度
     const [isComplete, setIsComplete] = useState<boolean>(false);
     const [expand, setExpand] = useState<boolean>(false);
 
     useEffect(() => {
-        setInterval(() => {
-            getInstallStatus().then((installstatus) => {
+        timerRef.current = setInterval(() => {
+            getInstallStatus().then((installStatus) => {
                 console.log('install status:', installstatus);
                 // setProgress((state) => {
                 //     return Math.min(state + 50, 100);
                 // });
             });
         }, 1000);
+
+        return () => {
+            clearInterval(timerRef.current);
+        };
     }, []);
 
     useEffect(() => {
@@ -44,19 +49,8 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
     };
 
     const onLogin = useCallback(async () => {
-        const orgList = await window.versions?.getDbValue();
-        const org = orgList.find((item: any) => item?.id == orgId);
-        if (!org) {
-            messageApi.open({
-                type: 'error',
-                content: '没有该组织',
-            });
-            return;
-        }
-
-        const orgAlias = org.alias;
         await window.versions?.setuserInfo({
-            org: orgAlias,
+            org: orgId, // 安装完成后，orgId暂时用作别名
             orgId,
             name: 'admin',
             autoLogin: null,

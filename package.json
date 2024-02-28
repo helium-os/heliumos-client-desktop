@@ -19,6 +19,7 @@
     "dependencies": {
         "@ant-design/nextjs-registry": "^1.0.0",
         "@electron-forge/cli": "^6.0.5",
+        "@mapbox/node-pre-gyp": "^1.0.11",
         "@reduxjs/toolkit": "^2.2.1",
         "antd": "^5.14.0",
         "antd-style": "^3.6.1",

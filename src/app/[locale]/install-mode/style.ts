@@ -8,6 +8,7 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
                 text-align: center;
                 text-shadow: 0 2px 3px rgba(48, 48, 48, 0.06);
                 font-size: 32px;
+                line-height: 45px;
                 font-weight: 500;
             }
             & > p {
@@ -27,11 +28,27 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
             position: relative;
             width: 120px;
             height: 120px;
+            margin-bottom: 16px;
             border-radius: 50%;
             box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
             backdrop-filter: blur(0.5px);
         `,
-        avatar: css``,
+        avatar: css`
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+        `,
+        installBtn: css`
+            padding: 5px 16px;
+            height: 30px;
+            line-height: 1;
+            border: none !important;
+            &:hover {
+                color: rgba(0, 0, 0, 0.9) !important;
+            }
+        `,
         switchModeType: css`
             position: fixed;
             right: 40px;

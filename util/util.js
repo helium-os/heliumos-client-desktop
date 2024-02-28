@@ -240,14 +240,6 @@ const askForMediaAccess = (data = [true, true]) => {
     });
 };
 
-//
-const loadFile = async (win, url = './index.html', arg = 'second') => {
-    const options = {
-        hash: arg,
-    };
-    win.loadFile(url, options);
-};
-
 // 加载Keycloak登录页面
 const loadKeycloakLoginPage = (win, orgId) => {
     win.loadURL('https://desktop.system.app.' + orgId);
@@ -256,7 +248,7 @@ const loadKeycloakLoginPage = (win, orgId) => {
 const pageToPathMap = {
     login: '/login',
     userList: '/user-list',
-    installMode: 'install-mode',
+    installMode: '/install-mode',
 };
 
 // 加载当前项目page
@@ -291,7 +283,6 @@ module.exports = {
     setStorageData,
     askForMediaAccess,
     findPath,
-    loadFile,
     loadKeycloakLoginPage,
     pageToPathMap,
     loadLocalePage,
