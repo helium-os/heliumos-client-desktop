@@ -3,17 +3,6 @@ import { createStyles } from 'antd-style';
 const useStyles = createStyles(({ token, css, prefixCls }) => {
     return {
         installGuideContainer: css`
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('/background.jpg') no-repeat center;
-            background-size: cover;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             & > h2 {
                 color: rgba(255, 255, 255, 0.8);
                 text-align: center;
@@ -43,6 +32,25 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
             backdrop-filter: blur(0.5px);
         `,
         avatar: css``,
+        switchModeType: css`
+            position: fixed;
+            right: 40px;
+            bottom: 40px;
+            .ant-select-selection-item {
+                color: rgba(255, 255, 255, 0.9) !important;
+                text-align: right;
+                text-shadow: 0 2px 4px rgba(48, 48, 48, 0.06);
+                font-size: 13px;
+                font-weight: 400;
+                line-height: 20px;
+            }
+            .ant-select-arrow {
+                color: rgba(255, 255, 255, 0.9) !important;
+            }
+            .ant-select-item-option {
+                color: rgba(0, 0, 0, 0.76);
+            }
+        `,
     };
 });
 

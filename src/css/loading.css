@@ -1,0 +1,56 @@
+@keyframes spiner {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin-infinite {
+  0% {
+    stroke-dasharray: 0.01px, 43.97px;
+    transform: rotate(0deg);
+  }
+  50% {
+    stroke-dasharray: 21.99px, 21.99px;
+    transform: rotate(450deg);
+  }
+  100% {
+    stroke-dasharray: 0.01px, 43.97px;
+    transform: rotate(1080deg);
+  }
+}
+.progressRing circle {
+  stroke: white;
+  fill: none;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  transform-origin: 50% 50%;
+  transition: all 0.2s ease-in-out 0s;
+  animation: 2s linear 0s infinite normal none running spin-infinite;
+}
+
+.bootscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100vw;
+  min-height: 100vh;
+  background-color: #010001;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  cursor: progress;
+}
+
+#loader {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: grid;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  animation: spiner infinite 2s;
+}

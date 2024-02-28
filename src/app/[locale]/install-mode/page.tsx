@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from '@/navigation';
 import Image from 'next/image';
 import { Button, Select } from 'antd';
-import { getBinaryVersion, getClusterConfig, installHeliumos, getInstallStatus } from '@/app/actions';
+import BgLayout from '@/components/structure/BgLayout';
 import useStyles from './style';
 
 enum ModeType {
@@ -32,6 +32,7 @@ export default function Page() {
     useEffect(() => {
         switch (modeType) {
             case ModeType.Normal:
+                window.versions?.switchModeType(ModeType.Normal);
                 break;
         }
     }, [modeType]);
@@ -45,7 +46,7 @@ export default function Page() {
     };
 
     return (
-        <div className={styles.installGuideContainer}>
+        <BgLayout className={styles.installGuideContainer}>
             <div className={styles.avatarBox}>
                 <Image fill alt="" src="/guide-avatar-bg.svg" />
                 <div className={styles.avatar}>
@@ -56,8 +57,14 @@ export default function Page() {
             <p>你可以在这里安装最新版的HeliumOS系统</p>
             <Button onClick={onStart}>开始安装</Button>
             <div className={styles.switchModeType}>
-                <Select value={modeType} onChange={onModeTypeChange} options={modeTypeOptions} />
+                <Select
+                    style={{ width: '120px' }}
+                    value={modeType}
+                    onChange={onModeTypeChange}
+                    options={modeTypeOptions}
+                    variant="borderless"
+                />
             </div>
-        </div>
+        </BgLayout>
     );
 }

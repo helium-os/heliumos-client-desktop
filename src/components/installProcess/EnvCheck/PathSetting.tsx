@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback, useRef, memo } from 'react';
-import { Input, Upload } from 'antd';
+import { Input, Upload, message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import SectionLayout, { GuideInfo } from '../SectionLayout';
 import useStyles from './style';
@@ -17,6 +17,8 @@ interface IProps extends BaseEnvItem {
 
 const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPassChange = null }) => {
     const { styles } = useStyles();
+
+    const [messageApi, contextHolder] = message.useMessage();
 
     const timerRef = useRef<any>(null);
 
@@ -52,12 +54,15 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
                 console.log('请求成功', res);
                 const { version, pass } = res;
                 setVersion(version);
-                // setPass(pass);
-                setPass(true);
-            } catch (error) {
+                setPass(pass);
+            } catch (error: any) {
                 console.error('请求失败 error', error);
                 setVersion('');
                 setPass(false);
+                messageApi.open({
+                    type: 'error',
+                    content: error.message,
+                });
             }
             setLoading(false);
         }, 300);
@@ -97,29 +102,32 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
     }, [loading, path, version, pass, styles]);
 
     return (
-        <SectionLayout
-            title={`${name} 所在路径`}
-            guideInfo={
-                {
-                    text: `如何安装 ${name}？`,
-                    link: installLink,
-                } as GuideInfo
-            }
-        >
-            <div className={styles.pathSettingWrap}>
-                <div className={`${styles.inputBox} ${version ? 'hasVersion' : ''}`}>
-                    <Input placeholder={`请输入${name} 所在路径`} value={path} onChange={onInputChange} />
-                    <div className={styles.suffix}>{suffix}</div>
-                </div>
-                <Upload beforeUpload={beforeUpload} showUploadList={false}>
-                    <div className={styles.uploadBtn}>
-                        <span className="dot" />
-                        <span className="dot" />
-                        <span className="dot" />
+        <>
+            {contextHolder}
+            <SectionLayout
+                title={`${name} 所在路径`}
+                guideInfo={
+                    {
+                        text: `如何安装 ${name}？`,
+                        link: installLink,
+                    } as GuideInfo
+                }
+            >
+                <div className={styles.pathSettingWrap}>
+                    <div className={`${styles.inputBox} ${version ? 'hasVersion' : ''}`}>
+                        <Input placeholder={`请输入${name} 所在路径`} value={path} onChange={onInputChange} />
+                        <div className={styles.suffix}>{suffix}</div>
                     </div>
-                </Upload>
-            </div>
-        </SectionLayout>
+                    <Upload beforeUpload={beforeUpload} showUploadList={false}>
+                        <div className={styles.uploadBtn}>
+                            <span className="dot" />
+                            <span className="dot" />
+                            <span className="dot" />
+                        </div>
+                    </Upload>
+                </div>
+            </SectionLayout>
+        </>
     );
 };
 

@@ -4,7 +4,9 @@ import { unstable_setRequestLocale } from 'next-intl/server';
 import { ConfigProvider } from 'antd';
 import { theme } from '@/utils/theme';
 import { Locale } from '@/config';
-import './reset.css';
+import '@/css/reset.css';
+import '@/css/main.css';
+import '@/css/loading.css';
 import StyleRegistry from '@/app/StyleRegistry';
 import StoreProvider from '@/app/StoreProvider';
 type Props = {

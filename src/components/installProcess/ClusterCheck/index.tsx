@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 import useStyles from './style';
-import { Divider, Input, Select } from 'antd';
+import { Divider, Input, Select, message } from 'antd';
 import PanelLayout from '@/components/installProcess/PanelLayout';
 import SectionLayout, { GuideInfo } from '@/components/installProcess/SectionLayout';
 import CheckResultItem from './CheckResultItem';
@@ -32,6 +32,8 @@ const ClusterCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
     const storageClass = useAppSelector((state: RootState) => state.installConfig.storageClass);
     const serverExpose = useAppSelector((state: RootState) => state.installConfig.serverExpose);
 
+    const [messageApi, contextHolder] = message.useMessage();
+
     const { styles } = useStyles();
 
     const timerRef = useRef<any>(null);
@@ -59,10 +61,18 @@ const ClusterCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
 
         clearTimer();
         timerRef.current = setTimeout(() => {
-            getClusterConfig(trimKubeConfig).then((res: ResultRes) => {
-                console.log('获取到ClusterConfig', res);
-                setRes(res);
-            });
+            getClusterConfig(trimKubeConfig)
+                .then((res: ResultRes) => {
+                    console.log('获取到ClusterConfig', res);
+                    setRes(res);
+                })
+                .catch((error: any) => {
+                    console.error('获取ClusterConfig失败', error);
+                    messageApi.open({
+                        type: 'error',
+                        content: error.message,
+                    });
+                });
         }, 300);
     }, [kubeConfig]);
 
@@ -208,39 +218,42 @@ const ClusterCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
     );
 
     return (
-        <PanelLayout footer={footerButtons} {...restProps}>
-            <SectionLayout title="Kubeconfig" guideInfo={guideInfo}>
-                <TextArea className={styles.textarea} rows={6} value={kubeConfig} onChange={onKubeConfigChange} />
-            </SectionLayout>
-            {res && (
-                <>
-                    <SectionLayout title="StorageClass">
-                        <Select
-                            value={storageClass}
-                            onChange={onStorageClassChange}
-                            style={{ width: '100%' }}
-                            options={storageClassOptions}
-                        />
-                    </SectionLayout>
-                    <SectionLayout title="服务暴露方式">
-                        <Select
-                            value={serverExpose}
-                            onChange={onServerExposeChange}
-                            style={{ width: '100%' }}
-                            options={serverExposeOptions}
-                        />
-                    </SectionLayout>
-                    <Divider />
-                    <SectionLayout>
-                        <div className={styles.clusterCheckResult}>
-                            {checkResults.map((item) => (
-                                <CheckResultItem key={item.id} {...item}></CheckResultItem>
-                            ))}
-                        </div>
-                    </SectionLayout>
-                </>
-            )}
-        </PanelLayout>
+        <>
+            {contextHolder}
+            <PanelLayout footer={footerButtons} {...restProps}>
+                <SectionLayout title="Kubeconfig" guideInfo={guideInfo}>
+                    <TextArea className={styles.textarea} rows={6} value={kubeConfig} onChange={onKubeConfigChange} />
+                </SectionLayout>
+                {res && (
+                    <>
+                        <SectionLayout title="StorageClass">
+                            <Select
+                                value={storageClass}
+                                onChange={onStorageClassChange}
+                                style={{ width: '100%' }}
+                                options={storageClassOptions}
+                            />
+                        </SectionLayout>
+                        <SectionLayout title="服务暴露方式">
+                            <Select
+                                value={serverExpose}
+                                onChange={onServerExposeChange}
+                                style={{ width: '100%' }}
+                                options={serverExposeOptions}
+                            />
+                        </SectionLayout>
+                        <Divider />
+                        <SectionLayout>
+                            <div className={styles.clusterCheckResult}>
+                                {checkResults.map((item) => (
+                                    <CheckResultItem key={item.id} {...item}></CheckResultItem>
+                                ))}
+                            </div>
+                        </SectionLayout>
+                    </>
+                )}
+            </PanelLayout>
+        </>
     );
 };
 
