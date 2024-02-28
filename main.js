@@ -7,7 +7,6 @@ const proxy = require('./proxy/proxy');
 const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
 let { autoUpdater } = require('electron-updater');
-const { installModeUrl } = require('./util/data');
 var keyList = ['heliumos.crt', '../heliumos.crt'];
 var publicKey;
 app.setName('Helium OS');
@@ -233,14 +232,17 @@ createWindow = async () => {
     });
 
     ipcMain.on('switchModeType', async (event, modeType, orgId) => {
-        let envList = await util.getStorageData(env);
-        console.log('envList', envList);
         switch (modeType) {
             case modeTypeMap.normal:
-                win.loadURL('https://desktop.system.app.' + (orgId || LastUser.orgId));
+                const finalOrgId = orgId || LastUser.orgId;
+                if (!finalOrgId) {
+                    util.loadLoginPage(win);
+                    return;
+                }
+                util.loadKeycloakLoginPage(win, finalOrgId);
                 break;
             case modeTypeMap.install:
-                win.loadURL(installModeUrl);
+                util.loadInstallModePage(win);
                 break;
         }
     });

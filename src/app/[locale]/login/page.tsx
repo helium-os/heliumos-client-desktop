@@ -60,7 +60,7 @@ export default function Page() {
     return (
         <>
             {contextHolder}
-            <BgLayout>
+            <BgLayout className={styles.loginPageContainer}>
                 <Form form={form} onFinish={onFinish} layout={'vertical'}>
                     <div className="account">
                         <div className="accountTitle">组织别名</div>

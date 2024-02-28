@@ -7,11 +7,18 @@ import SuccessOutlinedIcon from '@/components/common/icon/SuccessOutlined';
 import FooterButtons from '@/components/installProcess/FooterButtons';
 import useStyles from './style';
 import { getInstallStatus } from '@/app/actions';
+import { RootState, useAppSelector } from '@/store';
+import { ModeType } from '@/utils/data';
+import { message } from 'antd';
 
 interface IProps extends TabContentProps {}
 
 const Install: React.FC<IProps> = ({ title, ...restProps }) => {
+    const orgId = useAppSelector((state: RootState) => state.installConfig.orgId);
+
     const { styles } = useStyles();
+
+    const [messageApi, contextHolder] = message.useMessage();
 
     const [progress, setProgress] = useState<number>(0); // 安装进度
     const [isComplete, setIsComplete] = useState<boolean>(false);
@@ -36,7 +43,26 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
         setExpand((state) => !state);
     };
 
-    const onLogin = () => {};
+    const onLogin = useCallback(async () => {
+        const orgList = await window.versions?.getDbValue();
+        const org = orgList.find((item: any) => item?.id == orgId);
+        if (!org) {
+            messageApi.open({
+                type: 'error',
+                content: '没有该组织',
+            });
+            return;
+        }
+
+        const orgAlias = org.alias;
+        await window.versions?.setuserInfo({
+            org: orgAlias,
+            orgId,
+            name: 'admin',
+            autoLogin: null,
+        });
+        window.versions?.switchModeType(ModeType.Normal);
+    }, [orgId]);
 
     const footerButtons = useMemo(
         () => (
@@ -55,40 +81,43 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
     );
 
     return (
-        <PanelLayout title={title} footer={footerButtons} {...restProps}>
-            <div className={styles.installWrap}>
-                <div className={styles.installInner}>
-                    {isComplete ? (
-                        <div className={styles.installSuccess}>
-                            <SuccessOutlinedIcon />
-                            安装完成
-                        </div>
-                    ) : (
-                        <>
-                            <div className={styles.progressBarBox}>
-                                <div className={styles.doneBar} style={{ width: `${progress}%` }} />
+        <>
+            {contextHolder}
+            <PanelLayout title={title} footer={footerButtons} {...restProps}>
+                <div className={styles.installWrap}>
+                    <div className={styles.installInner}>
+                        {isComplete ? (
+                            <div className={styles.installSuccess}>
+                                <SuccessOutlinedIcon />
+                                安装完成
                             </div>
-                            <div className={styles.installLogWrap}>
-                                <div
-                                    className={`${styles.logTitle} ${expand ? 'expand' : ''}`}
-                                    onClick={onToggleExpand}
-                                >
-                                    <div className={styles.expandIcon}>
-                                        <DownOutlinedIcon />
-                                    </div>
-                                    正在安装配置...
+                        ) : (
+                            <>
+                                <div className={styles.progressBarBox}>
+                                    <div className={styles.doneBar} style={{ width: `${progress}%` }} />
                                 </div>
-                                {expand && (
-                                    <div className={styles.logDetailWrap}>
-                                        <div className={styles.logDetailInner}></div>
+                                <div className={styles.installLogWrap}>
+                                    <div
+                                        className={`${styles.logTitle} ${expand ? 'expand' : ''}`}
+                                        onClick={onToggleExpand}
+                                    >
+                                        <div className={styles.expandIcon}>
+                                            <DownOutlinedIcon />
+                                        </div>
+                                        正在安装配置...
                                     </div>
-                                )}
-                            </div>
-                        </>
-                    )}
+                                    {expand && (
+                                        <div className={styles.logDetailWrap}>
+                                            <div className={styles.logDetailInner}></div>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
-            </div>
-        </PanelLayout>
+            </PanelLayout>
+        </>
     );
 };
 

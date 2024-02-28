@@ -5,11 +5,7 @@ import Image from 'next/image';
 import { Button, Select } from 'antd';
 import BgLayout from '@/components/structure/BgLayout';
 import useStyles from './style';
-
-enum ModeType {
-    Normal = 'normal',
-    Install = 'install',
-}
+import { ModeType } from '@/utils/data';
 
 const modeTypeOptions = [
     {
