@@ -3,7 +3,12 @@
     "version": "1.2.7",
     "main": "main.js",
     "scripts": {
+        "dev": "next dev -p 3001",
+        "build": "next build",
+        "lint": "next lint",
+        "lint:fix": "next lint --fix",
         "electron-start": "cross-env NODE_ENV=testinner electron . --icon=favicon.ico ",
+        "electron-start-all": "concurrently \"npm run dev\" \"wait-on http://localhost:3001 && npm run start-electron\"",
         "dist": "cross-env  electron-builder --win --x64",
         "dist-mac": "electron-builder --macos --arm64 --x64",
         "dist-linux": "electron-builder  --linux  --x64",
@@ -12,19 +17,45 @@
         "version-win": "echo $npm_package_version "
     },
     "dependencies": {
+        "@ant-design/nextjs-registry": "^1.0.0",
         "@electron-forge/cli": "^6.0.5",
+        "@reduxjs/toolkit": "^2.2.1",
+        "antd": "^5.14.0",
+        "antd-style": "^3.6.1",
+        "axios": "^1.6.7",
         "cross-env": "^7.0.3",
         "crypto": "^1.0.1",
         "electron-json-storage": "^4.5.0",
         "electron-localshortcut": "^3.2.1",
         "electron-log": "^5.0.0-beta.23",
         "electron-updater": "^5.3.0",
+        "hex-to-rgba": "^2.0.1",
         "lodash": "^4.17.21",
         "log4js": "^6.9.1",
+        "next": "14.1.0",
+        "next-intl": "^3.5.4",
         "node-schedule": "^2.1.1",
+        "react": "^18",
+        "react-dom": "^18",
+        "react-redux": "^9.1.0",
         "request": "^2.88.2",
         "sqlite": "^5.0.1",
-        "sqlite3": "^5.1.6"
+        "sqlite3": "^5.1.7"
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "electron": "^27.0.0",
+        "electron-builder": "^23.6.0",
+        "eslint": "^8",
+        "eslint-config-next": "14.1.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.1.3",
+        "husky": "^9.0.10",
+        "lint-staged": "^15.2.1",
+        "prettier": "^3.2.4",
+        "typescript": "^5"
     },
     "build": {
         "appId": "com.xxx.app",
@@ -85,10 +116,6 @@
             ],
             "icon": "build/icon.png"
         }
-    },
-    "devDependencies": {
-        "electron": "^27.0.0",
-        "electron-builder": "^23.6.0"
     },
     "win": {
         "icon": "favicon.ico"
