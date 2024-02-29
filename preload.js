@@ -16,4 +16,8 @@ contextBridge.exposeInMainWorld('versions', {
     openExternal: (url) => ipcRenderer.send('openExternalUrl', url),
     loadUrl: (url) => ipcRenderer.send('loadUrl', url),
     switchModeType: (modeType, orgId) => ipcRenderer.send('switchModeType', modeType, orgId),
+    getBinaryVersion: (path, id) => ipcRenderer.invoke('getBinaryVersion', path, id),
+    getClusterConfig: (config) => ipcRenderer.invoke('getClusterConfig', config),
+    installHeliumos: (configObj) => ipcRenderer.invoke('installHeliumos', configObj),
+    getInstallStatus: (orgId) => ipcRenderer.invoke('getInstallStatus', orgId),
 });

@@ -1,12 +1,11 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 import PanelLayout from '@/components/installProcess/PanelLayout';
-import { Step, TabContentProps } from '@/app/[locale]/install-process/page';
+import { TabContentProps } from '@/app/[locale]/install-process/page';
 import DownOutlinedIcon from '@/components/common/icon/DownOutlined';
 import SuccessOutlinedIcon from '@/components/common/icon/SuccessOutlined';
 import FooterButtons from '@/components/installProcess/FooterButtons';
 import useStyles from './style';
-import { getInstallStatus } from '@/app/actions';
 import { RootState, useAppSelector } from '@/store';
 import { ModeType } from '@/utils/data';
 import { message } from 'antd';
@@ -27,7 +26,7 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
 
     useEffect(() => {
         timerRef.current = setInterval(() => {
-            getInstallStatus().then((installStatus) => {
+            window.versions?.getInstallStatus(orgId).then((installStatus) => {
                 console.log('install status:', installstatus);
                 // setProgress((state) => {
                 //     return Math.min(state + 50, 100);

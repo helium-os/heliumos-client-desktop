@@ -4,6 +4,7 @@ const storage = require('electron-json-storage');
 var crypto = require('crypto');
 var fs = require('fs');
 const proxy = require('./proxy/proxy');
+const install = require('./proxy/install');
 const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
 let { autoUpdater } = require('electron-updater');
@@ -455,6 +456,23 @@ app.whenReady().then(async () => {
         let res = await proxy.getAlias(env);
         return res;
     });
+
+    ipcMain.handle('getBinaryVersion', function (event, path, id) {
+        return install.getBinaryVersion(path, id);
+    });
+
+    ipcMain.handle('getClusterConfig', function (event, config) {
+        return install.getClusterConfig(config);
+    });
+
+    ipcMain.handle('installHeliumos', function (event, configObj) {
+        return install.installHeliumos(configObj);
+    });
+
+    ipcMain.handle('getInstallStatus', function (event, orgId) {
+        return install.getInstallStatus(orgId);
+    });
+
     const template =
         process.platform === 'darwin'
             ? [

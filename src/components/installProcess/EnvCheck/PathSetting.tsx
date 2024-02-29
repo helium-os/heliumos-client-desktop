@@ -7,7 +7,6 @@ import useStyles from './style';
 import SuccessFilledIcon from '@/components/common/icon/SuccsssFilled';
 import FailFilledIcon from '@/components/common/icon/FailFilled';
 import { BaseEnvItem } from '@/components/installProcess/EnvCheck/index';
-import { getBinaryVersion } from '@/app/actions';
 
 type VersionAndPassChangeFn = (id: string, version: string, pass: boolean) => void;
 
@@ -50,7 +49,7 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
         timerRef.current = setTimeout(async () => {
             setLoading(true);
             try {
-                const res = await getBinaryVersion(path, id);
+                const res = await window.versions?.getBinaryVersion(path, id);
                 console.log('请求成功', res);
                 const { version, pass } = res;
                 setVersion(version);

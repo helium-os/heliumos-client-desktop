@@ -14,7 +14,6 @@ import {
     setStoreConfigList,
     setOamStoreConfigList,
 } from '@/store/slices/installConfigSlice';
-import { getClusterConfig } from '@/app/actions';
 import { checkHasNoPass, keyNameMap, ResultItem, ResultRes } from '@/components/installProcess/ClusterCheck/data';
 import { BaseTabContentProps, Step } from '@/app/[locale]/install-process/page';
 import FooterButtons from '@/components/installProcess/FooterButtons';
@@ -61,7 +60,8 @@ const ClusterCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
 
         clearTimer();
         timerRef.current = setTimeout(() => {
-            getClusterConfig(trimKubeConfig)
+            window.versions
+                ?.getClusterConfig(trimKubeConfig)
                 .then((res: ResultRes) => {
                     console.log('获取到ClusterConfig', res);
                     setRes(res);

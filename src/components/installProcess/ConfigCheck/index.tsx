@@ -8,7 +8,6 @@ import StoreConfigList, { ModeType } from '@/components/structure/StoreConfigLis
 import { RootState, useAppSelector } from '@/store';
 import { BaseTabContentProps, Step } from '@/app/[locale]/install-process/page';
 import FooterButtons from '@/components/installProcess/FooterButtons';
-import { installHeliumos } from '@/app/actions';
 import { StorageMap } from '@/components/installProcess/ClusterCheck/data';
 
 interface IProps extends BaseTabContentProps {}
@@ -37,7 +36,7 @@ const ConfigCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
             oamConfigStorage[id] = value || defaultValue;
         });
 
-        return installHeliumos({
+        return window.versions?.installHeliumos({
             storageClass,
             expose: serverExpose,
             serverIp,
