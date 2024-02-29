@@ -1,6 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { StoreConfigItem } from '@/components/structure/StoreConfigList';
+import { StoreConfigItem } from '@/components/install-process/StoreConfigList';
 
 type State = {
     storageClass: string;

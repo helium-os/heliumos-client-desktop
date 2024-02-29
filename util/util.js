@@ -254,8 +254,7 @@ const pageToPathMap = {
 // 加载当前项目page
 const loadLocalePage = async (win, url, options = {}) => {
     if (!url) return;
-
-    await win.loadURL('http://localhost:3001' + url, options);
+    // await win.loadURL('http://localhost:3001' + url, options);
 };
 
 // 加载登录页面

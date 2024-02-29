@@ -1,4 +1,5 @@
 const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, session } = require('electron');
+const serve = require('electron-serve');
 const path = require('path');
 const storage = require('electron-json-storage');
 var crypto = require('crypto');
@@ -23,6 +24,16 @@ const modeTypeMap = {
     normal: 'normal',
     install: 'install',
 };
+
+const appServe = serve({
+    directory: path.join(__dirname, './.next/server/pages'),
+});
+
+// const appServe = app.isPackaged
+//     ? serve({
+//           directory: path.join(__dirname, '../out'),
+//       })
+//     : null;
 
 keyList.forEach((item) => {
     if (fs.existsSync(path.join(__dirname, item))) {
@@ -116,6 +127,17 @@ createWindow = async () => {
 
     loadingWindow.loadFile(path.join(__dirname, 'loading.html'));
 
+    console.log('app.isPackaged', app.isPackaged);
+    try {
+        await appServe(win);
+        console.log('--------------启动完成');
+    } catch (error) {
+        console.error('--------------启动失败', error);
+    }
+    // if (app.isPackaged) {
+    //     await appServe(win);
+    // }
+
     win.webContents.on('will-navigate', (event, url) => {
         if (process.platform !== 'linux') {
             win.setMovable(false);
@@ -123,6 +145,7 @@ createWindow = async () => {
             loadingWindow.show();
         }
     });
+
     win.webContents.on('did-finish-load', () => {
         if (process.platform !== 'linux') {
             setTimeout(() => {
@@ -235,12 +258,14 @@ createWindow = async () => {
     ipcMain.on('switchModeType', async (event, modeType, orgId) => {
         switch (modeType) {
             case modeTypeMap.normal:
-                const finalOrgId = orgId || LastUser.orgId;
-                if (!finalOrgId) {
-                    util.loadLoginPage(win);
-                    return;
+                {
+                    const finalOrgId = orgId || LastUser.orgId;
+                    if (!finalOrgId) {
+                        util.loadLoginPage(win);
+                        return;
+                    }
+                    util.loadKeycloakLoginPage(win, finalOrgId);
                 }
-                util.loadKeycloakLoginPage(win, finalOrgId);
                 break;
             case modeTypeMap.install:
                 util.loadInstallModePage(win);
