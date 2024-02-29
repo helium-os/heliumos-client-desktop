@@ -268,7 +268,7 @@ async function getInstallStatus(orgId) {
                     if (status.status === "True") {
                         availableCount ++;
                     }
-                    deployments.push({value: deployment.metadata.name, pass: status.status === "True"? true:false});
+                    deployments.push({name: deployment.metadata.name, status: status.status === "True"? "Available":"Unavailable"});
                     deploymentNameList.push(deployment.metadata.name);
                 }
             }
@@ -276,7 +276,7 @@ async function getInstallStatus(orgId) {
 
         const waitingList = deploymentList.filter(item => !deploymentNameList.includes(item));
         for (const item of waitingList) {
-            deployments.push({value: item, pass: false});
+            deployments.push({name: item, status: "Waiting"});
         }
 
         const percent = Math.round((availableCount / deploymentList.length) * 100)
