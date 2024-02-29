@@ -6,7 +6,36 @@ const { dialog } = require('electron');
 const path = require('path');
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
+const express = require('express');
+const { pageToPathMap, pagePaths } = require('./path.ts');
+const appExpress = express();
+
 let updateDownloaded = false;
+let rendererPort = 3001;
+
+// 启动服务 & 返回随机生成的端口号
+const appServerStart = () => {
+    return new Promise((resolve, reject) => {
+        const server = appExpress.listen(0, () => {
+            const { port } = server.address();
+            resolve(port);
+        });
+    });
+};
+
+// 用express启生产环境前端
+const startUpPackagedRenderer = async () => {
+    const rootPath = path.join(__dirname, '../out');
+    appExpress.use(express.static(rootPath));
+    for (const pagePath of pagePaths) {
+        appExpress.get(pagePath, (_, res) => {
+            res.sendFile(path.join(rootPath, `${pagePath}.html`));
+        });
+    }
+    rendererPort = await appServerStart();
+    console.log(`server is running at ${rendererPort} port`);
+};
+
 //存入数据
 const setDataSourse = (data, filePath = './data.json', en = true) => {
     if (!fs.existsSync(filePath)) {
@@ -245,16 +274,11 @@ const loadKeycloakLoginPage = (win, orgId) => {
     win.loadURL('https://desktop.system.app.' + orgId);
 };
 
-const pageToPathMap = {
-    login: '/login',
-    userList: '/user-list',
-    installMode: '/install-mode',
-};
-
 // 加载当前项目page
 const loadLocalePage = async (win, url, options = {}) => {
     if (!url) return;
-    // await win.loadURL('http://localhost:3001' + url, options);
+    console.log('loadLocaleUrl', `http://localhost:${rendererPort}` + url);
+    await win.loadURL(`http://localhost:${rendererPort}` + url, options);
 };
 
 // 加载登录页面
@@ -273,6 +297,7 @@ const loadInstallModePage = (win, options = {}) => {
 };
 
 module.exports = {
+    startUpPackagedRenderer,
     setDataSourse,
     AutoUpdater,
     AutoUpdaterInterval,

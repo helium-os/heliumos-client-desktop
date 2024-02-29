@@ -5,6 +5,7 @@ import { Button, Select } from 'antd';
 import BgLayout from '@/components/structure/BgLayout';
 import useStyles from '@/components/install-mode/style';
 import { ModeType } from '@/utils/data';
+const { pageToPathMap } = require('../../../util/path.ts');
 
 const modeTypeOptions = [
     {
@@ -33,7 +34,7 @@ export default function Index() {
     }, [modeType]);
 
     const onStart = () => {
-        router.push('/install-process');
+        router.push(pageToPathMap.installProcess);
     };
 
     const onModeTypeChange = (value: ModeType) => {

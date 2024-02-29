@@ -1,5 +1,4 @@
 const { ipcMain, app, BrowserWindow, dialog, globalShortcut, Menu, shell, session } = require('electron');
-const serve = require('electron-serve');
 const path = require('path');
 const storage = require('electron-json-storage');
 var crypto = require('crypto');
@@ -9,6 +8,7 @@ const install = require('./proxy/install');
 const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
 let { autoUpdater } = require('electron-updater');
+
 var keyList = ['heliumos.crt', '../heliumos.crt'];
 var publicKey;
 app.setName('Helium OS');
@@ -24,16 +24,6 @@ const modeTypeMap = {
     normal: 'normal',
     install: 'install',
 };
-
-const appServe = serve({
-    directory: path.join(__dirname, './.next/server/pages'),
-});
-
-// const appServe = app.isPackaged
-//     ? serve({
-//           directory: path.join(__dirname, '../out'),
-//       })
-//     : null;
 
 keyList.forEach((item) => {
     if (fs.existsSync(path.join(__dirname, item))) {
@@ -127,16 +117,10 @@ createWindow = async () => {
 
     loadingWindow.loadFile(path.join(__dirname, 'loading.html'));
 
-    console.log('app.isPackaged', app.isPackaged);
-    try {
-        await appServe(win);
-        console.log('--------------启动完成');
-    } catch (error) {
-        console.error('--------------启动失败', error);
+    // 用express启生产环境前端
+    if (app.isPackaged) {
+        await util.startUpPackagedRenderer();
     }
-    // if (app.isPackaged) {
-    //     await appServe(win);
-    // }
 
     win.webContents.on('will-navigate', (event, url) => {
         if (process.platform !== 'linux') {
