@@ -22,8 +22,8 @@ const orgsDb = 'orgsdb';
 const userDataPath = app.getPath('userData');
 
 const deploymentList = [
-    'deployer',
     'api-server',
+    'deployer',
     'app-store',
     'internal-dns',
     'heliumos-grafana',
@@ -34,13 +34,13 @@ const deploymentList = [
     'couchdb',
     'heliumos-vault-2cc473d7ee-agent-injector',
     'vault-manager',
-    'couchdb-manager',
     'pulsar-manager',
-    'sign-ca',
-    'pulsar-broker',
-    'external-dns-manager',
     'postgres-manager',
+    'pulsar-broker',
+    'sign-ca',
+    'couchdb-manager',
     'resource-manager',
+    'external-dns-manager',
     'app-manager',
     'peer',
     'orderer',
@@ -251,6 +251,7 @@ async function getInstallStatus(orgId) {
     filePath = `'` + filePath + `'`;
 
     let deployments = [];
+    let deploymentNameList = [];
     let percent = 0;
 
     try {
@@ -262,14 +263,20 @@ async function getInstallStatus(orgId) {
         );
         let availableCount = 0;
         for (const deployment of yaml.load(result.stdout).items) {
-            let statusMap = {"name": deployment.metadata.name};
             for (const status of deployment.status.conditions) {
-                statusMap[status.type] = status.status === "True"? true:false;
-                if (status.type === "Available" && status.status === "True") {
-                    availableCount ++;
+                if (status.type === "Available") {
+                    if (status.status === "True") {
+                        availableCount ++;
+                    }
+                    deployments.push({value: deployment.metadata.name, pass: status.status === "True"? true:false});
+                    deploymentNameList.push(deployment.metadata.name);
                 }
             }
-            deployments.push(statusMap);
+        }
+
+        const waitingList = deploymentList.filter(item => !deploymentNameList.includes(item));
+        for (const item of waitingList) {
+            deployments.push({value: item, pass: false});
         }
 
         const percent = Math.round((availableCount / deploymentList.length) * 100)
