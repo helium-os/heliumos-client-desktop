@@ -18,8 +18,35 @@ module.exports = {
 };
 
 const chartRepo = 'https://easypayx-helm.pkg.coding.net/heliumos/charts-dev';
-const sqliteDb = 'sqlitedb';
+const orgsDb = 'orgsdb';
 const userDataPath = app.getPath('userData');
+
+const deploymentList = [
+    'deployer',
+    'api-server',
+    'app-store',
+    'internal-dns',
+    'heliumos-grafana',
+    'heliumos-proxy',
+    'postgres',
+    'pulsar-zookeeper',
+    'pulsar-bookie',
+    'couchdb',
+    'heliumos-vault-2cc473d7ee-agent-injector',
+    'vault-manager',
+    'couchdb-manager',
+    'pulsar-manager',
+    'sign-ca',
+    'pulsar-broker',
+    'external-dns-manager',
+    'postgres-manager',
+    'resource-manager',
+    'app-manager',
+    'peer',
+    'orderer',
+    'transaction-agent',
+    'external-dns'
+]
 
 //返回helm kubectl 版本号
 async function getBinaryVersion(path, binaryName) {
@@ -220,21 +247,36 @@ async function installHeliumos(installConfig) {
 
 //获取安装状态
 async function getInstallStatus(orgId) {
-    //kubectl get deployment -n 2cc473d7ee --output=yaml --kubeconfig=kubeConfig
     let filePath = path.join(userDataPath, "kubeConfig");
     filePath = `'` + filePath + `'`;
 
+    let deployments = [];
+    let percent = 0;
+
     try {
-        const pods = await exec(
-            'helm list -n ' +
+        const result = await exec(
+            'kubectl get deployment -n ' +
             orgId +
             ' --output=yaml --kubeconfig=' +
             filePath
         );
-        return yaml.load(pods.stdout);
+        let availableCount = 0;
+        for (const deployment of yaml.load(result.stdout).items) {
+            let statusMap = {"name": deployment.metadata.name};
+            for (const status of deployment.status.conditions) {
+                statusMap[status.type] = status.status === "True"? true:false;
+                if (status.type === "Available" && status.status === "True") {
+                    availableCount ++;
+                }
+            }
+            deployments.push(statusMap);
+        }
+
+        const percent = Math.round((availableCount / deploymentList.length) * 100)
+        return {percent, deployments};
     } catch (err) {
         logger.error(`getInstallStatus exception: ${err.message}`);
-        return [];
+        return {percent, deployments};
     }
 }
 
@@ -244,7 +286,7 @@ async function getIpMap() {
 }
 
 function createDbConnection() {
-    const filePath = userDataPath + '/' + sqliteDb;
+    const filePath = path.join(userDataPath, orgsDb);
     return open({
         filename: filePath,
         driver: sqlite3.Database,
