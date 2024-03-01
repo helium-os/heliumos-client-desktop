@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import Layout from '@/components/install-process/ContentLayout';
+import Layout from '../ContentLayout';
 import useStyles from './style';
 
 export interface IProps {

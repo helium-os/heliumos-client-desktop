@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import useStyles from './style';
-import SectionLayout, { Direction } from '@/components/install-process/SectionLayout';
+import SectionLayout, { Direction } from '../common/SectionLayout';
 
 interface IProps {
     title: string;

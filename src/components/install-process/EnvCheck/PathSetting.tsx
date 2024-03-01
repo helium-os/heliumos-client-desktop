@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, memo } from 'react';
 import { Input, Upload, message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import SectionLayout, { GuideInfo } from '../SectionLayout';
+import SectionLayout, { GuideInfo } from '../common/SectionLayout';
 import useStyles from './style';
 import SuccessFilledIcon from '@/components/common/icon/SuccsssFilled';
 import FailFilledIcon from '@/components/common/icon/FailFilled';

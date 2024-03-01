@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { Input } from 'antd';
-import { StoreConfigItem } from '@/components/install-process/StoreConfigList/index';
+import { StoreConfigItem } from '@/components/install-process/common/StoreConfigList/index';
 import useStyles from './style';
 
 interface IProps extends StoreConfigItem {

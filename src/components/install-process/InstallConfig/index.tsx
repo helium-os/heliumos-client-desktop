@@ -1,14 +1,14 @@
 import React, { useMemo, useCallback, memo } from 'react';
 import { Input, Divider } from 'antd';
-import SectionLayout from '../SectionLayout';
-import PanelLayout from '@/components/install-process/PanelLayout';
-import { Step, TabContentProps } from '../../../pages/install-process';
-import StoreConfigList, { ModeType } from '../StoreConfigList';
+import SectionLayout from '../common/SectionLayout';
+import PanelLayout from '../common/PanelLayout';
+import { Step, BaseTabContentProps } from '@/components/install-process/data.d';
+import StoreConfigList, { ModeType } from '../common/StoreConfigList';
 import { RootState, useAppDispatch, useAppSelector } from '@/store';
 import { setAdminPassword } from '@/store/slices/installConfigSlice';
 import useStyles from './style';
-import FooterButtons from '@/components/install-process/FooterButtons';
-interface IProps extends TabContentProps {}
+import FooterButtons from '../common/FooterButtons';
+export interface IProps extends BaseTabContentProps {}
 
 const InstallConfig: React.FC<IProps> = ({ onStep, ...restProps }) => {
     const { styles } = useStyles();

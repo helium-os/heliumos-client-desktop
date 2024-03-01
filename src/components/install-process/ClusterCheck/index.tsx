@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 import useStyles from './style';
 import { Divider, Input, Select, message } from 'antd';
-import PanelLayout from '@/components/install-process/PanelLayout';
-import SectionLayout, { GuideInfo } from '@/components/install-process/SectionLayout';
+import PanelLayout from '../common/PanelLayout';
+import SectionLayout, { GuideInfo } from '../common/SectionLayout';
 import CheckResultItem from './CheckResultItem';
 import { RootState, useAppDispatch, useAppSelector } from '@/store';
 import {
@@ -14,12 +14,12 @@ import {
     setOamStoreConfigList,
 } from '@/store/slices/installConfigSlice';
 import { checkHasNoPass, keyNameMap, ResultItem, ResultRes } from '@/components/install-process/ClusterCheck/data';
-import { BaseTabContentProps, Step } from '../../../pages/install-process';
-import FooterButtons from '@/components/install-process/FooterButtons';
+import { BaseTabContentProps, Step } from '@/components/install-process/data.d';
+import FooterButtons from '../common/FooterButtons';
 
 const { TextArea } = Input;
 
-interface IProps extends BaseTabContentProps {}
+export interface IProps extends BaseTabContentProps {}
 
 const guideInfo: GuideInfo = {
     text: '从哪里获得 Kubeconfig？',

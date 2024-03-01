@@ -57,23 +57,6 @@ export default function Page() {
         addObverser();
     }, []);
 
-    const backBtn = useMemo(
-        () =>
-            window.history.length > 1 &&
-            back && (
-                <div
-                    className="goBack"
-                    onClick={() => {
-                        console.log(window.history.length);
-                        window.history.back();
-                    }}
-                >
-                    返回
-                </div>
-            ),
-        [back],
-    );
-
     return (
         <>
             {contextHolder}
@@ -99,7 +82,17 @@ export default function Page() {
                         <input className="loginButton" type="submit" disabled={!value} value={'下一步'} />
                     </div>
                 </Form>
-                {backBtn}
+                {window.history.length > 1 && back && (
+                    <div
+                        className="goBack"
+                        onClick={() => {
+                            console.log(window.history.length);
+                            window.history.back();
+                        }}
+                    >
+                        返回
+                    </div>
+                )}
             </BgLayout>
         </>
     );

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import useStyles from './style';
 import PathSetting from './PathSetting';
-import { BaseTabContentProps, Step } from '../../../pages/install-process';
-import PanelLayout from '@/components/install-process/PanelLayout';
-import FooterButtons from '@/components/install-process/FooterButtons';
+import { BaseTabContentProps, Step } from '@/components/install-process/data.d';
+import PanelLayout from '../common/PanelLayout';
+import FooterButtons from '../common/FooterButtons';
 
-interface IProps extends BaseTabContentProps {}
+export interface IProps extends BaseTabContentProps {}
 
 export type BaseEnvItem = {
     id: string;

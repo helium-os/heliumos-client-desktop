@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import useStyles from './style';
 import { Divider, message } from 'antd';
-import PanelLayout from '@/components/install-process/PanelLayout';
+import PanelLayout from '../common/PanelLayout';
 import ConfigItem from './ConfigItem';
-import StoreConfigList, { ModeType } from '../StoreConfigList';
+import StoreConfigList, { ModeType } from '../common/StoreConfigList';
 import { RootState, useAppSelector } from '@/store';
-import { BaseTabContentProps, Step } from '../../../pages/install-process';
-import FooterButtons from '@/components/install-process/FooterButtons';
+import { BaseTabContentProps, Step } from '@/components/install-process/data.d';
+import FooterButtons from '../common/FooterButtons';
 import { StorageMap } from '@/components/install-process/ClusterCheck/data';
 
-interface IProps extends BaseTabContentProps {}
+export interface IProps extends BaseTabContentProps {}
 
 const ConfigCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
     const [messageApi, contextHolder] = message.useMessage();
@@ -23,6 +23,8 @@ const ConfigCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
     const oamStoreConfigList = useAppSelector((state: RootState) => state.installConfig.oamStoreConfigList);
 
     const { styles } = useStyles();
+
+    const [loading, setLoading] = useState<boolean>(false);
 
     const onInstall = useCallback(() => {
         const baseConfigStorage: StorageMap = {};
@@ -59,7 +61,10 @@ const ConfigCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
                 }}
                 primaryButton={{
                     text: '安装',
+                    loading,
+                    disabled: loading,
                     onClick: async () => {
+                        setLoading(true);
                         try {
                             const orgId = await onInstall();
                             console.log('安装接口调用完成 orgId = ', orgId);
@@ -74,11 +79,12 @@ const ConfigCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
                                 content: error.message,
                             });
                         }
+                        setLoading(false);
                     },
                 }}
             />
         ),
-        [onInstall, onStep, messageApi],
+        [onInstall, onStep, messageApi, loading],
     );
 
     return (

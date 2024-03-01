@@ -1,4 +1,4 @@
-import { createStyles } from 'antd-style';
+import { createStyles, keyframes } from 'antd-style';
 
 const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
     const expandIcon = cx(css`
@@ -14,6 +14,16 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
             font-size: 12px;
         }
     `);
+
+    const loading = keyframes`
+    from {
+      transform: rotate(0);
+    }
+    to{
+      transform: rotate(360deg);
+    }
+  `;
+
     return {
         installWrap: css`
             height: 100%;
@@ -76,14 +86,36 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
             padding: 8px 0;
             border-radius: 6px;
             border: 1px solid rgba(0, 0, 0, 0.08);
-            font-size: 13px;
-            font-weight: 400;
-            color: rgba(0, 0, 0, 0.5);
         `,
-        logDetailInner: css`
-            padding: 0 12px;
-            max-height: 198px;
+        logDetailList: css`
+            padding: 0 20px;
+            height: 214px;
             overflow-y: auto;
+            & > li {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 4px;
+                label {
+                    width: 300px;
+                    font-size: 13px;
+                    line-height: 18px;
+                    font-weight: 400;
+                    color: rgba(0, 0, 0, 0.5);
+                }
+                .statusIcon {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 18px;
+                    height: 18px;
+                }
+                &.loading {
+                    .statusIcon {
+                        animation: ${loading} 2s ease infinite;
+                    }
+                }
+            }
         `,
     };
 });

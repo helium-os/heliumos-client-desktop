@@ -1,6 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { StoreConfigItem } from '@/components/install-process/StoreConfigList';
+import { StoreConfigItem } from '../../components/install-process/common/StoreConfigList';
 
 type State = {
     storageClass: string;
@@ -14,12 +14,12 @@ type State = {
 
 const initialState: State = {
     storageClass: '',
-    serverExpose: '',
-    serverIp: '',
-    orgId: '',
+    serverExpose: '', // 服务暴露方式
+    serverIp: '', // 公网IP
+    orgId: '', // 组织id
     adminPassword: '',
-    storeConfigList: [],
-    oamStoreConfigList: [],
+    storeConfigList: [], // PV存储
+    oamStoreConfigList: [], // OAM存储
 };
 
 const installConfigSlice = createSlice({

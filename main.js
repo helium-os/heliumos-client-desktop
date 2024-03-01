@@ -240,10 +240,11 @@ createWindow = async () => {
     });
 
     ipcMain.on('switchModeType', async (event, modeType, orgId) => {
+        console.log('switchModeType modeType', modeType, 'orgId', orgId, 'LastUser.orgId', LastUser?.orgId);
         switch (modeType) {
             case modeTypeMap.normal:
                 {
-                    const finalOrgId = orgId || LastUser.orgId;
+                    const finalOrgId = orgId || LastUser?.orgId;
                     if (!finalOrgId) {
                         util.loadLoginPage(win);
                         return;

@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { CloseOutlined } from '@ant-design/icons';
-import EnvCheck from '@/components/install-process/EnvCheck';
-import ClusterCheck from '@/components/install-process/ClusterCheck';
-import InstallConfig from '@/components/install-process/InstallConfig';
-import ConfigCheck from '@/components/install-process/ConfigCheck';
-import Install from '@/components/install-process/Install';
+import EnvCheck, { IProps as EnvCheckProps } from '@/components/install-process/EnvCheck';
+import ClusterCheck, { IProps as ClusterCheckProps } from '@/components/install-process/ClusterCheck';
+import InstallConfig, { IProps as InstallConfigProps } from '@/components/install-process/InstallConfig';
+import ConfigCheck, { IProps as ConfigCheckProps } from '@/components/install-process/ConfigCheck';
+import Install, { IProps as InstallProps } from '@/components/install-process/Install';
 import useStyles from '@/components/install-process/style';
+import { Step } from '@/components/install-process/data.d';
 
 enum Tab {
     EnvCheck,
@@ -16,24 +17,13 @@ enum Tab {
     Install,
 }
 
-export enum Step {
-    Back,
-    Next,
-}
-
-export interface BaseTabContentProps {
-    title: string;
-    style?: object;
-    onStep?: (step: Step) => void;
-}
-
-export interface TabContentProps extends BaseTabContentProps {}
+type TabContentProps = EnvCheckProps | ClusterCheckProps | InstallConfigProps | ConfigCheckProps | InstallProps;
 
 type TabItem = {
     key: Tab;
     name: string;
     Component: React.FC<TabContentProps>;
-    props: any;
+    props: Partial<TabContentProps>;
 };
 export default function Index() {
     const router = useRouter();

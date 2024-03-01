@@ -1,5 +1,5 @@
 import { createStyles } from 'antd-style';
-import { Direction } from '@/components/install-process/SectionLayout/index';
+import { Direction } from '@/components/install-process/common/SectionLayout/index';
 
 const useStyles = createStyles(({ token, css, prefixCls }, props: { direction: Direction }) => {
     const isRow = props.direction === Direction.Row;

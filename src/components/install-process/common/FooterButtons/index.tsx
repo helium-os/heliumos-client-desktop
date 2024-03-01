@@ -3,6 +3,7 @@ import { Button } from 'antd';
 
 interface ButtonProps {
     text: string;
+    loading?: boolean;
     disabled?: boolean;
     onClick?: () => void;
 }
@@ -22,9 +23,9 @@ const FooterButtons: React.FC<IProps> = ({ primaryButton, cancelButton }) => {
 
     return (
         <>
-            {cancelButton && <Button onClick={onCancel}>{cancelButton?.text}</Button>}
+            {cancelButton && <Button onClick={onCancel}>{cancelButton.text}</Button>}
             {primaryButton && (
-                <Button type="primary" disabled={primaryButton.disabled} onClick={onOk}>
+                <Button type="primary" loading={primaryButton.loading} disabled={primaryButton.disabled} onClick={onOk}>
                     {primaryButton.text}
                 </Button>
             )}

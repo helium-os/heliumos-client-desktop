@@ -112,7 +112,7 @@ const StoreConfigList: React.FC<IProps> = ({ type }) => {
                     </ul>
                 </div>
             </SectionLayout>
-            <SectionLayout title="oam" style={{ display: expand ? 'block' : 'none' }}>
+            <SectionLayout title="OAM" style={{ display: expand ? 'block' : 'none' }}>
                 <div className={styles.storeConfigListWrap}>
                     <ul className={styles.storeConfigList}>
                         {oamStoreConfigList.map((item) => (
