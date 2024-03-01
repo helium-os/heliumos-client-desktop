@@ -63,7 +63,7 @@ async function getBinaryVersion(path, binaryName) {
             const versionSplit = version.split('.');
             return { version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
         } else if (binaryName === 'helm') {
-            helmPath = path
+            helmPath = path;
             command += " version --template='Version: {{.Version}}'";
             let { stdout } = await exec(command);
             const version = stdout.substring(stdout.indexOf('Version')).split(' ')[1].substring(1);
