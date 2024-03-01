@@ -29,10 +29,10 @@ const SwitchModeType: React.FC<IProps> = ({ defaultModeType, orgId }) => {
 
         switch (value) {
             case ModeType.Normal:
-                window.versions?.switchModeType(ModeType.Normal, orgId);
+                window.versions?.switchModeType(value, orgId);
                 break;
             case ModeType.Install:
-                window.versions?.switchModeType(modeType);
+                window.versions?.switchModeType(value);
                 break;
         }
     };
