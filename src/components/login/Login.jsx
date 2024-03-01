@@ -5,6 +5,8 @@ import { Form, message } from 'antd';
 import BgLayout from '@/components/structure/BgLayout';
 import MyInput from '@/components/common/MyInput';
 import useStyles from './style';
+import { ModeType } from '@/utils/data';
+import SwitchModeType from '@/components/structure/SwitchModeType';
 
 export default function Page() {
     const router = useRouter();
@@ -38,9 +40,7 @@ export default function Page() {
                 }
             }
 
-            window.location.href =
-                // "http://localhost:3000/";
-                'https://desktop.system.app.' + orgList.filter((item) => item?.alias == values?.usePoint)[0]?.id;
+            window.versions?.loadKeycloakLogin(orgList.filter((item) => item?.alias == values?.usePoint)[0]?.id);
         }
     };
     const addObverser = async () => {
@@ -94,6 +94,7 @@ export default function Page() {
                     </div>
                 )}
             </BgLayout>
+            <SwitchModeType defaultModeType={ModeType.Normal} />
         </>
     );
 }

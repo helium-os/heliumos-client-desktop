@@ -273,16 +273,20 @@ const askForMediaAccess = (data = [true, true]) => {
     });
 };
 
+const loadURL = (win, url, options = {}) => {
+    log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~loadURL', url);
+    return win.loadURL(url, options);
+};
+
 // 加载Keycloak登录页面
 const loadKeycloakLoginPage = (win, orgId) => {
-    win.loadURL('https://desktop.system.app.' + orgId);
+    return loadURL(win, 'https://desktop.system.app.' + orgId);
 };
 
 // 加载当前项目page
-const loadLocalePage = async (win, pathname, options = {}) => {
+const loadLocalePage = (win, pathname, options = {}) => {
     if (!pathname) return;
-    log.info('loadLocaleUrl', getOrigin() + pathname);
-    await win.loadURL(getOrigin() + pathname, options);
+    return loadURL(win, getOrigin() + pathname, options);
 };
 
 // 加载登录页面
@@ -312,6 +316,7 @@ module.exports = {
     setStorageData,
     askForMediaAccess,
     findPath,
+    loadURL,
     loadKeycloakLoginPage,
     pageToPathMap,
     loadLocalePage,

@@ -25,7 +25,7 @@ type TabItem = {
     Component: React.FC<TabContentProps>;
     props: Partial<TabContentProps>;
 };
-export default function Index() {
+export default function Page() {
     const router = useRouter();
 
     const { styles } = useStyles();

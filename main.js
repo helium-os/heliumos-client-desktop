@@ -236,8 +236,12 @@ createWindow = async () => {
         }
     });
 
-    ipcMain.on('loadUrl', (event, url) => {
-        win.loadURL(url);
+    ipcMain.on('loadURL', (event, url) => {
+        util.loadURL(win, url);
+    });
+
+    ipcMain.on('loadKeycloakLogin', (event, orgId) => {
+        util.loadKeycloakLoginPage(win, orgId);
     });
 
     ipcMain.on('switchModeType', async (event, modeType, orgId) => {

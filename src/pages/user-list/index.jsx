@@ -29,7 +29,7 @@ function getColorForCharacter(char) {
     return userBackgoundColor[colorIndex];
 }
 
-export default function Index() {
+export default function Page() {
     const router = useRouter();
 
     const { styles } = useStyles();
@@ -62,9 +62,8 @@ export default function Index() {
                     return;
                 }
             }
-            window.location.href =
-                // "http://localhost:3000/";
-                'https://desktop.system.app.' + orgList.filter((item) => item?.alias == List[1])[0]?.id;
+
+            window.versions?.loadKeycloakLogin(orgList.filter((item) => item?.alias == List[1])[0]?.id);
         }
     };
 

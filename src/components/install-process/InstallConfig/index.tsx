@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, memo } from 'react';
-import { Input, Divider } from 'antd';
+import { Input, Divider, Form } from 'antd';
 import SectionLayout from '../common/SectionLayout';
 import PanelLayout from '../common/PanelLayout';
 import { Step, BaseTabContentProps } from '@/components/install-process/data.d';
@@ -9,6 +9,16 @@ import { setAdminPassword } from '@/store/slices/installConfigSlice';
 import useStyles from './style';
 import FooterButtons from '../common/FooterButtons';
 export interface IProps extends BaseTabContentProps {}
+
+const regex = new RegExp('(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,30}');
+
+const checkPassword = (rule: any, value: string) => {
+    const regex = new RegExp('(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,30}');
+    if (value && !regex.test(value)) {
+        return Promise.reject('请设置8位以上30位以下密码,由数字、字母和符号组成');
+    }
+    return Promise.resolve();
+};
 
 const InstallConfig: React.FC<IProps> = ({ onStep, ...restProps }) => {
     const { styles } = useStyles();
@@ -38,7 +48,7 @@ const InstallConfig: React.FC<IProps> = ({ onStep, ...restProps }) => {
                 }}
                 primaryButton={{
                     text: '下一步',
-                    disabled: !adminPassword,
+                    disabled: !adminPassword || !regex.test(adminPassword),
                     onClick: () => onStep?.(Step.Next),
                 }}
             />
@@ -48,9 +58,22 @@ const InstallConfig: React.FC<IProps> = ({ onStep, ...restProps }) => {
 
     return (
         <PanelLayout footer={footerButtons} {...restProps}>
-            <SectionLayout title="admin 密码">
-                <Input placeholder="admin 密码" value={adminPassword} onChange={onAdminChange} />
-            </SectionLayout>
+            <Form>
+                <SectionLayout title="admin 密码">
+                    <Form.Item
+                        name="adminPassword"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请设置8位以上30位以下密码,由数字、字母和符号组成',
+                            },
+                            { validator: checkPassword },
+                        ]}
+                    >
+                        <Input placeholder="admin 密码" value={adminPassword} onChange={onAdminChange} />
+                    </Form.Item>
+                </SectionLayout>
+            </Form>
             <Divider />
             <StoreConfigList type={ModeType.Write} />
         </PanelLayout>

@@ -13,7 +13,8 @@ interface Window {
         invokMethod: (name, value) => Promise<any>;
         loadLocalFont: () => Promise<any>;
         openExternal: (url) => void;
-        loadUrl: (url) => void;
+        loadKeycloakLogin: (orgId) => void;
+        loadURL: (url) => void;
         switchModeType: (modeType, orgId?: string) => void;
         getBinaryVersion: (path, id) => Promise<any>;
         getClusterConfig: (config) => Promise<any>;
