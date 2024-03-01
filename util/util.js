@@ -33,7 +33,7 @@ const startUpPackagedRenderer = async () => {
         });
     }
     rendererPort = await appServerStart();
-    console.log(`server is running at ${rendererPort} port`);
+    log.info(`server is running at ${rendererPort} port`);
 };
 
 const getOrigin = () => {
@@ -281,7 +281,7 @@ const loadKeycloakLoginPage = (win, orgId) => {
 // 加载当前项目page
 const loadLocalePage = async (win, pathname, options = {}) => {
     if (!pathname) return;
-    console.log('loadLocaleUrl', getOrigin() + pathname);
+    log.info('loadLocaleUrl', getOrigin() + pathname);
     await win.loadURL(getOrigin() + pathname, options);
 };
 

@@ -8,6 +8,7 @@ const install = require('./proxy/install');
 const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
 let { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
 
 var keyList = ['heliumos.crt', '../heliumos.crt'];
 var publicKey;
@@ -240,7 +241,16 @@ createWindow = async () => {
     });
 
     ipcMain.on('switchModeType', async (event, modeType, orgId) => {
-        console.log('switchModeType modeType', modeType, 'orgId', orgId, 'LastUser.orgId', LastUser?.orgId);
+        log.info(
+            'switchModeType modeType',
+            modeType,
+            'orgId',
+            orgId,
+            'LastUser',
+            LastUser,
+            'LastUser.orgId',
+            LastUser?.orgId,
+        );
         switch (modeType) {
             case modeTypeMap.normal:
                 {
