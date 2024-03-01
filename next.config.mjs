@@ -1,10 +1,7 @@
-import createNextIntlPlugin from 'next-intl/plugin';
-
-const withNextIntl = createNextIntlPlugin();
-
-/** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'standalone',
+    output: 'export',
+    images: { unoptimized: true },
+    transpilePackages: ['@ant-design', 'rc-util', 'rc-pagination', 'rc-picker', 'rc-tree', 'rc-table'], // 第三方的依赖
     reactStrictMode: true,
     webpack: (config) => {
         config.resolve.fallback = {
@@ -16,4 +13,4 @@ const nextConfig = {
     },
 };
 
-export default withNextIntl(nextConfig);
+export default nextConfig;

@@ -12,6 +12,9 @@
         "dist": "cross-env  electron-builder --win --x64",
         "dist-mac": "electron-builder --macos --arm64 --x64",
         "dist-linux": "electron-builder  --linux  --x64",
+        "build:dist": "npm run build && npm run dist",
+        "build:dist-mac": "npm run build && npm run dist-mac",
+        "build:dist-linux": "npm run build && npm run dist-linux",
         "release": "electron-builder --win --config --publish always",
         "version": "echo $npm_package_version > version",
         "version-win": "echo $npm_package_version "
@@ -30,6 +33,7 @@
         "electron-localshortcut": "^3.2.1",
         "electron-log": "^5.0.0-beta.23",
         "electron-updater": "^5.3.0",
+        "express": "^4.18.2",
         "hex-to-rgba": "^2.0.1",
         "lodash": "^4.17.21",
         "log4js": "^6.9.1",

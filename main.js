@@ -8,6 +8,7 @@ const install = require('./proxy/install');
 const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
 let { autoUpdater } = require('electron-updater');
+
 var keyList = ['heliumos.crt', '../heliumos.crt'];
 var publicKey;
 app.setName('Helium OS');
@@ -116,6 +117,11 @@ createWindow = async () => {
 
     loadingWindow.loadFile(path.join(__dirname, 'loading.html'));
 
+    // 用express启生产环境前端
+    if (app.isPackaged) {
+        await util.startUpPackagedRenderer();
+    }
+
     win.webContents.on('will-navigate', (event, url) => {
         if (process.platform !== 'linux') {
             win.setMovable(false);
@@ -123,6 +129,7 @@ createWindow = async () => {
             loadingWindow.show();
         }
     });
+
     win.webContents.on('did-finish-load', () => {
         if (process.platform !== 'linux') {
             setTimeout(() => {
@@ -235,12 +242,14 @@ createWindow = async () => {
     ipcMain.on('switchModeType', async (event, modeType, orgId) => {
         switch (modeType) {
             case modeTypeMap.normal:
-                const finalOrgId = orgId || LastUser.orgId;
-                if (!finalOrgId) {
-                    util.loadLoginPage(win);
-                    return;
+                {
+                    const finalOrgId = orgId || LastUser.orgId;
+                    if (!finalOrgId) {
+                        util.loadLoginPage(win);
+                        return;
+                    }
+                    util.loadKeycloakLoginPage(win, finalOrgId);
                 }
-                util.loadKeycloakLoginPage(win, finalOrgId);
                 break;
             case modeTypeMap.install:
                 util.loadInstallModePage(win);
