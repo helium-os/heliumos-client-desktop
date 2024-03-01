@@ -413,8 +413,8 @@ app.on('certificate-error', (event, webContents, url, error, cert, callback) => 
 app.whenReady().then(async () => {
     datas = await util.getStorageData();
     env = datas?._last?.env || 'prod';
-    // env = 'testinner';
     org = datas?._last?.org;
+    log.info('--------------------------------------------------env', env);
 
     //配置proxy
     let { port } = await proxy.runProxy(env);
