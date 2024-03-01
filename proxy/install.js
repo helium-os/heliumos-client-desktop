@@ -48,17 +48,22 @@ const deploymentList = [
     'external-dns'
 ]
 
+let kubectlPath = "kubectl";
+let helmPath = "helm";
+
 //返回helm kubectl 版本号
 async function getBinaryVersion(path, binaryName) {
     let command = path;
     try {
         if (binaryName === 'kubectl') {
+            kubectlPath = path;
             command += ' version --output=yaml';
             const { stdout } = await exec(command);
             const version = yaml.load(stdout).clientVersion.gitVersion.substring(1);
             const versionSplit = version.split('.');
             return { version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
         } else if (binaryName === 'helm') {
+            helmPath = path
             command += " version --template='Version: {{.Version}}'";
             let { stdout } = await exec(command);
             const version = stdout.substring(stdout.indexOf('Version')).split(' ')[1].substring(1);
@@ -124,13 +129,13 @@ async function getClusterConfig(kubeConfig) {
 
     try {
         //k8s version
-        let result = await exec('kubectl version --output=yaml --kubeconfig=' + filePath);
+        let result = await exec(kubectlPath + ' version --output=yaml --kubeconfig=' + filePath);
         const version = yaml.load(result.stdout).serverVersion.gitVersion.substring(1);
         const versionSplit = version.split('.');
         config.serverVersion = { value: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
 
         //nodes
-        result = await exec('kubectl get nodes --output=yaml --kubeconfig=' + filePath);
+        result = await exec(kubectlPath + ' get nodes --output=yaml --kubeconfig=' + filePath);
         for (const node of yaml.load(result.stdout).items) {
             let memory = node.status.capacity.memory.replace('Ki', '');
             memory = Math.ceil(memory / (1000 * 1000));
@@ -142,13 +147,13 @@ async function getClusterConfig(kubeConfig) {
         }
 
         //storage classes
-        result = await exec('kubectl get sc --output=yaml --kubeconfig=' + filePath);
+        result = await exec(kubectlPath + ' get sc --output=yaml --kubeconfig=' + filePath);
         for (const sc of yaml.load(result.stdout).items) {
             config.storageClasses.push(sc.metadata.name);
         }
 
         //coreDNS
-        result = await exec('kubectl get pods --namespace="kube-system" --output=yaml --kubeconfig=' + filePath);
+        result = await exec(kubectlPath + ' get pods --namespace="kube-system" --output=yaml --kubeconfig=' + filePath);
         for (const pod of yaml.load(result.stdout).items) {
             if (pod.metadata.name.indexOf('coredns') >= 0) {
                 config.component = { value: 'coreDNS', pass: true };
@@ -202,7 +207,7 @@ async function installHeliumos(installConfig) {
     try {
         let filePath = path.join(userDataPath, "kubeConfig");
         filePath = `'` + filePath + `'`;
-        const result = await exec('kubectl get ns --output=yaml --kubeconfig=' + filePath);
+        const result = await exec(kubectlPath + ' get ns --output=yaml --kubeconfig=' + filePath);
         let nsFlag = false;
         for (const ns of yaml.load(result.stdout).items) {
             if (config.orgId === ns.metadata.name) {
@@ -214,10 +219,10 @@ async function installHeliumos(installConfig) {
         await updateDb(installConfig.orgId, installConfig.serverIp);
 
         if (!nsFlag) {
-            const result = await exec('kubectl create ns ' + config.orgId + ' --output=yaml --kubeconfig=' + filePath);
+            const result = await exec(kubectlPath + ' create ns ' + config.orgId + ' --output=yaml --kubeconfig=' + filePath);
         }
 
-        const list = await exec('helm repo list --output=yaml');
+        const list = await exec(helmPath + ' repo list --output=yaml');
 
         let repoFlag = false;
         for (const repo of yaml.load(list.stdout)) {
@@ -227,11 +232,11 @@ async function installHeliumos(installConfig) {
             }
         }
         if (!repoFlag) {
-            await exec('helm repo add heliumos ' + chartRepo);
+            await exec(helmPath + ' repo add heliumos ' + chartRepo);
         }
-        await exec('helm repo update');
+        await exec(helmPath + ' repo update');
         await exec(
-            'helm install -f ' +
+            helmPath + ' install -f ' +
             configFilePath +
             ' heliumos-operator heliumos/heliumos-operator -n ' +
             config.orgId +
@@ -256,7 +261,7 @@ async function getInstallStatus(orgId) {
 
     try {
         const result = await exec(
-            'kubectl get deployment -n ' +
+            kubectlPath + ' get deployment -n ' +
             orgId +
             ' --output=yaml --kubeconfig=' +
             filePath
