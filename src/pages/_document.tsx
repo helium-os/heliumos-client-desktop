@@ -30,7 +30,7 @@ class MyDocument extends Document {
 
     render() {
         return (
-            <Html lang="zh">
+            <Html>
                 <Head>{this.props.styles}</Head>
                 <body>
                     <Main />

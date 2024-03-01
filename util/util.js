@@ -36,6 +36,10 @@ const startUpPackagedRenderer = async () => {
     console.log(`server is running at ${rendererPort} port`);
 };
 
+const getOrigin = () => {
+    return `http://localhost:${rendererPort}`;
+};
+
 //存入数据
 const setDataSourse = (data, filePath = './data.json', en = true) => {
     if (!fs.existsSync(filePath)) {
@@ -275,10 +279,10 @@ const loadKeycloakLoginPage = (win, orgId) => {
 };
 
 // 加载当前项目page
-const loadLocalePage = async (win, url, options = {}) => {
-    if (!url) return;
-    console.log('loadLocaleUrl', `http://localhost:${rendererPort}` + url);
-    await win.loadURL(`http://localhost:${rendererPort}` + url, options);
+const loadLocalePage = async (win, pathname, options = {}) => {
+    if (!pathname) return;
+    console.log('loadLocaleUrl', getOrigin() + pathname);
+    await win.loadURL(getOrigin() + pathname, options);
 };
 
 // 加载登录页面
@@ -298,6 +302,7 @@ const loadInstallModePage = (win, options = {}) => {
 
 module.exports = {
     startUpPackagedRenderer,
+    getOrigin,
     setDataSourse,
     AutoUpdater,
     AutoUpdaterInterval,

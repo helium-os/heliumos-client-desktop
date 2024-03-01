@@ -296,7 +296,7 @@ createWindow = async () => {
         } else {
             globalShortcut.unregister('F9');
         }
-        if (url.includes('/index.html')) {
+        if (url.includes(util.getOrigin())) {
             // 注册全局快捷键 F10
             globalShortcut.register('F10', () => {
                 const now = Date.now();
@@ -329,7 +329,7 @@ createWindow = async () => {
         } else {
             globalShortcut.unregister('F9');
         }
-        if (win.webContents.getURL().includes('/index.html')) {
+        if (win.webContents.getURL().includes(util.getOrigin())) {
             // 注册全局快捷键 F10
             globalShortcut.register('F10', () => {
                 const now = Date.now();
