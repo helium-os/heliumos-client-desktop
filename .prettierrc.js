@@ -33,7 +33,7 @@ module.exports = {
     // 根据显示样式决定 html 要不要折行
     htmlWhitespaceSensitivity: "ignore",
     // 换行符使用 lf
-    endOfLine: "lf",
+    endOfLine: "auto",
     // 格式化嵌入的内容
     embeddedLanguageFormatting: "auto",
 };

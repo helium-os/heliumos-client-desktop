@@ -1,6 +1,6 @@
 {
     "name": "Helium-OS",
-    "version": "1.2.7",
+    "version": "1.2.8",
     "main": "main.js",
     "scripts": {
         "dev": "next dev -p 3001",
@@ -45,7 +45,7 @@
         "react-redux": "^9.1.0",
         "request": "^2.88.2",
         "sqlite": "^5.0.1",
-        "sqlite3": "^5.1.7"
+        "sqlite3": "^5.1.6"
     },
     "devDependencies": {
         "@types/node": "^20",
@@ -90,7 +90,7 @@
             {
                 "provider": "github",
                 "owner": "helium-os",
-                "repo": "heliumos-client-desktop",
+                "repo": "heliumos-client-desktop-dev",
                 "releaseType": "release"
             }
         ],
