@@ -10,6 +10,7 @@ const logger = require('electron-log');
 const path = require("path");
 
 module.exports = {
+    getBinaryPathAndVersion,
     getBinaryVersion,
     getClusterConfig,
     installHeliumos,
@@ -51,24 +52,57 @@ const deploymentList = [
 let kubectlPath = "kubectl";
 let helmPath = "helm";
 
+//检测helm kubectl 安装路径，并返回版本号
+async function getBinaryPathAndVersion(binaryName) {
+    let command = "which ";
+    if (process.platform === "win32") {
+        command = "where ";
+    }
+    command += binaryName;
+    try {
+        let { stdout } = await exec(command);
+        stdout = stdout.replace(/[\r\n]/g, "");
+        if (binaryName === 'kubectl') {
+            command = kubectlPath + ' version --client=true --output=yaml';
+            const result = await exec(command);
+            const version = yaml.load(result.stdout).clientVersion.gitVersion.substring(1);
+            const versionSplit = version.split('.');
+            kubectlPath = stdout;
+            return { path: kubectlPath, version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
+        } else if (binaryName === 'helm') {
+            command = helmPath + ` version --template="Version: {{.Version}}"`;
+            const result = await exec(command);
+            const version = result.stdout.split(' ')[1].substring(1);
+            const versionSplit = version.split('.');
+            helmPath = stdout;
+            return { path: helmPath, version: version, pass: versionSplit[0] >= 3 ? true : false };
+        } else {
+            return { path: '', version: '', pass: false };
+        }
+    } catch (err) {
+        logger.error(`getBinaryPathAndVersion exception: ${err.message}`);
+        return { path: '', version: '', pass: false };
+    }
+}
+
 //返回helm kubectl 版本号
 async function getBinaryVersion(path, binaryName) {
     let command = path;
     try {
         if (binaryName === 'kubectl') {
-            kubectlPath = path;
-            command += ' version  --client=true --output=yaml';
-            const { stdout } = await exec(command);
-            const version = yaml.load(stdout).clientVersion.gitVersion.substring(1);
+            command += ' version --client=true --output=yaml';
+            const result = await exec(command);
+            const version = yaml.load(result.stdout).clientVersion.gitVersion.substring(1);
             const versionSplit = version.split('.');
+            kubectlPath = path;
             return { version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
         } else if (binaryName === 'helm') {
-            helmPath = path;
-            command += " version --template='Version: {{.Version}}'";
-            let { stdout } = await exec(command);
-            const version = stdout.substring(stdout.indexOf('Version')).split(' ')[1].substring(1);
+            command += ` version --template="Version: {{.Version}}"`;
+            const result = await exec(command);
+            const version = result.stdout.split(' ')[1].substring(1);
             const versionSplit = version.split('.');
-            return { version: stdout.split(' ')[1].substring(1), pass: versionSplit[0] >= 3 ? true : false };
+            helmPath = path;
+            return { version: version, pass: versionSplit[0] >= 3 ? true : false };
         } else {
             return { version: '', pass: false };
         }
