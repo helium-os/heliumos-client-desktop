@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('versions', {
     loadURL: (url) => ipcRenderer.send('loadURL', url),
     loadKeycloakLogin: (orgId) => ipcRenderer.send('loadKeycloakLogin', orgId),
     switchModeType: (modeType, orgId) => ipcRenderer.send('switchModeType', modeType, orgId),
+    getBinaryPathAndVersion: (id) => ipcRenderer.invoke('getBinaryPathAndVersion', id),
     getBinaryVersion: (path, id) => ipcRenderer.invoke('getBinaryVersion', path, id),
     getClusterConfig: (config) => ipcRenderer.invoke('getClusterConfig', config),
     installHeliumos: (configObj) => ipcRenderer.invoke('installHeliumos', configObj),

@@ -35,6 +35,22 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
         }
     };
 
+    // 自动获取path
+    useEffect(() => {
+        if (!id) return;
+
+        window.versions
+            ?.getBinaryPathAndVersion(id)
+            .then((res) => {
+                console.log('getBinaryPathAndVersion res', res);
+                const { path } = res;
+                setPath(path);
+            })
+            .catch((error) => {
+                console.error('getBinaryPathAndVersion error', error, id);
+            });
+    }, [id]);
+
     // path改变后，重新获取版本号 & 是否校验通过
     useEffect(() => {
         if (!path) {
@@ -64,7 +80,7 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
             }
             setLoading(false);
         }, 300);
-    }, [path, id]);
+    }, [path, id, messageApi]);
 
     useEffect(() => {
         onVersionAndPassChangeRef.current = onVersionAndPassChange;

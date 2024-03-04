@@ -16,6 +16,7 @@ interface Window {
         loadKeycloakLogin: (orgId) => void;
         loadURL: (url) => void;
         switchModeType: (modeType, orgId?: string) => void;
+        getBinaryPathAndVersion: (id) => Promise<any>;
         getBinaryVersion: (path, id) => Promise<any>;
         getClusterConfig: (config) => Promise<any>;
         installHeliumos: (configObj) => Promise<any>;
