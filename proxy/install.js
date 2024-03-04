@@ -57,7 +57,7 @@ async function getBinaryVersion(path, binaryName) {
     try {
         if (binaryName === 'kubectl') {
             kubectlPath = path;
-            command += ' version --output=yaml';
+            command += ' version  --client=true --output=yaml';
             const { stdout } = await exec(command);
             const version = yaml.load(stdout).clientVersion.gitVersion.substring(1);
             const versionSplit = version.split('.');
