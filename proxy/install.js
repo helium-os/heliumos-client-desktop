@@ -54,9 +54,9 @@ let helmPath = "helm";
 
 //检测helm kubectl 安装路径，并返回版本号
 async function getBinaryPathAndVersion(binaryName) {
-    let command = "which ";
+    let command = '/usr/bin/which ';
     if (process.platform === "win32") {
-        command = "where ";
+        command = 'C:\Windows\System32\where.exe ';
     }
     command += binaryName;
     try {
