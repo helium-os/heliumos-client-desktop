@@ -68,19 +68,19 @@ async function getBinaryPathAndVersion(binaryName) {
         stdout = stdout.split('\n')[0];
         stdout = stdout.replace(/[\r\n]/g, "");
         if (binaryName === 'kubectl') {
-            command = kubectlPath + ' version --client=true --output=yaml';
+            command =  `"` + stdout + `"` + ` version --client=true --output=yaml`;
             const result = await exec(command);
             const version = yaml.load(result.stdout).clientVersion.gitVersion.substring(1);
             const versionSplit = version.split('.');
-            kubectlPath = stdout;
-            return { path: kubectlPath, version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
+            kubectlPath = `"` + stdout + `"`;
+            return { path: stdout, version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
         } else if (binaryName === 'helm') {
-            command = helmPath + ` version --template="Version: {{.Version}}"`;
+            command =  `"` + stdout + `"` + ` version --template="Version: {{.Version}}"`;
             const result = await exec(command);
             const version = result.stdout.split(' ')[1].substring(1);
             const versionSplit = version.split('.');
-            helmPath = stdout;
-            return { path: helmPath, version: version, pass: versionSplit[0] >= 3 ? true : false };
+            helmPath = `"` + stdout + `"`;
+            return { path: stdout, version: version, pass: versionSplit[0] >= 3 ? true : false };
         } else {
             return { path: '', version: '', pass: false };
         }
@@ -93,6 +93,7 @@ async function getBinaryPathAndVersion(binaryName) {
 //返回helm kubectl 版本号
 async function getBinaryVersion(path, binaryName) {
     let command = path;
+    path = `"` + path + `"`;
     try {
         if (binaryName === 'kubectl') {
             command += ' version --client=true --output=yaml';
@@ -168,7 +169,7 @@ async function getClusterConfig(kubeConfig) {
     const yamlConfig = yaml.load(kubeConfig);
     let filePath = path.join(userDataPath, "kubeConfig");
     fs.writeFileSync(filePath, kubeConfig);
-    filePath = `'` + filePath + `'`
+    filePath = `"` + filePath + `"`
 
     const shasum = crypto.createHash('sha256');
     shasum.update(kubeConfig, 'utf-8');
@@ -254,11 +255,11 @@ async function installHeliumos(installConfig) {
 
     let configFilePath = path.join(userDataPath, "config.yaml");
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
-    configFilePath = `'` + configFilePath + `'`;
+    configFilePath = `"` + configFilePath + `"`;
 
     try {
         let filePath = path.join(userDataPath, "kubeConfig");
-        filePath = `'` + filePath + `'`;
+        filePath = `"` + filePath + `"`;
         const result = await exec(kubectlPath + ' get ns --output=yaml --kubeconfig=' + filePath);
         let nsFlag = false;
         for (const ns of yaml.load(result.stdout).items) {
@@ -305,7 +306,7 @@ async function installHeliumos(installConfig) {
 //获取安装状态
 async function getInstallStatus(orgId) {
     let filePath = path.join(userDataPath, "kubeConfig");
-    filePath = `'` + filePath + `'`;
+    filePath = `"` + filePath + `"`;
 
     let deployments = [];
     let deploymentNameList = [];
