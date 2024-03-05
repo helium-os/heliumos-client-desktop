@@ -120,7 +120,6 @@ async function getBinaryVersion(path, binaryName) {
 //获取默认kube配置
 async function getDefaultKubeConfig() {
     try {
-        fixPath();
         const currentDirectory = process.env.HOME || process.env.USERPROFILE;
         logger.info(`currentDirectory: ${currentDirectory}`);
         let filePath = path.join(currentDirectory, ".kube/config");
