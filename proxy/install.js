@@ -8,6 +8,7 @@ const { open } = require('sqlite');
 const { app } = require("electron");
 const logger = require('electron-log');
 const path = require("path");
+const fixPath  = require('fix-path');
 
 module.exports = {
     getBinaryPathAndVersion,
@@ -54,9 +55,10 @@ let helmPath = "helm";
 
 //检测helm kubectl 安装路径，并返回版本号
 async function getBinaryPathAndVersion(binaryName) {
-    let command = '/usr/bin/which ';
+    fixPath();
+    let command = 'which ';
     if (process.platform === "win32") {
-        command = 'C:\Windows\System32\where.exe ';
+        command = 'where ';
     }
     command += binaryName;
     try {
@@ -80,7 +82,7 @@ async function getBinaryPathAndVersion(binaryName) {
             return { path: '', version: '', pass: false };
         }
     } catch (err) {
-        logger.error(`getBinaryPathAndVersion exception: ${err.message}`);
+        logger.error(`getBinaryPathAndVersion exception: ${err}`);
         return { path: '', version: '', pass: false };
     }
 }
