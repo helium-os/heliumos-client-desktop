@@ -13,6 +13,7 @@ const fixPath  = require('fix-path');
 module.exports = {
     getBinaryPathAndVersion,
     getBinaryVersion,
+    getDefaultKubeConfig,
     getClusterConfig,
     installHeliumos,
     getInstallStatus,
@@ -52,6 +53,7 @@ const deploymentList = [
 
 let kubectlPath = "kubectl";
 let helmPath = "helm";
+
 
 //检测helm kubectl 安装路径，并返回版本号
 async function getBinaryPathAndVersion(binaryName) {
@@ -112,6 +114,20 @@ async function getBinaryVersion(path, binaryName) {
     } catch (err) {
         logger.error(`getBinaryVersion exception: ${err.message}`);
         return { version: '', pass: false };
+    }
+}
+
+//获取默认kube配置
+async function getDefaultKubeConfig() {
+    try {
+        fixPath();
+        const currentDirectory = process.env.HOME || process.env.USERPROFILE;
+        logger.info(`currentDirectory: ${currentDirectory}`);
+        let filePath = path.join(currentDirectory, ".kube/config");
+        const data = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
+        return data;
+    } catch (err) {
+        return "";
     }
 }
 
