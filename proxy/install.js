@@ -96,6 +96,7 @@ async function getBinaryVersion(path, binaryName) {
     try {
         if (binaryName === 'kubectl') {
             command += ' version --client=true --output=yaml';
+            logger.info(`kubectl command: ${command}`);
             const result = await exec(command);
             const version = yaml.load(result.stdout).clientVersion.gitVersion.substring(1);
             const versionSplit = version.split('.');
@@ -103,6 +104,7 @@ async function getBinaryVersion(path, binaryName) {
             return { version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
         } else if (binaryName === 'helm') {
             command += ` version --template="Version: {{.Version}}"`;
+            logger.info(`helm command: ${command}`);
             const result = await exec(command);
             const version = result.stdout.split(' ')[1].substring(1);
             const versionSplit = version.split('.');
