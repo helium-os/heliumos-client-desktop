@@ -63,6 +63,7 @@ async function getBinaryPathAndVersion(binaryName) {
     command += binaryName;
     try {
         let { stdout } = await exec(command);
+        stdout = stdout.split('\n')[0];
         stdout = stdout.replace(/[\r\n]/g, "");
         if (binaryName === 'kubectl') {
             command = kubectlPath + ' version --client=true --output=yaml';
