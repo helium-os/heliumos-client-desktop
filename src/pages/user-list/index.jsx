@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import BgLayout from '@/components/structure/BgLayout';
 import Image from 'next/image';
-import useStyles from '../../components/user-list/style';
 import { message } from 'antd';
+import BgLayout from '@/components/structure/BgLayout';
+import SwitchModeType from '@/components/structure/SwitchModeType';
+import { ModeType } from '@/utils/data';
+import useStyles from '@/components/user-list/style';
 
 const userBackgoundColor = [
     '#7E7CE3',
@@ -154,6 +156,7 @@ export default function Page() {
                     onClick={() => setPageno(pageno + 1)}
                 />
             </BgLayout>
+            <SwitchModeType defaultModeType={ModeType.Normal} />
         </>
     );
 }
