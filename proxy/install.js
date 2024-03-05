@@ -67,26 +67,10 @@ async function getBinaryPathAndVersion(binaryName) {
         let { stdout } = await exec(command);
         stdout = stdout.split('\n')[0];
         stdout = stdout.replace(/[\r\n]/g, "");
-        if (binaryName === 'kubectl') {
-            command =  `"` + stdout + `"` + ` version --client=true --output=yaml`;
-            const result = await exec(command);
-            const version = yaml.load(result.stdout).clientVersion.gitVersion.substring(1);
-            const versionSplit = version.split('.');
-            kubectlPath = `"` + stdout + `"`;
-            return { path: stdout, version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
-        } else if (binaryName === 'helm') {
-            command =  `"` + stdout + `"` + ` version --template="Version: {{.Version}}"`;
-            const result = await exec(command);
-            const version = result.stdout.split(' ')[1].substring(1);
-            const versionSplit = version.split('.');
-            helmPath = `"` + stdout + `"`;
-            return { path: stdout, version: version, pass: versionSplit[0] >= 3 ? true : false };
-        } else {
-            return { path: '', version: '', pass: false };
-        }
+        return { path: stdout };
     } catch (err) {
         logger.error(`getBinaryPathAndVersion exception: ${err}`);
-        return { path: '', version: '', pass: false };
+        return { path: '' };
     }
 }
 
