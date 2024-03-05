@@ -489,6 +489,10 @@ app.whenReady().then(async () => {
         return install.getBinaryVersion(path, id);
     });
 
+    ipcMain.handle('getDefaultKubeConfig', function (event) {
+        return install.getDefaultKubeConfig();
+    });
+
     ipcMain.handle('getClusterConfig', function (event, config) {
         return install.getClusterConfig(config);
     });

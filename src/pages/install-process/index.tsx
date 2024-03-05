@@ -110,6 +110,7 @@ export default function Page() {
                             <Component
                                 key={key}
                                 title={name}
+                                display={activeTab.key === key}
                                 style={activeTab.key === key ? {} : { display: 'none' }}
                                 onStep={onStep}
                                 {...props}

@@ -42,7 +42,7 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
         window.versions
             ?.getBinaryPathAndVersion(id)
             .then((res) => {
-                console.log('getBinaryPathAndVersion res', res);
+                console.log('getBinaryPathAndVersion ', id, 'res', res);
                 const { path } = res;
                 setPath(path);
             })
@@ -65,12 +65,12 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
             setLoading(true);
             try {
                 const res = await window.versions?.getBinaryVersion(path, id);
-                console.log('请求成功', res);
+                console.log('getBinaryVersion请求成功', res);
                 const { version, pass } = res;
                 setVersion(version);
                 setPass(pass);
             } catch (error: any) {
-                console.error('请求失败 error', error);
+                console.error('getBinaryVersion请求失败 error', error);
                 setVersion('');
                 setPass(false);
                 messageApi.open({

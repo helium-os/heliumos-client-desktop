@@ -25,7 +25,7 @@ const guideInfo: GuideInfo = {
     text: '从哪里获得 Kubeconfig？',
     link: '',
 };
-const ClusterCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
+const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
     const dispatch = useAppDispatch();
     const storageClass = useAppSelector((state: RootState) => state.installConfig.storageClass);
     const serverExpose = useAppSelector((state: RootState) => state.installConfig.serverExpose);
@@ -43,6 +43,20 @@ const ClusterCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
     const [checkResults, setCheckResults] = useState<ResultItem[]>([]); // 检验结果
     const [allCheckPass, setAllCheckPass] = useState<boolean>(false); // 是否全部校验通过
 
+    useEffect(() => {
+        if (!display) return;
+
+        window.versions
+            ?.getDefaultKubeConfig()
+            .then((res) => {
+                console.log('getDefaultKubeConfig success', res);
+                setKubeConfig(res);
+            })
+            .catch((error) => {
+                console.error('getDefaultKubeConfig error', error);
+            });
+    }, [display]);
+
     const clearTimer = () => {
         if (timerRef) {
             clearTimeout(timerRef.current);
@@ -51,6 +65,8 @@ const ClusterCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
 
     useEffect(() => {
         const trimKubeConfig = kubeConfig.trim();
+        if (!display) return;
+
         if (!trimKubeConfig) {
             clearTimer();
             setRes(null);
@@ -73,7 +89,7 @@ const ClusterCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
                     });
                 });
         }, 300);
-    }, [kubeConfig]);
+    }, [display, kubeConfig, messageApi]);
 
     useEffect(() => {
         const {
