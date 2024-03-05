@@ -92,22 +92,21 @@ async function getBinaryPathAndVersion(binaryName) {
 
 //返回helm kubectl 版本号
 async function getBinaryVersion(path, binaryName) {
-    let command = path;
-    path = `"` + path + `"`;
+    let command = `"` + path + `"`;
     try {
         if (binaryName === 'kubectl') {
             command += ' version --client=true --output=yaml';
             const result = await exec(command);
             const version = yaml.load(result.stdout).clientVersion.gitVersion.substring(1);
             const versionSplit = version.split('.');
-            kubectlPath = path;
+            kubectlPath = `"` + path + `"`;
             return { version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
         } else if (binaryName === 'helm') {
             command += ` version --template="Version: {{.Version}}"`;
             const result = await exec(command);
             const version = result.stdout.split(' ')[1].substring(1);
             const versionSplit = version.split('.');
-            helmPath = path;
+            helmPath = `"` + path + `"`;
             return { version: version, pass: versionSplit[0] >= 3 ? true : false };
         } else {
             return { version: '', pass: false };
