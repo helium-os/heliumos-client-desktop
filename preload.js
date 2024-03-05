@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('versions', {
     switchModeType: (modeType, orgId) => ipcRenderer.send('switchModeType', modeType, orgId),
     getBinaryPathAndVersion: (id) => ipcRenderer.invoke('getBinaryPathAndVersion', id),
     getBinaryVersion: (path, id) => ipcRenderer.invoke('getBinaryVersion', path, id),
+    getDefaultKubeConfig: () => ipcRenderer.invoke('getDefaultKubeConfig'),
     getClusterConfig: (config) => ipcRenderer.invoke('getClusterConfig', config),
     installHeliumos: (configObj) => ipcRenderer.invoke('installHeliumos', configObj),
     getInstallStatus: (orgId) => ipcRenderer.invoke('getInstallStatus', orgId),
