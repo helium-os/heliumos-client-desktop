@@ -11,7 +11,7 @@ const path = require("path");
 const fixPath  = require('fix-path');
 
 module.exports = {
-    getBinaryPathAndVersion,
+    getBinaryPath,
     getBinaryVersion,
     getDefaultKubeConfig,
     getClusterConfig,
@@ -55,8 +55,8 @@ let kubectlPath = "kubectl";
 let helmPath = "helm";
 
 
-//检测helm kubectl 安装路径，并返回版本号
-async function getBinaryPathAndVersion(binaryName) {
+//检测helm kubectl 安装路径
+async function getBinaryPath(binaryName) {
     fixPath();
     let command = 'which ';
     if (process.platform === "win32") {
@@ -69,7 +69,7 @@ async function getBinaryPathAndVersion(binaryName) {
         stdout = stdout.replace(/[\r\n]/g, "");
         return { path: stdout };
     } catch (err) {
-        logger.error(`getBinaryPathAndVersion exception: ${err}`);
+        logger.error(`getBinaryPath exception: ${err}`);
         return { path: '' };
     }
 }
@@ -80,7 +80,6 @@ async function getBinaryVersion(path, binaryName) {
     try {
         if (binaryName === 'kubectl') {
             command += ' version --client=true --output=yaml';
-            logger.info(`kubectl command: ${command}`);
             const result = await exec(command);
             const version = yaml.load(result.stdout).clientVersion.gitVersion.substring(1);
             const versionSplit = version.split('.');
@@ -88,7 +87,6 @@ async function getBinaryVersion(path, binaryName) {
             return { version: version, pass: versionSplit[0] >= 1 && versionSplit[1] >= 20 ? true : false };
         } else if (binaryName === 'helm') {
             command += ` version --template="Version: {{.Version}}"`;
-            logger.info(`helm command: ${command}`);
             const result = await exec(command);
             const version = result.stdout.split(' ')[1].substring(1);
             const versionSplit = version.split('.');
@@ -122,6 +120,10 @@ async function getClusterConfig(kubeConfig) {
     config.nodes = [];
     config.storageClasses = [];
     config.expose = ['loadBalancer'];
+    config.serverVersion = { value: "", pass: false };
+    config.component = { value: 'coreDNS', pass: false };
+    config.serverIp = { value: "", pass: false };
+
 
     config.baseConfig = {
         storage: {

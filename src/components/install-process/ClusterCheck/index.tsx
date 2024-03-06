@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
-import useStyles from './style';
-import { Divider, Input, Select, message } from 'antd';
+import { Spin, Divider, Input, Select, message } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import PanelLayout from '../common/PanelLayout';
 import SectionLayout, { GuideInfo } from '../common/SectionLayout';
 import CheckResultItem from './CheckResultItem';
@@ -16,6 +16,7 @@ import {
 import { checkHasNoPass, keyNameMap, ResultItem, ResultRes } from '@/components/install-process/ClusterCheck/data';
 import { BaseTabContentProps, Step } from '@/components/install-process/data.d';
 import FooterButtons from '../common/FooterButtons';
+import useStyles from './style';
 
 const { TextArea } = Input;
 
@@ -37,6 +38,7 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
     const timerRef = useRef<any>(null);
 
     const [kubeConfig, setKubeConfig] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
     const [res, setRes] = useState<ResultRes | null>(null);
     const [storageClassList, setStorageClassList] = useState<string[]>([]);
     const [serverExposeList, setServerExposeList] = useState<string[]>([]);
@@ -65,16 +67,17 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
 
     useEffect(() => {
         const trimKubeConfig = kubeConfig.trim();
-        if (!display) return;
-
         if (!trimKubeConfig) {
             clearTimer();
             setRes(null);
+            setLoading(false);
             return;
         }
 
         clearTimer();
         timerRef.current = setTimeout(() => {
+            setLoading(true);
+            setRes(null);
             window.versions
                 ?.getClusterConfig(trimKubeConfig)
                 .then((res: ResultRes) => {
@@ -87,9 +90,12 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
                         type: 'error',
                         content: error.message,
                     });
+                })
+                .finally(() => {
+                    setLoading(false);
                 });
         }, 300);
-    }, [display, kubeConfig, messageApi]);
+    }, [kubeConfig, messageApi]);
 
     useEffect(() => {
         const {
@@ -167,8 +173,6 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
 
     // StorageClass默认选中第一项
     useEffect(() => {
-        if (!storageClassList.length) return;
-
         changeStorageClass(storageClassList[0]);
     }, [storageClassList, changeStorageClass]);
 
@@ -193,8 +197,6 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
 
     // 服务暴露方式默认选中第一项
     useEffect(() => {
-        if (!serverExposeList.length) return;
-
         changeServerExpose(serverExposeList[0]);
     }, [serverExposeList, changeServerExpose]);
 
@@ -239,34 +241,32 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
                 <SectionLayout title="Kubeconfig" guideInfo={guideInfo}>
                     <TextArea className={styles.textarea} rows={6} value={kubeConfig} onChange={onKubeConfigChange} />
                 </SectionLayout>
-                {res && (
-                    <>
-                        <SectionLayout title="StorageClass">
-                            <Select
-                                value={storageClass}
-                                onChange={onStorageClassChange}
-                                style={{ width: '100%' }}
-                                options={storageClassOptions}
-                            />
-                        </SectionLayout>
-                        <SectionLayout title="服务暴露方式">
-                            <Select
-                                value={serverExpose}
-                                onChange={onServerExposeChange}
-                                style={{ width: '100%' }}
-                                options={serverExposeOptions}
-                            />
-                        </SectionLayout>
-                        <Divider />
-                        <SectionLayout>
-                            <div className={styles.clusterCheckResult}>
-                                {checkResults.map((item) => (
-                                    <CheckResultItem key={item.id} {...item}></CheckResultItem>
-                                ))}
-                            </div>
-                        </SectionLayout>
-                    </>
-                )}
+                <Spin spinning={loading} indicator={<LoadingOutlined />}>
+                    <SectionLayout title="StorageClass">
+                        <Select
+                            value={storageClass}
+                            onChange={onStorageClassChange}
+                            style={{ width: '100%' }}
+                            options={storageClassOptions}
+                        />
+                    </SectionLayout>
+                    <SectionLayout title="服务暴露方式">
+                        <Select
+                            value={serverExpose}
+                            onChange={onServerExposeChange}
+                            style={{ width: '100%' }}
+                            options={serverExposeOptions}
+                        />
+                    </SectionLayout>
+                    <Divider />
+                    <SectionLayout>
+                        <div className={styles.clusterCheckResult}>
+                            {checkResults.map((item) => (
+                                <CheckResultItem key={item.id} {...item}></CheckResultItem>
+                            ))}
+                        </div>
+                    </SectionLayout>
+                </Spin>
             </PanelLayout>
         </>
     );

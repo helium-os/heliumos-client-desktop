@@ -16,7 +16,7 @@ interface Window {
         loadKeycloakLogin: (orgId) => void;
         loadURL: (url) => void;
         switchModeType: (modeType, orgId?: string) => void;
-        getBinaryPathAndVersion: (id) => Promise<any>;
+        getBinaryPath: (id) => Promise<any>;
         getBinaryVersion: (path, id) => Promise<any>;
         getDefaultKubeConfig: () => Promise<any>;
         getClusterConfig: (config) => Promise<any>;
