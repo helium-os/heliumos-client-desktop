@@ -35,7 +35,7 @@ export const theme = {
             optionLineHeight: '20px',
             optionPadding: '6px 8px',
             optionActiveBg: 'rgba(0, 0, 0, 0.06)',
-            optionSelectedBg: 'rgba(0, 0, 0, 0.06)',
+            optionSelectedBg: 'rgba(0, 0, 0, 0.08)',
             optionSelectedFontWeight: 400,
             paddingXXS: 8,
         },

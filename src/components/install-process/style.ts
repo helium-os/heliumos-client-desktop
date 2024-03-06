@@ -57,8 +57,7 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
             li {
                 display: flex;
                 align-items: center;
-                margin: 5px 0;
-                padding: 0 10px;
+                padding: 5px 10px;
                 color: rgba(0, 0, 0, 0.5);
                 font-size: 15px;
                 font-weight: 400;

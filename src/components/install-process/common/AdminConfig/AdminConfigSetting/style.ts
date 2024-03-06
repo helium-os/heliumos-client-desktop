@@ -2,9 +2,10 @@ import { createStyles } from 'antd-style';
 
 const useStyles = createStyles(({ token, css, prefixCls }) => {
     return {
-        installConfigContent: css`
-            .ant-form-item {
-                margin-bottom: 0;
+        settingContent: css`
+            .ant-input-password-icon {
+                font-size: 16px;
+                color: rgba(0, 0, 0, 0.5);
             }
         `,
     };

@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import React, { memo } from 'react';
 import { Input } from 'antd';
 import { StoreConfigItem } from '@/components/install-process/common/StoreConfigList/index';
+import ConfigReader from '@/components/install-process/common/ConfigReader';
+import { Direction } from '@/components/install-process/data.d';
 import useStyles from './style';
 
 interface IProps extends StoreConfigItem {
@@ -17,17 +19,21 @@ const StoreConfig: React.FC<IProps> = ({ readOnly, id, defaultValue, value, onCh
     };
 
     return (
-        <div className={styles.storeConfig}>
-            <label className="title">{id}</label>
-            <div className="content">
-                {readOnly ? (
-                    <label className="value">{value || defaultValue}</label>
-                ) : (
-                    <Input placeholder={defaultValue + ''} value={value} onChange={onValueChange} />
-                )}
-                <label className="unit">Gi</label>
-            </div>
-        </div>
+        <>
+            {readOnly ? (
+                <ConfigReader label={id} direction={Direction.Row}>
+                    {value || defaultValue}Gi
+                </ConfigReader>
+            ) : (
+                <div className={styles.storeConfig}>
+                    <label className="title">{id}</label>
+                    <div className="content">
+                        <Input placeholder={defaultValue + ''} value={value} onChange={onValueChange} />
+                        <label className="unit">Gi</label>
+                    </div>
+                </div>
+            )}
+        </>
     );
 };
 

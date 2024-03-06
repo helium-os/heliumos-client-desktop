@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
-import { Spin, Divider, Input, Select, message } from 'antd';
+import React, { useState, useEffect, useMemo, memo, useRef } from 'react';
+import { Spin, Input, message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import PanelLayout from '../common/PanelLayout';
 import SectionLayout, { GuideInfo } from '../common/SectionLayout';
 import CheckResultItem from './CheckResultItem';
-import { RootState, useAppDispatch, useAppSelector } from '@/store';
+import { useAppDispatch } from '@/store';
 import {
-    setStorageClass,
-    setServerExpose,
+    setStorageClassList,
+    setServerExposeList,
     setServerIp,
     setOrgId,
     setStoreConfigList,
@@ -28,20 +28,14 @@ const guideInfo: GuideInfo = {
 };
 const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
     const dispatch = useAppDispatch();
-    const storageClass = useAppSelector((state: RootState) => state.installConfig.storageClass);
-    const serverExpose = useAppSelector((state: RootState) => state.installConfig.serverExpose);
 
     const [messageApi, contextHolder] = message.useMessage();
-
     const { styles } = useStyles();
 
     const timerRef = useRef<any>(null);
-
     const [kubeConfig, setKubeConfig] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [res, setRes] = useState<ResultRes | null>(null);
-    const [storageClassList, setStorageClassList] = useState<string[]>([]);
-    const [serverExposeList, setServerExposeList] = useState<string[]>([]);
     const [checkResults, setCheckResults] = useState<ResultItem[]>([]); // 检验结果
     const [allCheckPass, setAllCheckPass] = useState<boolean>(false); // 是否全部校验通过
 
@@ -108,10 +102,10 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
         } = res || ({} as ResultRes);
 
         // StorageClass列表
-        setStorageClassList(storageClasses);
+        dispatch(setStorageClassList(storageClasses));
 
         // 服务暴露方式列表
-        setServerExposeList(expose);
+        dispatch(setServerExposeList(expose));
 
         // 组织id
         dispatch(setOrgId(orgId));
@@ -163,54 +157,6 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
         setAllCheckPass(!!res && !checkHasNoPass(rest));
     }, [res, dispatch]);
 
-    // 修改StorageClass
-    const changeStorageClass = useCallback(
-        (storageClass: string) => {
-            dispatch(setStorageClass(storageClass));
-        },
-        [dispatch],
-    );
-
-    // StorageClass默认选中第一项
-    useEffect(() => {
-        changeStorageClass(storageClassList[0]);
-    }, [storageClassList, changeStorageClass]);
-
-    // StorageClass下拉菜单Options
-    const storageClassOptions = useMemo(
-        () => storageClassList.map((value) => ({ value, label: value })),
-        [storageClassList],
-    );
-
-    // 切换StorageClass
-    const onStorageClassChange = (value: string) => {
-        changeStorageClass(value);
-    };
-
-    // 修改服务暴露方式
-    const changeServerExpose = useCallback(
-        (serverExpose: string) => {
-            dispatch(setServerExpose(serverExpose));
-        },
-        [dispatch],
-    );
-
-    // 服务暴露方式默认选中第一项
-    useEffect(() => {
-        changeServerExpose(serverExposeList[0]);
-    }, [serverExposeList, changeServerExpose]);
-
-    // 服务暴露方式下拉菜单Options
-    const serverExposeOptions = useMemo(
-        () => serverExposeList.map((value) => ({ value, label: value })),
-        [serverExposeList],
-    );
-
-    // 切换StorageClass
-    const onServerExposeChange = (value: string) => {
-        changeServerExpose(value);
-    };
-
     // 输入的Kubeconfig改变
     const onKubeConfigChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { value } = e.target;
@@ -242,23 +188,6 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
                     <TextArea className={styles.textarea} rows={6} value={kubeConfig} onChange={onKubeConfigChange} />
                 </SectionLayout>
                 <Spin spinning={loading} indicator={<LoadingOutlined />}>
-                    <SectionLayout title="StorageClass">
-                        <Select
-                            value={storageClass}
-                            onChange={onStorageClassChange}
-                            style={{ width: '100%' }}
-                            options={storageClassOptions}
-                        />
-                    </SectionLayout>
-                    <SectionLayout title="服务暴露方式">
-                        <Select
-                            value={serverExpose}
-                            onChange={onServerExposeChange}
-                            style={{ width: '100%' }}
-                            options={serverExposeOptions}
-                        />
-                    </SectionLayout>
-                    <Divider />
                     <SectionLayout>
                         <div className={styles.clusterCheckResult}>
                             {checkResults.map((item) => (

@@ -30,6 +30,7 @@ interface InstallStatus {
 
 const Install: React.FC<IProps> = ({ title, ...restProps }) => {
     const orgId = useAppSelector((state: RootState) => state.installConfig.orgId);
+    const adminUsername = useAppSelector((state: RootState) => state.installConfig.adminUsername);
 
     const { styles } = useStyles();
     const [messageApi, contextHolder] = message.useMessage();
@@ -80,8 +81,8 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
         await window.versions?.setuserInfo({
             org: orgId, // 安装完成后，orgId暂时用作别名
             orgId,
-            name: 'admin',
-            display_name: 'admin',
+            name: adminUsername,
+            display_name: adminUsername,
             autoLogin: null,
         });
         window.versions?.switchModeType(ModeType.Normal, orgId);

@@ -5,6 +5,12 @@ export enum Direction {
     Row,
     Column,
 }
+
+export enum Size {
+    Small,
+    Default,
+    Large,
+}
 export interface GuideInfo {
     text: string;
     link: string;
@@ -12,6 +18,7 @@ export interface GuideInfo {
 
 type IProps = {
     direction?: Direction;
+    size?: Size;
     title?: string;
     children?: React.ReactNode;
     guideInfo?: GuideInfo;
@@ -20,13 +27,14 @@ type IProps = {
 };
 const SectionLayout: React.FC<IProps> = ({
     direction = Direction.Column, // 垂直排列 || 水平排列
+    size = Size.Default,
     title,
     children,
     guideInfo,
     className,
     style,
 }) => {
-    const { styles } = useStyles({ direction });
+    const { styles } = useStyles({ direction, size });
 
     const onOpenUrl = () => {
         (window as any).versions?.openExternal(guideInfo?.link);

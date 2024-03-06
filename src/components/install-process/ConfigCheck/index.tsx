@@ -1,15 +1,19 @@
-import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import useStyles from './style';
 import { Divider, message } from 'antd';
 import PanelLayout from '../common/PanelLayout';
-import ConfigItem from './ConfigItem';
-import StoreConfigList, { ModeType } from '../common/StoreConfigList';
+import StoreConfigList from '../common/StoreConfigList';
 import { RootState, useAppSelector } from '@/store';
-import { BaseTabContentProps, Step } from '@/components/install-process/data.d';
+import { BaseTabContentProps, ReadWriteType, Step } from '@/components/install-process/data.d';
 import FooterButtons from '../common/FooterButtons';
 import { StorageMap } from '@/components/install-process/ClusterCheck/data';
+import StorageClassConfig from '@/components/install-process/common/StorageClassConfig';
+import ServerExposeConfig from '@/components/install-process/common/ServerExposeConfig';
+import AdminConfig from '@/components/install-process/common/AdminConfig';
 
 export interface IProps extends BaseTabContentProps {}
+
+const readOnly = true;
 
 const ConfigCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
     const [messageApi, contextHolder] = message.useMessage();
@@ -91,12 +95,13 @@ const ConfigCheck: React.FC<IProps> = ({ onStep, ...restProps }) => {
         <>
             {contextHolder}
             <PanelLayout footer={footerButtons} {...restProps}>
-                <ConfigItem title="StorageClass" value={storageClass} />
-                <ConfigItem title="服务暴露方式" value={serverExpose} />
-                <ConfigItem title="组织id" value={orgId} />
-                <ConfigItem title="admin密码" value={adminPassword} />
+                <StorageClassConfig readOnly={readOnly} />
                 <Divider />
-                <StoreConfigList type={ModeType.Read} />
+                <ServerExposeConfig readOnly={readOnly} />
+                <Divider />
+                <AdminConfig readOnly={readOnly} />
+                <Divider />
+                <StoreConfigList readOnly={readOnly} />
             </PanelLayout>
         </>
     );

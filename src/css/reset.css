@@ -31,3 +31,10 @@ ul, ol, li {
     background: rgba(0, 0, 0, 0.08);
     border-radius: 2px;
 }
+
+.ant-select-dropdown .ant-select-item {
+    margin-bottom: 2px;
+}
+.ant-select-dropdown .ant-select-item:last-of-type {
+    margin-bottom: 0;
+}

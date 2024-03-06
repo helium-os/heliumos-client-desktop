@@ -1,17 +1,12 @@
 import React, { useState, useMemo, useCallback, memo } from 'react';
-import SectionLayout from '../SectionLayout';
+import SectionLayout, { Size } from '../SectionLayout';
 import StoreConfig from './StoreConfig';
 import DownOutlinedIcon from '@/components/common/icon/DownOutlined';
 import { RootState, useAppDispatch, useAppSelector } from '@/store';
 import { setStoreConfigList, setOamStoreConfigList } from '@/store/slices/installConfigSlice';
 import useStyles from './style';
-
-export enum ModeType {
-    Read,
-    Write,
-}
 interface IProps {
-    type: ModeType;
+    readOnly: boolean;
 }
 
 export interface StoreConfigItem {
@@ -20,12 +15,10 @@ export interface StoreConfigItem {
     value?: string;
 }
 
-const StoreConfigList: React.FC<IProps> = ({ type }) => {
+const StoreConfigList: React.FC<IProps> = ({ readOnly }) => {
     const dispatch = useAppDispatch();
     const storeConfigList = useAppSelector((state: RootState) => state.installConfig.storeConfigList);
     const oamStoreConfigList = useAppSelector((state: RootState) => state.installConfig.oamStoreConfigList);
-
-    const readOnly = useMemo(() => type === ModeType.Read, [type]);
 
     const { styles } = useStyles({ readOnly });
 
@@ -92,7 +85,7 @@ const StoreConfigList: React.FC<IProps> = ({ type }) => {
                     {!readOnly && <DownOutlinedIcon />}
                 </div>
             </SectionLayout>
-            <SectionLayout title="存储PV" style={{ display: expand ? 'block' : 'none' }}>
+            <SectionLayout title="存储PV" size={Size.Large} style={{ display: expand ? 'block' : 'none' }}>
                 <div className={styles.storeConfigListWrap}>
                     <ul className={styles.storeConfigList}>
                         {storeConfigList.map((item) => (
@@ -112,7 +105,7 @@ const StoreConfigList: React.FC<IProps> = ({ type }) => {
                     </ul>
                 </div>
             </SectionLayout>
-            <SectionLayout title="OAM" style={{ display: expand ? 'block' : 'none' }}>
+            <SectionLayout title="OAM" size={Size.Large} style={{ display: expand ? 'block' : 'none' }}>
                 <div className={styles.storeConfigListWrap}>
                     <ul className={styles.storeConfigList}>
                         {oamStoreConfigList.map((item) => (
