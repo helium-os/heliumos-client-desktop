@@ -11,7 +11,7 @@ const path = require("path");
 const fixPath  = require('fix-path');
 
 module.exports = {
-    getBinaryPathAndVersion,
+    getBinaryPath,
     getBinaryVersion,
     getDefaultKubeConfig,
     getClusterConfig,
@@ -55,8 +55,8 @@ let kubectlPath = "kubectl";
 let helmPath = "helm";
 
 
-//检测helm kubectl 安装路径，并返回版本号
-async function getBinaryPathAndVersion(binaryName) {
+//检测helm kubectl 安装路径
+async function getBinaryPath(binaryName) {
     fixPath();
     let command = 'which ';
     if (process.platform === "win32") {
@@ -69,7 +69,7 @@ async function getBinaryPathAndVersion(binaryName) {
         stdout = stdout.replace(/[\r\n]/g, "");
         return { path: stdout };
     } catch (err) {
-        logger.error(`getBinaryPathAndVersion exception: ${err}`);
+        logger.error(`getBinaryPath exception: ${err}`);
         return { path: '' };
     }
 }
@@ -120,6 +120,10 @@ async function getClusterConfig(kubeConfig) {
     config.nodes = [];
     config.storageClasses = [];
     config.expose = ['loadBalancer'];
+    config.serverVersion = { value: "", pass: false };
+    config.component = { value: 'coreDNS', pass: false };
+    config.serverIp = { value: "", pass: false };
+
 
     config.baseConfig = {
         storage: {

@@ -40,14 +40,14 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
         if (!id) return;
 
         window.versions
-            ?.getBinaryPathAndVersion(id)
+            ?.getBinaryPath(id)
             .then((res) => {
-                console.log('getBinaryPathAndVersion ', id, 'res', res);
+                console.log('getBinaryPath ', id, 'res', res);
                 const { path } = res;
                 setPath(path);
             })
             .catch((error) => {
-                console.error('getBinaryPathAndVersion error', error, id);
+                console.error('getBinaryPath error', error, id);
             });
     }, [id]);
 

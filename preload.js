@@ -17,7 +17,7 @@ contextBridge.exposeInMainWorld('versions', {
     loadURL: (url) => ipcRenderer.send('loadURL', url),
     loadKeycloakLogin: (orgId) => ipcRenderer.send('loadKeycloakLogin', orgId),
     switchModeType: (modeType, orgId) => ipcRenderer.send('switchModeType', modeType, orgId),
-    getBinaryPathAndVersion: (id) => ipcRenderer.invoke('getBinaryPathAndVersion', id),
+    getBinaryPath: (id) => ipcRenderer.invoke('getBinaryPath', id),
     getBinaryVersion: (path, id) => ipcRenderer.invoke('getBinaryVersion', path, id),
     getDefaultKubeConfig: () => ipcRenderer.invoke('getDefaultKubeConfig'),
     getClusterConfig: (config) => ipcRenderer.invoke('getClusterConfig', config),

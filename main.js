@@ -481,8 +481,8 @@ app.whenReady().then(async () => {
         return res;
     });
 
-    ipcMain.handle('getBinaryPathAndVersion', function (event, id) {
-        return install.getBinaryPathAndVersion(id);
+    ipcMain.handle('getBinaryPath', function (event, id) {
+        return install.getBinaryPath(id);
     });
 
     ipcMain.handle('getBinaryVersion', function (event, path, id) {
