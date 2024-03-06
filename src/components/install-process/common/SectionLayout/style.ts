@@ -31,12 +31,16 @@ const useStyles = createStyles(({ token, css, prefixCls }, props: { direction: D
             ${contentStyle};
         `,
         guide: css`
+            display: inline-block;
             margin-top: 8px;
             font-size: 13px;
             font-weight: 400;
             text-decoration-line: underline;
             color: rgba(0, 0, 0, 0.5);
             cursor: pointer;
+            &:hover {
+                color: rgba(0, 0, 0, 0.8);
+            }
         `,
     };
 });

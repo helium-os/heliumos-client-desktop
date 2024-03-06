@@ -37,9 +37,9 @@ const SectionLayout: React.FC<IProps> = ({
             {title && <p className={styles.title}>{title}</p>}
             <div className={styles.content}>{children}</div>
             {guideInfo?.text && (
-                <p className={styles.guide} onClick={onOpenUrl}>
+                <span className={styles.guide} onClick={onOpenUrl}>
                     {guideInfo.text}
-                </p>
+                </span>
             )}
         </div>
     );

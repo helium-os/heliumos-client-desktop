@@ -40,7 +40,7 @@ export default function Page() {
             },
             {
                 key: Tab.ClusterCheck,
-                name: '集群配置检查',
+                name: '集群环境检查',
                 Component: ClusterCheck,
                 props: {},
             },
@@ -93,8 +93,11 @@ export default function Page() {
             <div className={styles.mainContent}>
                 <div className={styles.leftPanel}>
                     <ul className={styles.tabList}>
-                        {tabList.map((item) => (
-                            <li key={item.key} className={activeTab.key === item.key ? 'active' : ''}>
+                        {tabList.map((item, index) => (
+                            <li
+                                key={item.key}
+                                className={activeTabIndex > index ? 'done' : activeTabIndex === index ? 'active' : ''}
+                            >
                                 <div className={styles.orderIconBox}>
                                     <span className={styles.orderIcon} />
                                 </div>

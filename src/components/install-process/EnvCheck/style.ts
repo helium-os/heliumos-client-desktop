@@ -16,10 +16,14 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
         `,
         inputBox: css`
             flex: 1;
-            overflow: hidden;
             position: relative;
             &.hasVersion .ant-input {
                 padding-right: 90px;
+            }
+            .ant-input {
+                &:hover {
+                    box-shadow: ${(token as any).Input?.hoverShadow};
+                }
             }
         `,
         suffix: css`
@@ -61,6 +65,7 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
                 background: rgba(0, 0, 0, 0.5);
             }
             &:hover {
+                box-shadow: ${(token as any).Input?.hoverShadow};
                 .dot {
                     background: rgba(0, 0, 0, 0.8);
                 }

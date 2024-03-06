@@ -33,6 +33,15 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
             top: 4px;
             right: 11px;
             cursor: pointer;
+            .anticon {
+                font-size: 12px;
+                color: rgba(0, 0, 0, 0.5);
+            }
+            &:hover {
+                .anticon {
+                    color: rgba(0, 0, 0, 0.8);
+                }
+            }
         `,
         mainContent: css`
             flex: 1;
@@ -53,6 +62,9 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
                 color: rgba(0, 0, 0, 0.5);
                 font-size: 15px;
                 font-weight: 400;
+                &.done {
+                    color: rgba(0, 0, 0, 0.8);
+                }
                 &.active {
                     color: #007aff;
                     .${orderIcon} {

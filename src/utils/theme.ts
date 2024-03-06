@@ -8,11 +8,15 @@ export const theme = {
         Button: {
             controlHeight: 36,
             borderRadius: 5,
-            colorPrimary: '#3395FF',
             defaultBorderColor: 'rgba(0, 0, 0, 0.30)',
             defaultColor: 'rgba(0, 0, 0, 0.9)',
             defaultShadow: 'none',
+            defaultHoverBg: 'rgba(0, 0, 0, 0.06)',
+            defaultHoverBorderColor: 'rgba(0, 0, 0, 0.06)',
+            defaultHoverColor: 'rgba(0, 0, 0, 0.9)',
+            colorPrimary: '#007AFF',
             primaryShadow: 'none',
+            colorPrimaryHover: '#3395FF',
         },
         Input: {
             paddingBlock: 8,
@@ -22,6 +26,7 @@ export const theme = {
             activeBorderColor: '#007AFF',
             activeShadow: '0 1px 6px 0 rgba(0, 122, 255, 0.07)',
             hoverBorderColor: 'none',
+            hoverShadow: '0 1px 6px 0 rgba(0, 0, 0, 0.07)',
         },
         Select: {
             colorBorder: 'rgba(0, 0, 0, 0.12)',

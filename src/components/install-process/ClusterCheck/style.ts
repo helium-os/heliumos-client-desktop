@@ -8,12 +8,13 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
         justify-content: space-between;
     `);
 
-    const textLineHeight = '15px';
+    const textFontSize = '13px';
+    const textLineHeight = '18px';
 
     const commonVerifyTitle = css`
         flex: 1;
         overflow: hidden;
-        font-size: 11px;
+        font-size: ${textFontSize};
         font-weight: 400;
         line-height: ${textLineHeight};
         color: rgba(0, 0, 0, 0.76);
@@ -24,7 +25,9 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
     return {
         textarea: css`
             resize: none !important;
-            box-shadow: 0px 1px 2px 0px rgba(0, 122, 255, 0.03);
+            &:hover {
+                box-shadow: ${(token as any).Input?.hoverShadow};
+            }
         `,
         clusterCheckResult: css`
             padding: 12px;
@@ -44,7 +47,7 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
                 margin-right: 16px;
                 width: 120px;
                 flex: 0 0 auto;
-                font-size: 11px;
+                font-size: ${textFontSize};
                 line-height: ${textLineHeight};
                 font-weight: 400;
                 color: rgba(0, 0, 0, 0.5);
