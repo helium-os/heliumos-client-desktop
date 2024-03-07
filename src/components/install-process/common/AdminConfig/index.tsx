@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import type { FormInstance } from 'antd';
 import SectionLayout, { Size } from '../SectionLayout';
 import AdminConfigSetting from './AdminConfigSetting';
 import AdminConfigReader from './AdminConfigReader';
@@ -6,16 +7,17 @@ import EyeVisibleOutlinedIcon from '@/components/common/icon/EyeVisibleOutlined'
 import EyeInVisibleOutlinedIcon from '@/components/common/icon/EyeInvisibleOutlined';
 import useStyles from './style';
 
-export interface IProps {
+type IProps = {
     readOnly: boolean;
-}
+    form?: FormInstance;
+};
 
 export type PasswordIconRender = (visible: boolean) => React.ReactNode;
 
 const passwordIconRender: PasswordIconRender = (visible) =>
     visible ? <EyeVisibleOutlinedIcon /> : <EyeInVisibleOutlinedIcon />;
 
-const AdminConfig: React.FC<IProps> = ({ readOnly }) => {
+const AdminConfig: React.FC<IProps> = ({ readOnly, form }) => {
     const { styles } = useStyles({ readOnly });
 
     return (

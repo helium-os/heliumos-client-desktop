@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, memo } from 'react';
+import React, { useMemo, useCallback, memo } from 'react';
 import { Divider, Form } from 'antd';
 import PanelLayout from '../common/PanelLayout';
 import { Step, BaseTabContentProps } from '@/components/install-process/data.d';
@@ -8,23 +8,26 @@ import AdminConfig from '../common/AdminConfig';
 import StoreConfigList from '../common/StoreConfigList';
 import useStyles from './style';
 import FooterButtons from '../common/FooterButtons';
+import { setStorageClass, setServerExpose, setAdminPassword } from '@/store/slices/installConfigSlice';
+import { useAppDispatch } from '@/store';
 export interface IProps extends BaseTabContentProps {}
 
 const readOnly = false;
 
 const InstallConfig: React.FC<IProps> = ({ onStep, ...restProps }) => {
+    const dispatch = useAppDispatch();
+
     const { styles } = useStyles();
 
     const [form] = Form.useForm();
-    const values = Form.useWatch([], form);
 
-    const [submittable, setSubmittable] = React.useState<boolean>(false);
-
-    useEffect(() => {
-        form.validateFields({ validateOnly: true })
-            .then(() => setSubmittable(true))
-            .catch(() => setSubmittable(false));
-    }, [form, values]);
+    const onSubmit = useCallback(async () => {
+        await form.validateFields();
+        const { storageClass, serverExpose, adminPassword } = form.getFieldsValue();
+        dispatch(setStorageClass(storageClass));
+        dispatch(setServerExpose(serverExpose));
+        dispatch(setAdminPassword(adminPassword));
+    }, [form, dispatch]);
 
     const footerButtons = useMemo(
         () => (
@@ -35,21 +38,27 @@ const InstallConfig: React.FC<IProps> = ({ onStep, ...restProps }) => {
                 }}
                 primaryButton={{
                     text: '下一步',
-                    disabled: !submittable,
-                    onClick: () => onStep?.(Step.Next),
+                    onClick: async () => {
+                        try {
+                            await onSubmit();
+                            onStep?.(Step.Next);
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    },
                 }}
             />
         ),
-        [submittable, onStep],
+        [onSubmit, onStep],
     );
 
     return (
         <PanelLayout footer={footerButtons} {...restProps}>
             <div className={styles.installConfigContent}>
                 <Form form={form}>
-                    <StorageClassConfig readOnly={readOnly} />
-                    <ServerExposeConfig readOnly={readOnly} />
-                    <AdminConfig readOnly={readOnly} />
+                    <StorageClassConfig readOnly={readOnly} form={form} />
+                    <ServerExposeConfig readOnly={readOnly} form={form} />
+                    <AdminConfig readOnly={readOnly} form={form} />
                 </Form>
                 <Divider />
                 <StoreConfigList readOnly={readOnly} />

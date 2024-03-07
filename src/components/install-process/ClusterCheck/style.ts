@@ -56,7 +56,7 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
         verifyWrap: css`
             margin-right: 24px;
             box-sizing: border-box;
-            width: 200px;
+            width: 220px;
             flex: 0 0 auto;
             padding: 0 20px;
             display: flex;

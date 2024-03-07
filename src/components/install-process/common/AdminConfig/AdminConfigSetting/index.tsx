@@ -1,9 +1,8 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Form, Input } from 'antd';
 import SectionLayout from '../../SectionLayout';
 import { PasswordIconRender } from '@/components/install-process/common/AdminConfig';
-import { RootState, useAppDispatch, useAppSelector } from '@/store';
-import { setAdminPassword } from '@/store/slices/installConfigSlice';
+import { RootState, useAppSelector } from '@/store';
 import useStyles from './style';
 
 export interface IProps {
@@ -25,39 +24,22 @@ const checkPassword = (rule: any, value: string) => {
 const AdminConfigSetting: React.FC<IProps> = ({ passwordIconRender }) => {
     const { styles } = useStyles();
 
-    const dispatch = useAppDispatch();
     const adminUsername = useAppSelector((state: RootState) => state.installConfig.adminUsername);
-    const adminPassword = useAppSelector((state: RootState) => state.installConfig.adminPassword);
 
+    const [password, setPassword] = useState<string>('');
     const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
-    const [verifyPassword, setVerifyPassword] = useState<string>(''); // 二次确认密码
+
     const [verifyPasswordVisible, setVerifyPasswordVisible] = useState<boolean>(false);
 
-    // 修改store admin密码
-    const changeAdminPassword = useCallback(
-        (password: string) => {
-            dispatch(setAdminPassword(password));
-        },
-        [dispatch],
-    );
-
-    // admin密码更改
     const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { value } = e.target;
-        changeAdminPassword(value.trim());
+        setPassword(e.target.value);
     };
 
-    // admin密码更改
-    const onVerifyPasswordChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { value } = e.target;
-        setVerifyPassword(value.trim());
-    };
-
-    const checkPasswordSame = (rule: any, value: string) => {
+    const checkPasswordSame = async (rule: any, value: string) => {
         if (!value) {
             return Promise.reject('请确认登录密码');
         }
-        if (value !== adminPassword) {
+        if (value !== password) {
             return Promise.reject('密码不一致');
         }
         return Promise.resolve();
@@ -66,9 +48,7 @@ const AdminConfigSetting: React.FC<IProps> = ({ passwordIconRender }) => {
     return (
         <div className={styles.settingContent}>
             <SectionLayout title="用户名" style={{ paddingTop: 0 }}>
-                <Form.Item rules={[{ required: true, message: '请输入用户名' }]}>
-                    <Input value={adminUsername} disabled />
-                </Form.Item>
+                <Input value={adminUsername} disabled />
             </SectionLayout>
             <SectionLayout title="登录密码">
                 <Form.Item name="adminPassword" rules={[{ validator: checkPassword }]}>
@@ -84,7 +64,6 @@ const AdminConfigSetting: React.FC<IProps> = ({ passwordIconRender }) => {
                 <Form.Item name="verifyPassword" rules={[{ validator: checkPasswordSame }]}>
                     <Input.Password
                         placeholder="请确认登录密码"
-                        onChange={onVerifyPasswordChange}
                         visibilityToggle={{
                             visible: verifyPasswordVisible,
                             onVisibleChange: setVerifyPasswordVisible,

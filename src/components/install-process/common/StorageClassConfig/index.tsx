@@ -1,13 +1,14 @@
-import React, { useEffect, useMemo, useCallback, memo } from 'react';
-import { Form, Input, Select } from 'antd';
+import React, { useEffect, useMemo, memo } from 'react';
+import type { FormInstance } from 'antd';
+import { Form, Select } from 'antd';
 import SectionLayout, { Size } from '../SectionLayout';
 import ConfigReader from '../ConfigReader';
 import { configSettingWidth } from '@/components/install-process/data.d';
-import { RootState, useAppDispatch, useAppSelector } from '@/store';
-import { setStorageClass } from '@/store/slices/installConfigSlice';
+import { RootState, useAppSelector } from '@/store';
 import useStyles from './style';
 export interface IProps {
     readOnly: boolean;
+    form?: FormInstance;
 }
 
 enum Association {
@@ -25,10 +26,9 @@ const associationValue = Association.PV;
 
 const associationLabel = associationOptions.find((item) => item.value === associationValue)?.label || '';
 
-const StorageClassConfig: React.FC<IProps> = ({ readOnly }) => {
+const StorageClassConfig: React.FC<IProps> = ({ readOnly, form }) => {
     const { styles } = useStyles({ readOnly });
 
-    const dispatch = useAppDispatch();
     const storageClassList = useAppSelector((state: RootState) => state.installConfig.storageClassList);
     const storageClass = useAppSelector((state: RootState) => state.installConfig.storageClass);
 
@@ -38,23 +38,12 @@ const StorageClassConfig: React.FC<IProps> = ({ readOnly }) => {
         [storageClassList],
     );
 
-    // 修改store StorageClass
-    const changeStorageClass = useCallback(
-        (storageClass: string) => {
-            dispatch(setStorageClass(storageClass));
-        },
-        [dispatch],
-    );
-
     // StorageClass默认选中第一项
     useEffect(() => {
-        changeStorageClass(storageClassList[0]);
-    }, [storageClassList, changeStorageClass]);
+        if (!form) return;
 
-    // 点击切换StorageClass
-    const onStorageClassChange = (value: string) => {
-        changeStorageClass(value);
-    };
+        form!.setFieldValue('storageClass', storageClassList[0]);
+    }, [form, storageClassList]);
 
     return (
         <SectionLayout title="数据持久化方式" size={Size.Large}>
@@ -71,13 +60,13 @@ const StorageClassConfig: React.FC<IProps> = ({ readOnly }) => {
                             options={associationOptions}
                             style={{ width: `${configSettingWidth}px` }}
                         />
-                        <Select
-                            placeholder="请选择数据持久化方式"
-                            value={storageClass}
-                            options={storageClassOptions}
-                            onChange={onStorageClassChange}
-                            style={{ width: `${configSettingWidth}px` }}
-                        />
+                        <Form.Item name="storageClass" rules={[{ required: true, message: '请选择数据持久化方式' }]}>
+                            <Select
+                                placeholder="请选择数据持久化方式"
+                                options={storageClassOptions}
+                                style={{ width: `${configSettingWidth}px` }}
+                            />
+                        </Form.Item>
                     </>
                 )}
             </div>
