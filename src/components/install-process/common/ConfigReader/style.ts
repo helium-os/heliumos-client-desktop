@@ -8,6 +8,7 @@ const useStyles = createStyles(({ token, css, prefixCls }, props: { direction: D
         ? css`
               display: flex;
               flex-direction: row;
+              align-items: center;
               gap: 10px;
           `
         : css``;
