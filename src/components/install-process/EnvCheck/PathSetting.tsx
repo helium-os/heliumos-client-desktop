@@ -39,6 +39,7 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
     useEffect(() => {
         if (!id) return;
 
+        setLoading(true);
         window.versions
             ?.getBinaryPath(id)
             .then((res) => {
@@ -48,6 +49,9 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
             })
             .catch((error) => {
                 console.error('getBinaryPath error', error, id);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, [id]);
 
@@ -61,8 +65,8 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
         }
 
         clearTimer();
+        setLoading(true);
         timerRef.current = setTimeout(async () => {
-            setLoading(true);
             try {
                 const res = await window.versions?.getBinaryVersion(path, id);
                 console.log('getBinaryVersion请求成功', res);
@@ -103,7 +107,7 @@ const PathSetting: React.FC<IProps> = ({ id, name, installLink, onVersionAndPass
     const suffix = useMemo(() => {
         if (loading) return <LoadingOutlined />;
 
-        if (path && version) {
+        if (path) {
             return (
                 <div className={`${styles.versionCheckBox} ${pass ? 'pass' : 'not-pass'}`}>
                     {version}
