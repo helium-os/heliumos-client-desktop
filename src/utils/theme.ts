@@ -24,7 +24,6 @@ export const theme = {
             primaryShadow: 'none',
         },
         Input: {
-            lineHeight: '20px',
             paddingBlock: 8,
             paddingInline: 12,
             borderRadius: 5,
