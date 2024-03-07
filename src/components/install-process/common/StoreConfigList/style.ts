@@ -40,7 +40,10 @@ const useStyles = createStyles(({ token, css, prefixCls }, props: { readOnly: bo
                 margin-right: 24px;
             }
         `,
-        storeConfig: css`
+        storeConfigReader: css`
+            min-width: unset;
+        `,
+        storeConfigSetting: css`
             .title {
                 font-size: 12px;
                 font-weight: 400;

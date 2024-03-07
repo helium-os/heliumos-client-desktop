@@ -43,6 +43,7 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
         installBtn: css`
             padding: 5px 16px;
             height: 30px;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.06) 100%), #fff !important;
             line-height: 1;
             border: none !important;
             &:hover {

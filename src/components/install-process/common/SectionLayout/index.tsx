@@ -31,7 +31,7 @@ const SectionLayout: React.FC<IProps> = ({
     title,
     children,
     guideInfo,
-    className,
+    className = '',
     style,
 }) => {
     const { styles } = useStyles({ direction, size });

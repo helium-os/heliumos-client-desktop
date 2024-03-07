@@ -60,23 +60,25 @@ const StorageClassConfig: React.FC<IProps> = ({ readOnly }) => {
         <SectionLayout title="数据持久化方式" size={Size.Large}>
             <div className={styles.storageClassContent}>
                 {readOnly ? (
-                    <ConfigReader label={associationLabel} />
+                    <>
+                        <ConfigReader label={associationLabel} />
+                        <ConfigReader label={storageClass} />
+                    </>
                 ) : (
-                    <Select
-                        value={associationValue}
-                        options={associationOptions}
-                        style={{ width: `${configSettingWidth}px` }}
-                    />
-                )}
-                {readOnly ? (
-                    <ConfigReader label={storageClass} />
-                ) : (
-                    <Select
-                        value={storageClass}
-                        options={storageClassOptions}
-                        onChange={onStorageClassChange}
-                        style={{ width: `${configSettingWidth}px` }}
-                    />
+                    <>
+                        <Select
+                            value={associationValue}
+                            options={associationOptions}
+                            style={{ width: `${configSettingWidth}px` }}
+                        />
+                        <Select
+                            placeholder="请选择数据持久化方式"
+                            value={storageClass}
+                            options={storageClassOptions}
+                            onChange={onStorageClassChange}
+                            style={{ width: `${configSettingWidth}px` }}
+                        />
+                    </>
                 )}
             </div>
         </SectionLayout>

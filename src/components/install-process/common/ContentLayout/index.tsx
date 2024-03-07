@@ -6,7 +6,7 @@ type IProps = {
     style?: object;
     children?: React.ReactNode;
 };
-const Layout: React.FC<IProps> = ({ title, style, children }) => {
+const ContentLayout: React.FC<IProps> = ({ title, style, children }) => {
     const { styles } = useStyles();
 
     return (
@@ -17,4 +17,4 @@ const Layout: React.FC<IProps> = ({ title, style, children }) => {
     );
 };
 
-export default memo(Layout);
+export default memo(ContentLayout);

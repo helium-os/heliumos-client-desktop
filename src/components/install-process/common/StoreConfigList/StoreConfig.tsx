@@ -21,11 +21,11 @@ const StoreConfig: React.FC<IProps> = ({ readOnly, id, defaultValue, value, onCh
     return (
         <>
             {readOnly ? (
-                <ConfigReader label={id} direction={Direction.Row}>
+                <ConfigReader className={styles.storeConfigReader} label={id} direction={Direction.Row} separator=":">
                     {value || defaultValue}Gi
                 </ConfigReader>
             ) : (
-                <div className={styles.storeConfig}>
+                <div className={styles.storeConfigSetting}>
                     <label className="title">{id}</label>
                     <div className="content">
                         <Input placeholder={defaultValue + ''} value={value} onChange={onValueChange} />

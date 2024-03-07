@@ -32,9 +32,14 @@ ul, ol, li {
     border-radius: 2px;
 }
 
+/*antd*/
+.ant-input::placeholder {
+    font-size: 14px;
+}
 .ant-select-dropdown .ant-select-item {
     margin-bottom: 2px;
 }
 .ant-select-dropdown .ant-select-item:last-of-type {
     margin-bottom: 0;
 }
+

@@ -7,7 +7,6 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
             flex-direction: column;
             box-sizing: border-box;
             height: 100%;
-            padding-bottom: 10px;
         `,
         title: css`
             padding: 20px 24px;
@@ -18,7 +17,7 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
         content: css`
             flex: 1;
             overflow: auto;
-            padding: 0 24px 20px;
+            padding: 0 24px 30px;
         `,
     };
 });

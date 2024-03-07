@@ -6,7 +6,7 @@ interface IProps {
     children?: React.ReactNode;
 }
 
-const BgLayout: React.FC<IProps> = ({ className, style, children }) => {
+const BgLayout: React.FC<IProps> = ({ className = '', style, children }) => {
     const { styles } = useStyles();
 
     return (

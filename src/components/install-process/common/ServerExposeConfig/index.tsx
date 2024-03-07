@@ -53,6 +53,7 @@ const ServerExposeConfig: React.FC<IProps> = ({ readOnly }) => {
                 <ConfigReader label={serverExposeLabel} />
             ) : (
                 <Select
+                    placeholder="请选择服务暴露方式"
                     value={serverExpose}
                     options={serverExposeOptions}
                     onChange={onServerExposeChange}
