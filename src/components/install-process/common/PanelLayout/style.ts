@@ -30,7 +30,7 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
             overflow: hidden;
             background: #fff;
             box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.06) inset;
-            ${halfPxBorder('10px', 'rgba(0, 0, 0, 0.06)')};
+            ${halfPxBorder('10px', 'rgba(0, 0, 0, 0.04)')};
             .sectionArea {
                 padding: 12px 0;
             }

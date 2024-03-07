@@ -8,12 +8,15 @@ const useStyles = createStyles(({ token, css, prefixCls }, props: { readOnly: bo
         : css`
               color: #007aff;
               cursor: pointer;
+              &:hover {
+                  color: #3395ff;
+              }
           `;
 
     return {
         advancedConfig: css`
             margin-top: -8px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 400;
             ${advancedConfigStyle};
             .anticon {

@@ -25,9 +25,12 @@ const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
     return {
         textarea: css`
             resize: none !important;
-            &:hover {
-                box-shadow: ${(token as any).Input?.hoverShadow};
-            }
+        `,
+        spinBox: css`
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         `,
         clusterCheckResult: css`
             padding: 12px;

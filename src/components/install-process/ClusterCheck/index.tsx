@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, memo, useRef } from 'react';
-import { Spin, Input, message } from 'antd';
+import { Spin, Input, message, Divider } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import PanelLayout from '../common/PanelLayout';
 import SectionLayout, { GuideInfo } from '../common/SectionLayout';
@@ -187,15 +187,24 @@ const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
                 <SectionLayout title="Kubeconfig" guideInfo={guideInfo}>
                     <TextArea className={styles.textarea} rows={6} value={kubeConfig} onChange={onKubeConfigChange} />
                 </SectionLayout>
-                <Spin spinning={loading} indicator={<LoadingOutlined />}>
-                    <SectionLayout>
-                        <div className={styles.clusterCheckResult}>
-                            {checkResults.map((item) => (
-                                <CheckResultItem key={item.id} {...item}></CheckResultItem>
-                            ))}
-                        </div>
-                    </SectionLayout>
-                </Spin>
+                {loading ? (
+                    <div className={styles.spinBox}>
+                        <Spin indicator={<LoadingOutlined />} />
+                    </div>
+                ) : (
+                    res && (
+                        <>
+                            <Divider />
+                            <SectionLayout>
+                                <div className={styles.clusterCheckResult}>
+                                    {checkResults.map((item) => (
+                                        <CheckResultItem key={item.id} {...item}></CheckResultItem>
+                                    ))}
+                                </div>
+                            </SectionLayout>
+                        </>
+                    )
+                )}
             </PanelLayout>
         </>
     );

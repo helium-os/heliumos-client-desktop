@@ -10,20 +10,12 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
             display: flex;
             align-items: center;
             gap: 8px;
-            .ant-input {
-                line-height: 20px;
-            }
         `,
         inputBox: css`
             flex: 1;
             position: relative;
             &.hasVersion .ant-input {
                 padding-right: 90px;
-            }
-            .ant-input {
-                &:hover {
-                    box-shadow: ${(token as any).Input?.hoverShadow};
-                }
             }
         `,
         suffix: css`
