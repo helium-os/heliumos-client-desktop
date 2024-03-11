@@ -1,4 +1,4 @@
-export const theme = {
+const theme = {
     token: {
         motion: false,
         fontFamily: 'PingFang SC',
@@ -54,7 +54,4 @@ export const theme = {
     },
 };
 
-const config = {
-    theme,
-};
-export default config;
+export default theme;
