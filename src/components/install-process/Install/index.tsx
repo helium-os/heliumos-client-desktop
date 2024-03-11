@@ -8,7 +8,7 @@ import { RootState, useAppSelector } from '@/store';
 import { ModeType } from '@/utils/data';
 import { message } from 'antd';
 import Image from 'next/image';
-import { BaseTabContentProps } from '@/components/install-process/data.d';
+import { BaseTabContentProps } from '@/components/install-process/data';
 
 export interface IProps extends BaseTabContentProps {}
 

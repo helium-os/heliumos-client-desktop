@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import useStyles from './style';
 import PathSetting from './PathSetting';
-import { BaseTabContentProps, Step } from '@/components/install-process/data.d';
+import { BaseTabContentProps, Step } from '@/components/install-process/data';
 import PanelLayout from '../common/PanelLayout';
 import FooterButtons from '../common/FooterButtons';
 

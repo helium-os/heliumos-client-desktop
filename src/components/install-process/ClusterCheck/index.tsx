@@ -14,7 +14,7 @@ import {
     setOamStoreConfigList,
 } from '@/store/slices/installConfigSlice';
 import { checkHasNoPass, keyNameMap, ResultItem, ResultRes } from '@/components/install-process/ClusterCheck/data';
-import { BaseTabContentProps, Step } from '@/components/install-process/data.d';
+import { BaseTabContentProps, Step } from '@/components/install-process/data';
 import FooterButtons from '../common/FooterButtons';
 import useStyles from './style';
 

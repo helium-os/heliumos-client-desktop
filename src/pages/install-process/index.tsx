@@ -7,7 +7,7 @@ import InstallConfig, { IProps as InstallConfigProps } from '@/components/instal
 import ConfigCheck, { IProps as ConfigCheckProps } from '@/components/install-process/ConfigCheck';
 import Install, { IProps as InstallProps } from '@/components/install-process/Install';
 import useStyles from '@/components/install-process/style';
-import { Step } from '@/components/install-process/data.d';
+import { Step } from '@/components/install-process/data';
 
 enum Tab {
     EnvCheck,

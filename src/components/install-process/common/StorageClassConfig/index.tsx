@@ -3,7 +3,7 @@ import type { FormInstance } from 'antd';
 import { Form, Select } from 'antd';
 import SectionLayout, { Size } from '../SectionLayout';
 import ConfigReader from '../ConfigReader';
-import { configSettingWidth } from '@/components/install-process/data.d';
+import { configSettingWidth } from '@/components/install-process/data';
 import { RootState, useAppSelector } from '@/store';
 import useStyles from './style';
 export interface IProps {

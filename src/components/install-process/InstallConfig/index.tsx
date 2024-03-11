@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, memo } from 'react';
 import { Divider, Form } from 'antd';
 import PanelLayout from '../common/PanelLayout';
-import { Step, BaseTabContentProps } from '@/components/install-process/data.d';
+import { Step, BaseTabContentProps } from '@/components/install-process/data';
 import StorageClassConfig from '../common/StorageClassConfig';
 import ServerExposeConfig from '../common/ServerExposeConfig';
 import AdminConfig from '../common/AdminConfig';

@@ -2,7 +2,7 @@ import React, { memo, useCallback, useState } from 'react';
 import ConfigReader from '@/components/install-process/common/ConfigReader';
 import { PasswordIconRender } from '@/components/install-process/common/AdminConfig';
 import { RootState, useAppSelector } from '@/store';
-import { Direction } from '@/components/install-process/data.d';
+import { Direction } from '@/components/install-process/data';
 import useStyles from './style';
 
 export interface IProps {

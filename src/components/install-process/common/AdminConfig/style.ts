@@ -1,5 +1,5 @@
 import { createStyles } from 'antd-style';
-import { configSettingWidth } from '@/components/install-process/data.d';
+import { configSettingWidth } from '@/components/install-process/data';
 
 const useStyles = createStyles(({ token, css, prefixCls }, props: { readOnly: boolean }) => {
     const adminConfigContentStyle = props.readOnly

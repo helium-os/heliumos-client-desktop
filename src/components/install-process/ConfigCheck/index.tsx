@@ -4,7 +4,7 @@ import { Divider, message } from 'antd';
 import PanelLayout from '../common/PanelLayout';
 import StoreConfigList from '../common/StoreConfigList';
 import { RootState, useAppSelector } from '@/store';
-import { BaseTabContentProps, ReadWriteType, Step } from '@/components/install-process/data.d';
+import { BaseTabContentProps, ReadWriteType, Step } from '@/components/install-process/data';
 import FooterButtons from '../common/FooterButtons';
 import { StorageMap } from '@/components/install-process/ClusterCheck/data';
 import StorageClassConfig from '@/components/install-process/common/StorageClassConfig';

@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Input } from 'antd';
 import { StoreConfigItem } from '@/components/install-process/common/StoreConfigList/index';
 import ConfigReader from '@/components/install-process/common/ConfigReader';
-import { Direction } from '@/components/install-process/data.d';
+import { Direction } from '@/components/install-process/data';
 import useStyles from './style';
 
 interface IProps extends StoreConfigItem {

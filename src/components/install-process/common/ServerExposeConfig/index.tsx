@@ -4,7 +4,7 @@ import { Form, Select } from 'antd';
 import SectionLayout, { Size } from '../SectionLayout';
 import ConfigReader from '@/components/install-process/common/ConfigReader';
 import { RootState, useAppSelector } from '@/store';
-import { configSettingWidth } from '@/components/install-process/data.d';
+import { configSettingWidth } from '@/components/install-process/data';
 import useStyles from './style';
 export interface IProps {
     readOnly: boolean;

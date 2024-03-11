@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Direction } from '@/components/install-process/data.d';
+import { Direction } from '@/components/install-process/data';
 import useStyles from './style';
 export interface IProps {
     className?: string;
