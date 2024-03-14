@@ -168,7 +168,7 @@ async function getClusterConfig(kubeConfig) {
     const shasum = crypto.createHash('sha256');
     shasum.update(kubeConfig, 'utf-8');
     const hexStr = shasum.digest('hex');
-    config.orgId = hexStr.substring(0, 10);
+    config.orgId = "h"+hexStr.substring(0, 9);
 
     for (const cluster of yamlConfig.clusters) {
         config.serverIp = { value: cluster.cluster.server.split(':')[1].replace(/\//g, ''), pass: true };
