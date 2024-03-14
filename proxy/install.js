@@ -17,6 +17,7 @@ module.exports = {
     getClusterConfig,
     installHeliumos,
     getInstallStatus,
+    installSuccess,
     getIpMap,
 };
 
@@ -159,16 +160,17 @@ async function getClusterConfig(kubeConfig) {
             'ipfs-pvc': '100',
         },
     };
-
-    const yamlConfig = yaml.load(kubeConfig);
-    let filePath = path.join(userDataPath, "kubeConfig");
-    fs.writeFileSync(filePath, kubeConfig);
-    filePath = `"` + filePath + `"`
-
     const shasum = crypto.createHash('sha256');
     shasum.update(kubeConfig, 'utf-8');
     const hexStr = shasum.digest('hex');
-    config.orgId = "h"+hexStr.substring(0, 9);
+    let final = /[^\d]/.exec(hexStr);
+    config.orgId = hexStr.substr(final.index, 10);
+
+    const yamlConfig = yaml.load(kubeConfig);
+    let filePath = path.join(userDataPath, config.orgId);
+    fs.writeFileSync(filePath, kubeConfig);
+    filePath = `"` + filePath + `"`;
+
 
     for (const cluster of yamlConfig.clusters) {
         config.serverIp = { value: cluster.cluster.server.split(':')[1].replace(/\//g, ''), pass: true };
@@ -252,7 +254,7 @@ async function installHeliumos(installConfig) {
     configFilePath = `"` + configFilePath + `"`;
 
     try {
-        let filePath = path.join(userDataPath, "kubeConfig");
+        let filePath = path.join(userDataPath, config.orgId);
         filePath = `"` + filePath + `"`;
         const result = await exec(kubectlPath + ' get ns --output=yaml --kubeconfig=' + filePath);
         let nsFlag = false;
@@ -262,8 +264,6 @@ async function installHeliumos(installConfig) {
                 break;
             }
         }
-
-        await updateDb(installConfig.orgId, installConfig.serverIp);
 
         if (!nsFlag) {
             const result = await exec(kubectlPath + ' create ns ' + config.orgId + ' --output=yaml --kubeconfig=' + filePath);
@@ -299,7 +299,7 @@ async function installHeliumos(installConfig) {
 
 //获取安装状态
 async function getInstallStatus(orgId) {
-    let filePath = path.join(userDataPath, "kubeConfig");
+    let filePath = path.join(userDataPath, orgId);
     filePath = `"` + filePath + `"`;
 
     let deployments = [];
@@ -338,6 +338,29 @@ async function getInstallStatus(orgId) {
         return {percent, deployments};
     }
 }
+
+//安装成功
+async function installSuccess(orgId) {
+    try {
+        let filePath = path.join(userDataPath, orgId);
+        filePath = `"` + filePath + `"`;
+        const { stdout } = await exec(
+            kubectlPath + ' get service heliumos-lb -n ' +
+            orgId +
+            ' --output=yaml --kubeconfig=' +
+            filePath
+        );
+
+        for (const ip of yaml.load(stdout).status.loadBalancer.ingress) {
+            await updateDb(orgId, ip.ip);
+            return ip.ip;
+        }
+    } catch (err) {
+        logger.error(`get service heliumos-lb exception: ${err.message}`);
+        return "";
+    }
+}
+
 
 //组织与集群ip对应关系
 async function getIpMap() {

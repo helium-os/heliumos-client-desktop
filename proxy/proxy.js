@@ -12,7 +12,7 @@ const logger = require('electron-log');
 const curve = 'prime256v1';
 const algorithm = 'aes-256-ctr';
 const buf = Buffer.alloc(16);
-const helloInfo = {"port": ":443", "host":""};
+let helloInfo = {"port": ":443", "host":"", "type":""};
 
 let dnsMap = new Map();
 let env = "";
@@ -37,10 +37,12 @@ async function setEnv(electron_env) {
 async function runProxy(electron_env) {
     logger.info(`Start run proxy: ${electron_env}`);
     env = electron_env;
+
     await setFirstDNS();
     port = await runServer()
-    await setSecondDNS()
-    const alias = await updateAliasDb()
+    await setSecondDNS();
+
+    const alias = await updateAliasDb();
     return {port, alias};
 }
 
@@ -59,6 +61,9 @@ async function setFirstDNS() {
         dnsUrl = config.demo_dns + "/api/v1/zones"
     } else if (env == "prod") {
         dnsUrl = config.prod_dns + "/api/v1/zones"
+    } else if (env.indexOf("custom") === 0) {
+        dnsMap.set("custom", env.substring(7));
+        return true;
     }
 
     const fistDnsData = await tools.proxyRequest(dnsUrl, "get", null, null, null, null);
@@ -169,7 +174,6 @@ async function runServer() {
             hostname = dnsMap.get(org)
             port = config.server_port
         }
-
         const serverSocket = net.connect(port, hostname);
         const serverErrorHandler = (err) => {
             logger.debug(`Server error: ${err.message}`);
@@ -222,7 +226,17 @@ async function runServer() {
                     secretKey = Buffer.from(secHash, "hex").subarray(0, 32);
                     logger.debug(`secret key string: ${Buffer.from(secHash, "hex").subarray(0, 32).toString("hex")}`);
                     helloInfo.host = orginalHost
+                    if (org === "custom")
+                    {
+                        helloInfo.type = "ping";
+                    } else {
+                        helloInfo.type = "";
+                    }
                     serverSocket.write(JSON.stringify(helloInfo));
+                } else if (data.toString().indexOf("{\"org_id\":") >= 0) {
+                    const orgJson = JSON.parse(data.toString());
+                    dnsMap.clear();
+                    dnsMap.set(orgJson.org_id, env.substring(7));
                 }
             });
             serverSocket.on('connect', () => {
@@ -271,22 +285,27 @@ async function updateAliasDb() {
         break;
     }
 
-    const url = config.alias_server + "heliumos" + "/v1/pubcc/organizations"
-    const aliasData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port, __dirname + "/../" +config.cert_file);
+    if (env.indexOf("custom") === 0) {
+        aliasArray.push([org, org]);
+    } else {
+        const url = config.alias_server + org + "/v1/pubcc/organizations"
+        const aliasData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port, __dirname + "/../" +config.cert_file);
 
-    try {
-        if (aliasData == null || JSON.parse(aliasData).data == null) {
-            logger.error(`Get alias failed: ${url}`);
+        try {
+            if (aliasData == null || JSON.parse(aliasData).data == null) {
+                logger.error(`Get alias failed: ${url}`);
+                return []
+            }
+        } catch (e) {
+            logger.error(`Parse alias failed: ${url}`);
             return []
         }
-    } catch (e) {
-        logger.error(`Parse alias failed: ${url}`);
-        return []
+
+        JSON.parse(aliasData).data.forEach(element => {
+            aliasArray.push([element.id,element.alias]);
+        });
     }
 
-    JSON.parse(aliasData).data.forEach(element => {
-        aliasArray.push([element.id,element.alias]);
-    });
     const aliasFromDb = await tools.updateDb(env, aliasArray)
     logger.info(`Update aliasDb finished: ${env}`);
     return aliasFromDb;
