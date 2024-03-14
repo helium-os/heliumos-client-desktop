@@ -22,5 +22,8 @@ interface Window {
         getClusterConfig: (config) => Promise<any>;
         installHeliumos: (configObj) => Promise<any>;
         getInstallStatus: (orgId) => Promise<any>;
+        getIpByOrgId: (orgId) => Promise<any>;
+        setEnv: (env) => Promise<any>;
+        runProxy: (env) => Promise<any>;
     };
 }

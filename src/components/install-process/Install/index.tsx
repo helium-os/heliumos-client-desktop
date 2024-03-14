@@ -78,6 +78,9 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
     };
 
     const onLogin = useCallback(async () => {
+        const ip = await window.versions?.getIpByOrgId(orgId);
+        const env = `custom@${ip}`;
+        await window.versions?.setEnv(env);
         await window.versions?.setuserInfo({
             org: orgId, // 安装完成后，orgId暂时用作别名
             orgId,

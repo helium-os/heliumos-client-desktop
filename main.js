@@ -166,6 +166,7 @@ createWindow = async () => {
     });
 
     ipcMain.on('setuserInfo', async function (event, arg) {
+        log.info('setuserInfo', arg, 'env', env);
         let data = await util.getStorageData();
 
         if (arg?.org != null && arg?.name != null) {
@@ -174,6 +175,8 @@ createWindow = async () => {
                 _last: { env, ...arg },
                 [env]: { [arg?.org]: { [arg?.name?.toLocaleLowerCase()]: { ...arg, orgId: data?._last?.orgId } } },
             });
+
+            log.info('setuserInfo设置成功，获取data', await util.getStorageData());
 
             if (arg?.name && (arg.autoLogin === true || arg.autoLogin === false)) {
                 let envList = await util.getStorageData(env);
@@ -245,6 +248,8 @@ createWindow = async () => {
     });
 
     ipcMain.on('switchModeType', async (event, modeType, orgId) => {
+        let data = await util.getStorageData();
+        console.log('switchModeType data', data);
         log.info(
             'switchModeType modeType',
             modeType,
@@ -503,6 +508,26 @@ app.whenReady().then(async () => {
 
     ipcMain.handle('getInstallStatus', function (event, orgId) {
         return install.getInstallStatus(orgId);
+    });
+
+    ipcMain.handle('getIpByOrgId', function (event, orgId) {
+        return install.installSuccess(orgId);
+    });
+
+    ipcMain.handle('setEnv', async (event, customEnv) => {
+        log.info('~~~~~~~~~~~~~~~~setEnv', customEnv);
+        await proxy.setEnv(customEnv);
+        env = customEnv;
+        await util.setStorageData('data', { _last: { env: customEnv, org: null, name: null } });
+        log.info('~~~~~~~~~~~~~~~~setEnv end', await util.getStorageData());
+    });
+
+    //配置prox
+    ipcMain.handle('runProxy', async (event, customEnv) => {
+        let { port } = await proxy.runProxy(customEnv || env);
+        app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
+        log.info('~~~~~~~~~~~~~~~~runProxy customEnv', customEnv, 'last env', env, 'port', port);
+        return port;
     });
 
     const template =

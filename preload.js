@@ -23,4 +23,7 @@ contextBridge.exposeInMainWorld('versions', {
     getClusterConfig: (config) => ipcRenderer.invoke('getClusterConfig', config),
     installHeliumos: (configObj) => ipcRenderer.invoke('installHeliumos', configObj),
     getInstallStatus: (orgId) => ipcRenderer.invoke('getInstallStatus', orgId),
+    getIpByOrgId: (orgId) => ipcRenderer.invoke('getIpByOrgId', orgId),
+    setEnv: (env) => ipcRenderer.invoke('setEnv', env),
+    runProxy: (env) => ipcRenderer.invoke('runProxy', env),
 });
