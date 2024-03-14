@@ -12,7 +12,6 @@ const logger = require('electron-log');
 const curve = 'prime256v1';
 const algorithm = 'aes-256-ctr';
 const buf = Buffer.alloc(16);
-let helloInfo = {"port": ":443", "host":"", "type":""};
 
 let dnsMap = new Map();
 let env = "";
@@ -225,12 +224,10 @@ async function runServer() {
                     const secHash = hash.digest('hex');
                     secretKey = Buffer.from(secHash, "hex").subarray(0, 32);
                     logger.debug(`secret key string: ${Buffer.from(secHash, "hex").subarray(0, 32).toString("hex")}`);
-                    helloInfo.host = orginalHost
+                    let helloInfo = {"port": ":443", "host": orginalHost, "type": ""};
                     if (org === "custom")
                     {
                         helloInfo.type = "ping";
-                    } else {
-                        helloInfo.type = "";
                     }
                     serverSocket.write(JSON.stringify(helloInfo));
                 } else if (data.toString().indexOf("{\"org_id\":") >= 0) {
