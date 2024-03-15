@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic';
 
 const Login = dynamic(
     () => {
-        return import('@/components/login/Login');
+        return import('@/components/login');
     },
     { ssr: false },
 );

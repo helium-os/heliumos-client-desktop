@@ -52,11 +52,11 @@ const F10 = (win) => {
         if (dbName) {
             loading = true;
             win.webContents.send('Loading', loading);
-            await proxy.setEnv(dbName);
+            await util.setEnv(dbName);
+            env = dbName;
             loading = false;
             win.webContents.send('change-env', dbName);
             win.webContents.send('Loading', loading);
-            env = dbName;
             if (env != 'prod') {
                 globalShortcut.register('F9', () => {
                     win.webContents.openDevTools();
@@ -64,7 +64,6 @@ const F10 = (win) => {
             } else {
                 globalShortcut.unregister('F9');
             }
-            await util.setStorageData('data', { _last: { env: dbName, org: null, name: null } });
         }
     });
 };
@@ -165,55 +164,6 @@ createWindow = async () => {
         win.setAlwaysOnTop(false);
     });
 
-    ipcMain.on('setuserInfo', async function (event, arg) {
-        log.info('setuserInfo', arg, 'env', env);
-        let data = await util.getStorageData();
-
-        if (arg?.org != null && arg?.name != null) {
-            org = arg?.org;
-            await util.setStorageData('data', {
-                _last: { env, ...arg },
-                [env]: { [arg?.org]: { [arg?.name?.toLocaleLowerCase()]: { ...arg, orgId: data?._last?.orgId } } },
-            });
-
-            log.info('setuserInfo设置成功，获取data', await util.getStorageData());
-
-            if (arg?.name && (arg.autoLogin === true || arg.autoLogin === false)) {
-                let envList = await util.getStorageData(env);
-                await util.setStorageData(
-                    env,
-                    [
-                        ...(envList?.logList || []).filter((item) => item?.name != arg.name),
-                        { name: arg?.name, org: arg?.org },
-                    ],
-                    ['logList'],
-                );
-            }
-
-            if (arg.autoStart === true || arg.autoStart === false) {
-                app.setLoginItemSettings({
-                    // 设置为true注册开机自起
-                    openAtLogin: arg?.autoStart,
-                    openAsHidden: false,
-                    path: process.execPath,
-                });
-            }
-            return;
-        }
-        if (arg?.org != null && arg?.name === null) {
-            org = arg?.org;
-            await util.setStorageData('data', { _last: { env, ...arg } });
-            let envList = await util.getStorageData(env);
-            await util.setStorageData(
-                env,
-                [...(envList?.orgList || []).filter((item) => item?.value != arg.org), { value: arg?.org }],
-                ['orgList'],
-            );
-            return;
-        }
-        await util.setStorageData('data', arg, [env, data?._last?.org, data?._last?.name]);
-    });
-
     ipcMain.on('clearInfo', async (event, arg) => {
         if (process.platform !== 'linux') {
             win.setMovable(false);
@@ -247,11 +197,9 @@ createWindow = async () => {
         util.loadKeycloakLoginPage(win, orgId);
     });
 
-    ipcMain.on('switchModeType', async (event, modeType, orgId) => {
-        let data = await util.getStorageData();
-        console.log('switchModeType data', data);
+    ipcMain.on('switchModeType', (event, modeType, orgId) => {
         log.info(
-            'switchModeType modeType',
+            '~~~~~~~~~~~~~~~switchModeType modeType',
             modeType,
             'orgId',
             orgId,
@@ -259,12 +207,14 @@ createWindow = async () => {
             LastUser,
             'LastUser.orgId',
             LastUser?.orgId,
+            'env',
+            env,
         );
         switch (modeType) {
             case modeTypeMap.normal:
                 {
                     const finalOrgId = orgId || LastUser?.orgId;
-                    if (!finalOrgId) {
+                    if (!finalOrgId || !env) {
                         util.loadLoginPage(win);
                         return;
                     }
@@ -423,11 +373,10 @@ app.whenReady().then(async () => {
     datas = await util.getStorageData();
     env = datas?._last?.env || 'prod';
     org = datas?._last?.org;
-    log.info('--------------------------------------------------env', env);
+    log.info('~~~~~~~~~~~~~~~env', env);
 
     //配置proxy
-    let { port } = await proxy.runProxy(env);
-    app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
+    await util.runProxy(env);
     //更新不走端口
     app.commandLine.appendSwitch('proxy-bypass-list', '*github.com');
     //开机自启动
@@ -436,6 +385,55 @@ app.whenReady().then(async () => {
         openAtLogin: datas?.[env]?.[datas?._last?.org]?.[datas?._last?.name]?.autoStart || false,
         openAsHidden: false,
         path: process.execPath,
+    });
+
+    ipcMain.handle('setuserInfo', async function (event, arg) {
+        log.info('~~~~~~~~~~~~~~~enter setuserInfo', arg, 'env', env);
+        let data = await util.getStorageData();
+
+        if (arg?.org != null && arg?.name != null) {
+            org = arg?.org;
+            await util.setStorageData('data', {
+                _last: { env, ...arg },
+                [env]: { [arg?.org]: { [arg?.name?.toLocaleLowerCase()]: { ...arg, orgId: data?._last?.orgId } } },
+            });
+
+            log.info('~~~~~~~~~~~~~~~setuserInfo设置成功，获取data', await util.getStorageData());
+
+            if (arg?.name && (arg.autoLogin === true || arg.autoLogin === false)) {
+                let envList = await util.getStorageData(env);
+                await util.setStorageData(
+                    env,
+                    [
+                        ...(envList?.logList || []).filter((item) => item?.name != arg.name),
+                        { name: arg?.name, org: arg?.org },
+                    ],
+                    ['logList'],
+                );
+            }
+
+            if (arg.autoStart === true || arg.autoStart === false) {
+                app.setLoginItemSettings({
+                    // 设置为true注册开机自起
+                    openAtLogin: arg?.autoStart,
+                    openAsHidden: false,
+                    path: process.execPath,
+                });
+            }
+            return;
+        }
+        if (arg?.org != null && arg?.name === null) {
+            org = arg?.org;
+            await util.setStorageData('data', { _last: { env, ...arg } });
+            let envList = await util.getStorageData(env);
+            await util.setStorageData(
+                env,
+                [...(envList?.orgList || []).filter((item) => item?.value != arg.org), { value: arg?.org }],
+                ['orgList'],
+            );
+            return;
+        }
+        await util.setStorageData('data', arg, [env, data?._last?.org, data?._last?.name]);
     });
 
     //dns配置
@@ -514,20 +512,14 @@ app.whenReady().then(async () => {
         return install.installSuccess(orgId);
     });
 
-    ipcMain.handle('setEnv', async (event, customEnv) => {
-        log.info('~~~~~~~~~~~~~~~~setEnv', customEnv);
-        await proxy.setEnv(customEnv);
-        env = customEnv;
-        await util.setStorageData('data', { _last: { env: customEnv, org: null, name: null } });
-        log.info('~~~~~~~~~~~~~~~~setEnv end', await util.getStorageData());
+    ipcMain.handle('setEnv', async (event, newEnv) => {
+        await util.setEnv(newEnv);
+        env = newEnv;
     });
 
-    //配置prox
-    ipcMain.handle('runProxy', async (event, customEnv) => {
-        let { port } = await proxy.runProxy(customEnv || env);
-        app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
-        log.info('~~~~~~~~~~~~~~~~runProxy customEnv', customEnv, 'last env', env, 'port', port);
-        return port;
+    // 配置proxy
+    ipcMain.handle('runProxy', (event, env) => {
+        return util.runProxy(env);
     });
 
     const template =

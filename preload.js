@@ -4,7 +4,7 @@ contextBridge.exposeInMainWorld('versions', {
     lock: 'false',
     name: () => ipcRenderer.invoke('getUserValue', 'name'),
     password: () => ipcRenderer.invoke('getUserValue', 'password'),
-    setuserInfo: (value) => ipcRenderer.send('setuserInfo', value),
+    setuserInfo: (value) => ipcRenderer.invoke('setuserInfo', value),
     getDNS: () => ipcRenderer.invoke('getUserValue', 'DNS'),
     clearInfo: (res) => ipcRenderer.send('clearInfo', res),
     getValue: (res) => ipcRenderer.invoke('getUserValue', res),

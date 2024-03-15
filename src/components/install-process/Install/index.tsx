@@ -40,7 +40,8 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
     const [expand, setExpand] = useState<boolean>(false);
     const [progress, setProgress] = useState<number>(0); // 安装进度
     const isComplete: boolean = useMemo(() => progress >= 100, [progress]); // 是否安装完成
-    const [deployments, setDeployments] = useState<InstallDeploymentItem[]>([]);
+    const [deployments, setDeployments] = useState<InstallDeploymentItem[]>([]); // 安装服务列表
+    const [loading, setLoading] = useState<boolean>(false);
 
     const clearTimer = () => {
         timerRef.current && clearInterval(timerRef.current);
@@ -78,18 +79,33 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
     };
 
     const onLogin = useCallback(async () => {
-        const ip = await window.versions?.getIpByOrgId(orgId);
-        const env = `custom@${ip}`;
-        await window.versions?.setEnv(env);
-        await window.versions?.setuserInfo({
-            org: orgId, // 安装完成后，orgId暂时用作别名
-            orgId,
-            name: adminUsername,
-            display_name: adminUsername,
-            autoLogin: null,
-        });
-        window.versions?.switchModeType(ModeType.Normal, orgId);
-    }, [orgId]);
+        if (loading) return;
+
+        setLoading(false);
+        try {
+            const ip = await window.versions?.getIpByOrgId(orgId);
+            console.log('getIpByOrgId success', ip);
+
+            const env = `custom@${ip}`;
+            await window.versions?.setEnv(env);
+            await window.versions?.runProxy(env);
+
+            await window.versions?.setuserInfo({
+                org: orgId, // 安装完成后，orgId暂时用作别名
+                orgId,
+                name: adminUsername,
+                display_name: adminUsername,
+                autoLogin: null,
+            });
+            window.versions?.switchModeType(ModeType.Normal, orgId);
+        } catch (error: any) {
+            messageApi.open({
+                type: 'error',
+                content: error.message,
+            });
+        }
+        setLoading(true);
+    }, [loading, orgId, adminUsername, messageApi]);
 
     const footerButtons = useMemo(
         () => (
@@ -98,13 +114,15 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
                     isComplete
                         ? {
                               text: '登录HeliumOS',
+                              loading,
+                              disabled: loading,
                               onClick: onLogin,
                           }
                         : null
                 }
             />
         ),
-        [isComplete, onLogin],
+        [isComplete, onLogin, loading],
     );
 
     return (

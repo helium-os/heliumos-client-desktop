@@ -2,12 +2,13 @@ const fs = require('fs');
 const storage = require('electron-json-storage');
 const dirCache = {};
 const _ = require('lodash');
-const { dialog } = require('electron');
+const { dialog, app } = require('electron');
 const path = require('path');
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
 const express = require('express');
 const { pageToPathMap, pagePaths } = require('./path.ts');
+const proxy = require('../proxy/proxy');
 const appExpress = express();
 
 let updateDownloaded = false;
@@ -273,8 +274,28 @@ const askForMediaAccess = (data = [true, true]) => {
     });
 };
 
+const setEnv = async (env) => {
+    log.info('~~~~~~~~~~~~~~~enter setEnv env = ', env);
+    await proxy.setEnv(env);
+    await setStorageData('data', {
+        _last: { env, org: null, orgId: null, name: null, display_name: null, autoLogin: null },
+    });
+    log.info('~~~~~~~~~~~~~~~setEnv success', 'current storageData = ', await getStorageData());
+};
+
+const runProxy = async (env) => {
+    log.info('~~~~~~~~~~~~~~~~enter runProxy env = ', env);
+    let { port, alias } = await proxy.runProxy(env);
+    app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
+    log.info('~~~~~~~~~~~~~~~runProxy success port ', port, 'alias', alias);
+    if (!alias.length) {
+        throw new Error('~~~~~~~~~~~~~~~runProxy成功，但alias长度为0');
+    }
+    return { port, alias };
+};
+
 const loadURL = (win, url, options = {}) => {
-    log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~loadURL', url);
+    log.info('~~~~~~~~~~~~~~~loadURL', url);
     return win.loadURL(url, options);
 };
 
@@ -316,6 +337,8 @@ module.exports = {
     setStorageData,
     askForMediaAccess,
     findPath,
+    setEnv,
+    runProxy,
     loadURL,
     loadKeycloakLoginPage,
     pageToPathMap,
