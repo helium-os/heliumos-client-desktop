@@ -283,7 +283,9 @@ async function updateAliasDb() {
     }
 
     if (env.indexOf("custom") === 0) {
-        aliasArray.push([org, org]);
+        if (org !== "custom") {
+            aliasArray.push([org, org]);
+        }
     } else {
         const url = config.alias_server + org + "/v1/pubcc/organizations"
         const aliasData = await tools.proxyRequest(url, "get", null, null, "http://127.0.0.1:"+port, __dirname + "/../" +config.cert_file);
