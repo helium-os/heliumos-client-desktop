@@ -289,7 +289,7 @@ const runProxy = async (env) => {
     app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
     log.info('~~~~~~~~~~~~~~~runProxy success port ', port, 'alias', alias);
     if (!alias.length) {
-        throw new Error('~~~~~~~~~~~~~~~runProxy成功，但alias长度为0');
+        throw new Error('runProxy成功，但alias长度为0');
     }
     return { port, alias };
 };
