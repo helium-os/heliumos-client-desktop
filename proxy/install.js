@@ -218,7 +218,7 @@ async function getClusterConfig(kubeConfig) {
 //安装Heliumos
 async function installHeliumos(installConfig) {
     let config = {};
-    config.Environment = 'demo';
+    config.Environment = 'testinner';
     config.chartRepo = chartRepo;
     config.expose = {};
     config.expose.type = installConfig.expose;
