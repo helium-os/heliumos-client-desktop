@@ -1,6 +1,6 @@
 import React, { useState, memo } from 'react';
 import { useRouter } from 'next/router';
-import { Form, message } from 'antd';
+import { message } from 'antd';
 import { LoginType, loginTypeMap } from '@/components/login/data';
 import Login from '@/components/login/Login';
 const { pageToPathMap } = require('../../../../util/path.ts');
@@ -22,7 +22,11 @@ const LoginByIp = () => {
         try {
             const env = `custom@${ip}`;
             await window.versions?.setEnv(env);
-            const { alias } = await window.versions?.runProxy(env);
+
+            const { alias } = (await window.versions?.runProxy(env)) || {};
+            if (!alias?.length) {
+                throw new Error('alias长度为0');
+            }
 
             const { id: orgId, alias: orgAlias } = alias[0] || {};
             await window.versions?.setuserInfo({
