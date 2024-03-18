@@ -81,7 +81,7 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
     const onLogin = useCallback(async () => {
         if (loading) return;
 
-        setLoading(false);
+        setLoading(true);
         try {
             const ip = await window.versions?.getIpByOrgId(orgId);
             console.log('getIpByOrgId success', ip);
@@ -104,7 +104,7 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
                 content: error.message,
             });
         }
-        setLoading(true);
+        setLoading(false);
     }, [loading, orgId, adminUsername, messageApi]);
 
     const footerButtons = useMemo(
