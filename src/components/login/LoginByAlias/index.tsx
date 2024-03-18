@@ -1,6 +1,6 @@
 import React, { useState, memo } from 'react';
 import { message } from 'antd';
-import Login from '../Login';
+import Login from '../common/Login';
 import { LoginType, loginTypeMap } from '../data';
 
 const loginType = LoginType.Alias;

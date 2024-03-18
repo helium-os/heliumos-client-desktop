@@ -1,6 +1,6 @@
 // 当前项目的所有页面路径
 const pageToPathMap = {
-    login: '/login',
+    login: '/login/alias',
     loginByAlias: '/login/alias',
     loginByIp: '/login/ip',
     userList: '/user-list',

@@ -2,8 +2,7 @@ import React, { useState, memo } from 'react';
 import { useRouter } from 'next/router';
 import { message } from 'antd';
 import { LoginType, loginTypeMap } from '@/components/login/data';
-import Login from '@/components/login/Login';
-const { pageToPathMap } = require('../../../../util/path.ts');
+import Login from '../common/Login';
 
 const loginType = LoginType.Ip;
 const switchList = [loginTypeMap[LoginType.Alias]];
@@ -46,10 +45,6 @@ const LoginByIp = () => {
         }
 
         setSpinning(false);
-    };
-
-    const onSwitchLoginType = () => {
-        router.push(pageToPathMap.loginByAlias);
     };
 
     return (

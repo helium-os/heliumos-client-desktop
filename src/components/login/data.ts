@@ -15,6 +15,8 @@ export type LoginTypeMap = {
     [key in LoginType]: LoginTypeInfo;
 };
 
+export const loginTypes: LoginType[] = [LoginType.Alias, LoginType.Ip];
+
 export const loginTypeMap: LoginTypeMap = {
     [LoginType.Alias]: {
         type: LoginType.Alias,

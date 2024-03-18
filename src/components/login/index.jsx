@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { Form } from 'antd';
 import BgLayout from '@/components/structure/BgLayout';
 import SwitchModeType from '@/components/structure/SwitchModeType';
@@ -13,20 +12,13 @@ const loginTypeMap = {
     ip: 'ip',
 };
 
-export default function Page() {
-    const router = useRouter();
-
+export default function Page({ loginType }) {
     const { styles } = useStyles();
 
     const [form] = Form.useForm();
 
-    const [loginType, setLoginType] = useState(); // 登录方式 alias-通过组织别名登录  ip-通过ip登录
-
     const [back, setBack] = useState(true);
 
-    useEffect(() => {
-        setLoginType(router.query.type);
-    }, [router]);
     const addObverser = async () => {
         if (window?.versions) {
             await window?.versions?.getMessage('change-env', (event, arg) => {
