@@ -52,7 +52,7 @@ const F10 = (win) => {
         if (dbName) {
             loading = true;
             win.webContents.send('Loading', loading);
-            await util.setEnv(dbName);
+            await util.setEnv(proxy, dbName);
             env = dbName;
             loading = false;
             win.webContents.send('change-env', dbName);
@@ -376,7 +376,7 @@ app.whenReady().then(async () => {
     log.info('~~~~~~~~~~~~~~~env', env);
 
     //配置proxy
-    await util.runProxy(env);
+    await util.runProxy(proxy, env);
     //更新不走端口
     app.commandLine.appendSwitch('proxy-bypass-list', '*github.com');
     //开机自启动
@@ -513,13 +513,13 @@ app.whenReady().then(async () => {
     });
 
     ipcMain.handle('setEnv', async (event, newEnv) => {
-        await util.setEnv(newEnv);
+        await util.setEnv(proxy, newEnv);
         env = newEnv;
     });
 
     // 配置proxy
     ipcMain.handle('runProxy', (event, env) => {
-        return util.runProxy(env);
+        return util.runProxy(proxy, env);
     });
 
     const template =

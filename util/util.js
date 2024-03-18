@@ -8,7 +8,6 @@ const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
 const express = require('express');
 const { pageToPathMap, pagePaths } = require('./path.ts');
-const proxy = require('../proxy/proxy');
 const appExpress = express();
 
 let updateDownloaded = false;
@@ -274,7 +273,7 @@ const askForMediaAccess = (data = [true, true]) => {
     });
 };
 
-const setEnv = async (env) => {
+const setEnv = async (proxy, env) => {
     log.info('~~~~~~~~~~~~~~~enter setEnv env = ', env);
     await proxy.setEnv(env);
     await setStorageData('data', {
@@ -283,7 +282,7 @@ const setEnv = async (env) => {
     log.info('~~~~~~~~~~~~~~~setEnv success', 'current storageData = ', await getStorageData());
 };
 
-const runProxy = async (env) => {
+const runProxy = async (proxy, env) => {
     log.info('~~~~~~~~~~~~~~~~enter runProxy env = ', env);
     let { port, alias } = await proxy.runProxy(env);
     app.commandLine.appendSwitch('proxy-server', 'http://127.0.0.1:' + port);
