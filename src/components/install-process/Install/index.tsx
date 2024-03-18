@@ -88,7 +88,11 @@ const Install: React.FC<IProps> = ({ title, ...restProps }) => {
 
             const env = `custom@${ip}`;
             await window.versions?.setEnv(env);
-            await window.versions?.runProxy(env);
+
+            const { alias } = (await window.versions?.runProxy(env)) || {};
+            if (!alias.length) {
+                throw new Error('runProxy成功，但alias长度为0');
+            }
 
             await window.versions?.setuserInfo({
                 org: orgId, // 安装完成后，orgId暂时用作别名

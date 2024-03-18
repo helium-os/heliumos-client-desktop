@@ -24,7 +24,7 @@ const LoginByIp = () => {
 
             const { alias } = (await window.versions?.runProxy(env)) || {};
             if (!alias?.length) {
-                throw new Error('alias长度为0');
+                throw new Error('runProxy成功，alias长度为0');
             }
 
             const { id: orgId, alias: orgAlias } = alias[0] || {};
