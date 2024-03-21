@@ -222,7 +222,7 @@ async function installHeliumos(installConfig) {
     config.chartRepo = chartRepo;
     config.expose = {};
     config.expose.type = installConfig.expose;
-    config.adminPw = installConfig.adminPw;
+    config.adminPw = Buffer.from(installConfig.adminPw, 'utf8').toString('hex');
     config.orgId = installConfig.orgId;
     config.storageClass = installConfig.storageClass;
     config.storageSize = {
