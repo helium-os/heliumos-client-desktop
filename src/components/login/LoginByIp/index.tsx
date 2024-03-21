@@ -22,12 +22,12 @@ const LoginByIp = () => {
             const env = `custom@${ip}`;
             await window.versions?.setEnv(env);
 
-            const { alias } = (await window.versions?.runProxy(env)) || {};
-            if (!alias?.length) {
-                throw new Error('runProxy成功，alias长度为0');
+            const { alias: orgList } = (await window.versions?.runProxy(env)) || {};
+            if (!orgList?.length) {
+                throw new Error('runProxy成功，orgList长度为0');
             }
 
-            const { id: orgId, alias: orgAlias } = alias[0] || {};
+            const { id: orgId, alias: orgAlias } = orgList[0];
             await window.versions?.setuserInfo({
                 org: orgAlias,
                 orgId,

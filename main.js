@@ -214,7 +214,7 @@ createWindow = async () => {
             case modeTypeMap.normal:
                 {
                     const finalOrgId = orgId || LastUser?.orgId;
-                    if (!finalOrgId || !env) {
+                    if (!finalOrgId) {
                         util.loadLoginPage(win);
                         return;
                     }
@@ -484,34 +484,30 @@ app.whenReady().then(async () => {
         return res;
     });
 
+    // 安装过程接口
     ipcMain.handle('getBinaryPath', function (event, id) {
         return install.getBinaryPath(id);
     });
-
     ipcMain.handle('getBinaryVersion', function (event, path, id) {
         return install.getBinaryVersion(path, id);
     });
-
     ipcMain.handle('getDefaultKubeConfig', function (event) {
         return install.getDefaultKubeConfig();
     });
-
     ipcMain.handle('getClusterConfig', function (event, config) {
         return install.getClusterConfig(config);
     });
-
     ipcMain.handle('installHeliumos', function (event, configObj) {
         return install.installHeliumos(configObj);
     });
-
     ipcMain.handle('getInstallStatus', function (event, orgId) {
         return install.getInstallStatus(orgId);
     });
-
     ipcMain.handle('getIpByOrgId', function (event, orgId) {
         return install.installSuccess(orgId);
     });
 
+    // 设置env
     ipcMain.handle('setEnv', async (event, newEnv) => {
         await util.setEnv(proxy, newEnv);
         env = newEnv;

@@ -12,7 +12,6 @@ const LoginByAlias = () => {
     const [spinning, setSpinning] = useState(false);
 
     const onFinish = async (values: any) => {
-        console.log('values', values);
         const { alias } = values;
         if (!alias || spinning || !window.versions) return;
 

@@ -11,7 +11,7 @@ const { pageToPathMap, pagePaths } = require('./path.ts');
 const appExpress = express();
 
 let updateDownloaded = false;
-let rendererPort = 3001;
+let rendererPort = 3001; // 开发环境前端页面端口号
 
 // 启动服务 & 返回随机生成的端口号
 const appServerStart = () => {
