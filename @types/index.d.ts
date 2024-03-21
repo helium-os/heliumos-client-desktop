@@ -3,7 +3,7 @@ interface Window {
         lock: string;
         name: () => Promise<any>;
         password: () => Promise<any>;
-        setuserInfo: (value) => void;
+        setuserInfo: (value) => Promise<any>;
         getDNS: () => Promise<any>;
         clearInfo: (res) => void;
         getValue: (res) => Promise<any>;
