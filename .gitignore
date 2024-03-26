@@ -64,7 +64,7 @@ prod
 /out/
 
 # production
-/build
+/build/icons/png
 
 # misc
 *.pem

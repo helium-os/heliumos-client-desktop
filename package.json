@@ -8,6 +8,7 @@
         "lint": "next lint",
         "lint:fix": "next lint --fix",
         "electron-start": "cross-env NODE_ENV=testinner electron . --icon=favicon.ico ",
+        "electron:generate-icons": "electron-icon-builder --input=./build/icon.png --output=build",
         "electron-start-all": "concurrently \"npm run dev\" \"wait-on http://localhost:3001 && npm run electron-start\"",
         "dist": "cross-env  electron-builder --win --x64",
         "dist-mac": "electron-builder --macos --arm64 --x64",
@@ -29,11 +30,13 @@
         "axios": "^1.6.7",
         "cross-env": "^7.0.3",
         "crypto": "^1.0.1",
+        "electron-icon-builder": "^2.0.1",
         "electron-json-storage": "^4.5.0",
         "electron-localshortcut": "^3.2.1",
         "electron-log": "^5.0.0-beta.23",
         "electron-updater": "^5.3.0",
         "express": "^4.18.2",
+        "fix-path": "^3.0.0",
         "hex-to-rgba": "^2.0.1",
         "lodash": "^4.17.21",
         "log4js": "^6.9.1",
@@ -45,8 +48,7 @@
         "react-redux": "^9.1.0",
         "request": "^2.88.2",
         "sqlite": "^5.0.1",
-        "sqlite3": "^5.1.6",
-        "fix-path": "^3.0.0"
+        "sqlite3": "^5.1.6"
     },
     "devDependencies": {
         "@types/node": "^20",
@@ -106,14 +108,14 @@
                 "com.apple.security.device.audio-input": true,
                 "com.apple.security.device.camera": true
             },
-            "icon": "build/icon.icns"
+            "icon": "build/icons/mac/icon.icns"
         },
         "win": {
             "target": [
                 "nsis",
                 "zip"
             ],
-            "icon": "build/icon.ico"
+            "icon": "build/icons/win/icon.ico"
         },
         "linux": {
             "target": [
