@@ -4,6 +4,7 @@ import PathSetting from './PathSetting';
 import { BaseTabContentProps, Step } from '@/components/install-process/data';
 import PanelLayout from '../common/PanelLayout';
 import FooterButtons from '../common/FooterButtons';
+import { getGuideLinkPrefix } from '@/utils/utils';
 
 export interface IProps extends BaseTabContentProps {}
 
@@ -22,12 +23,12 @@ const baseEnvList: BaseEnvItem[] = [
     {
         id: 'kubectl',
         name: 'Kubectl',
-        installLink: 'https://www.baidu.com',
+        installLink: `${getGuideLinkPrefix() + '/install_kubectl'}`,
     },
     {
         id: 'helm',
         name: 'Helm',
-        installLink: '',
+        installLink: `${getGuideLinkPrefix() + '/install_helm'}`,
     },
 ];
 

@@ -273,6 +273,19 @@ const askForMediaAccess = (data = [true, true]) => {
     });
 };
 
+// 获取当前操作系统
+const getPlatform = () => {
+    log.info('process.platform', process.platform);
+    switch (process.platform) {
+        case 'darwin':
+            return 'macos';
+        case 'win32':
+            return 'windows';
+        case 'linux':
+            return 'linux';
+    }
+};
+
 const setEnv = async (proxy, env) => {
     log.info('~~~~~~~~~~~~~~~enter setEnv env = ', env);
     await proxy.setEnv(env);
@@ -333,6 +346,7 @@ module.exports = {
     setStorageData,
     askForMediaAccess,
     findPath,
+    getPlatform,
     setEnv,
     runProxy,
     loadURL,

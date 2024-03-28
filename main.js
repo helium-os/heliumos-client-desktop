@@ -9,6 +9,7 @@ const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
 let { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
+const package = require("./package.json");
 
 var keyList = ['heliumos.crt', '../heliumos.crt'];
 var publicKey;
@@ -228,6 +229,14 @@ createWindow = async () => {
     });
 
     ipcMain.on('openExternalUrl', (event, url) => {
+        const { origin, pathname, search, hash } = new URL(url);
+        const searchParams = new URLSearchParams(search);
+        const platform = util.getPlatform();
+        searchParams.set('source', `desktop-${platform}-client_${package.version}`);
+
+        const searchStr = searchParams.toString() ? `?${searchParams.toString()}` : '';
+        url = origin + pathname + searchStr + hash;
+        log.info('openExternalUrl', url, 'platform', platform, 'package.version', package.version, 'process.versions.electron', process.versions.electron);
         shell.openExternal(url);
     });
 

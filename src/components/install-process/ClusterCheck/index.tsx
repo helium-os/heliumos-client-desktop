@@ -17,6 +17,7 @@ import { checkHasNoPass, keyNameMap, ResultItem, ResultRes } from '@/components/
 import { BaseTabContentProps, Step } from '@/components/install-process/data';
 import FooterButtons from '../common/FooterButtons';
 import useStyles from './style';
+import { getGuideLinkPrefix } from '@/utils/utils';
 
 const { TextArea } = Input;
 
@@ -24,7 +25,7 @@ export interface IProps extends BaseTabContentProps {}
 
 const guideInfo: GuideInfo = {
     text: '从哪里获得 Kubeconfig？',
-    link: '',
+    link: `${getGuideLinkPrefix() + '/get_kubeconfig'}`,
 };
 const ClusterCheck: React.FC<IProps> = ({ display, onStep, ...restProps }) => {
     const dispatch = useAppDispatch();
