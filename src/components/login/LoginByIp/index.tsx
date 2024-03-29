@@ -22,9 +22,9 @@ const LoginByIp = () => {
             const env = `custom@${ip}`;
             await window.versions?.setEnv(env);
 
-            const { alias: orgList } = (await window.versions?.runProxy(env)) || {};
+            const orgList = await window?.versions?.getDbValue();
             if (!orgList?.length) {
-                throw new Error('runProxy成功，orgList长度为0');
+                throw new Error('setEnv成功，但orgList长度为0');
             }
 
             const { id: orgId, alias: orgAlias } = orgList[0];
