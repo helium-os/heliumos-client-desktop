@@ -21,7 +21,7 @@ module.exports = {
     getIpMap,
 };
 
-const chartRepo = 'https://easypayx-helm.pkg.coding.net/heliumos/charts';
+const chartRepo = 'https://intellimesh-helm.pkg.coding.net/heliumos/charts';
 const orgsDb = 'orgsdb';
 const userDataPath = app.getPath('userData');
 
