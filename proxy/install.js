@@ -21,7 +21,7 @@ module.exports = {
     getIpMap,
 };
 
-const chartRepo = 'https://easypayx-helm.pkg.coding.net/heliumos/charts-dev';
+const chartRepo = 'https://easypayx-helm.pkg.coding.net/heliumos/charts';
 const orgsDb = 'orgsdb';
 const userDataPath = app.getPath('userData');
 
@@ -218,7 +218,7 @@ async function getClusterConfig(kubeConfig) {
 //安装Heliumos
 async function installHeliumos(installConfig) {
     let config = {};
-    config.Environment = 'testinner';
+    config.Environment = '';
     config.chartRepo = chartRepo;
     config.expose = {};
     config.expose.type = installConfig.expose;
