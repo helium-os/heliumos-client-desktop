@@ -507,7 +507,10 @@ app.whenReady().then(async () => {
         return install.getClusterConfig(config);
     });
     ipcMain.handle('installHeliumos', function (event, configObj) {
-        return install.installHeliumos(configObj);
+        return install.installHeliumos({
+            ...configObj,
+            env
+        });
     });
     ipcMain.handle('getInstallStatus', function (event, orgId) {
         return install.getInstallStatus(orgId);
