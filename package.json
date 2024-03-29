@@ -93,7 +93,6 @@
             {
                 "provider": "github",
                 "owner": "helium-os",
-                "repo": "heliumos-client-desktop-dev",
                 "releaseType": "release"
             }
         ],
