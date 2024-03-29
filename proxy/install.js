@@ -218,7 +218,7 @@ async function getClusterConfig(kubeConfig) {
 //安装Heliumos
 async function installHeliumos(installConfig) {
     let config = {};
-    config.Environment = '';
+    config.Environment = installConfig.env === "prod" ? "" : installConfig.env;
     config.chartRepo = chartRepo;
     config.expose = {};
     config.expose.type = installConfig.expose;
@@ -271,16 +271,13 @@ async function installHeliumos(installConfig) {
 
         const list = await exec(helmPath + ' repo list --output=yaml');
 
-        let repoFlag = false;
         for (const repo of yaml.load(list.stdout)) {
-            if (repo.name == 'heliumos') {
-                repoFlag = true;
-                break;
+            if (repo.name === 'heliumos') {
+                await exec(helmPath + ' repo remove heliumos');
             }
         }
-        if (!repoFlag) {
-            await exec(helmPath + ' repo add heliumos ' + chartRepo);
-        }
+
+        await exec(helmPath + ' repo add heliumos ' + chartRepo);
         await exec(helmPath + ' repo update');
         await exec(
             helmPath + ' install -f ' +
