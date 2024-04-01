@@ -6,7 +6,7 @@ import BgLayout from '@/components/structure/BgLayout';
 import SwitchModeType from '@/components/structure/SwitchModeType';
 import { ModeType } from '@/utils/data';
 import useStyles from '@/components/user-list/style';
-const { pageToPathMap } = require('../../../path.ts');
+const { pageToPathMap } = require('../../../pagePath');
 
 const userBackgoundColor = [
     '#7E7CE3',

@@ -7,7 +7,7 @@ const path = require('path');
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
 const express = require('express');
-const { pageToPathMap, pagePaths } = require('../../path.ts');
+const { pageToPathMap, pagePaths } = require('../../pagePath');
 const appExpress = express();
 
 let updateDownloaded = false;
@@ -25,7 +25,7 @@ const appServerStart = () => {
 
 // 用express启生产环境前端
 const startUpPackagedRenderer = async () => {
-    const rootPath = path.join(__dirname, '../out');
+    const rootPath = path.join(app.getAppPath(), 'out');
     appExpress.use(express.static(rootPath));
     for (const pagePath of pagePaths) {
         appExpress.get(pagePath, (_, res) => {

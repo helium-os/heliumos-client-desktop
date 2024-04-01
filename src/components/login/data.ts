@@ -1,4 +1,4 @@
-const { pageToPathMap } = require('../../../path.ts');
+const { pageToPathMap } = require('../../../pagePath');
 
 export enum LoginType {
     Alias = 'alias',

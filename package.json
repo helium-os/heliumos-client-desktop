@@ -69,7 +69,8 @@
         "asar": true,
         "files": [
             "electron-src",
-            "out"
+            "out",
+            "pagePath.js"
         ],
         "appId": "com.xxx.app",
         "productName": "Helium OS",
