@@ -9,11 +9,11 @@ const util = require('./util/util');
 const changeClose = require('./app-init/changeClose');
 let { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
-const package = require("./package.json");
+const packageObj = require('../package.json');
 
-var keyList = ['heliumos.crt', '../heliumos.crt'];
-var publicKey;
+const publicKey = fs.readFileSync(path.join(__dirname, 'heliumos.crt'), 'utf8');
 app.setName('Helium OS');
+
 //F10双击,F8双击
 let f10Press = false,
     f8Press = false;
@@ -27,11 +27,6 @@ const modeTypeMap = {
     install: 'install',
 };
 
-keyList.forEach((item) => {
-    if (fs.existsSync(path.join(__dirname, item))) {
-        publicKey = fs.readFileSync(path.join(__dirname, item), 'utf8');
-    }
-});
 let datas = {};
 let loading = false;
 
@@ -232,11 +227,20 @@ createWindow = async () => {
         const { origin, pathname, search, hash } = new URL(url);
         const searchParams = new URLSearchParams(search);
         const platform = util.getPlatform();
-        searchParams.set('source', `desktop-${platform}-client_${package.version}`);
+        searchParams.set('source', `desktop-${platform}-client_${packageObj.version}`);
 
         const searchStr = searchParams.toString() ? `?${searchParams.toString()}` : '';
         url = origin + pathname + searchStr + hash;
-        log.info('openExternalUrl', url, 'platform', platform, 'package.version', package.version, 'process.versions.electron', process.versions.electron);
+        log.info(
+            'openExternalUrl',
+            url,
+            'platform',
+            platform,
+            'packageObj.version',
+            packageObj.version,
+            'process.versions.electron',
+            process.versions.electron,
+        );
         shell.openExternal(url);
     });
 
@@ -509,7 +513,7 @@ app.whenReady().then(async () => {
     ipcMain.handle('installHeliumos', function (event, configObj) {
         return install.installHeliumos({
             ...configObj,
-            env
+            env,
         });
     });
     ipcMain.handle('getInstallStatus', function (event, orgId) {

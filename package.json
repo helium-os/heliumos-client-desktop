@@ -1,14 +1,14 @@
 {
     "name": "Helium-OS",
     "version": "1.2.8",
-    "main": "main.js",
+    "main": "electron-src/main.js",
     "scripts": {
         "dev": "next dev -p 3001",
         "build": "next build",
         "lint": "next lint",
         "lint:fix": "next lint --fix",
         "electron-start": "cross-env NODE_ENV=testinner electron . --icon=favicon.ico ",
-        "electron:generate-icons": "electron-icon-builder --input=./build/icon.png --output=build",
+        "electron:generate-icons": "electron-icon-builder --input=./electron-src/build/icon.png --output=electron-src/build",
         "electron-start-all": "concurrently \"npm run dev\" \"wait-on http://localhost:3001 && npm run electron-start\"",
         "dist": "cross-env  electron-builder --win --x64",
         "dist-mac": "electron-builder --macos --arm64 --x64",
@@ -66,26 +66,13 @@
         "typescript": "^5"
     },
     "build": {
+        "asar": true,
+        "files": [
+            "electron-src",
+            "out"
+        ],
         "appId": "com.xxx.app",
         "productName": "Helium OS",
-        "extraResources": [
-            {
-                "from": "heliumos.crt",
-                "to": "heliumos.crt"
-            },
-            {
-                "from": "build/icon.png",
-                "to": "icon.png"
-            },
-            {
-                "from": "build/lightModeTrayIcon.png",
-                "to": "lightModeTrayIcon.png"
-            },
-            {
-                "from": "build/darkModeTrayIcon.png",
-                "to": "darkModeTrayIcon.png"
-            }
-        ],
         "nsis": {
             "perMachine": false
         },
@@ -107,21 +94,21 @@
                 "com.apple.security.device.audio-input": true,
                 "com.apple.security.device.camera": true
             },
-            "icon": "build/icons/mac/icon.icns"
+            "icon": "electron-src/build/icons/mac/icon.icns"
         },
         "win": {
             "target": [
                 "nsis",
                 "zip"
             ],
-            "icon": "build/icons/win/icon.ico"
+            "icon": "electron-src/build/icons/win/icon.ico"
         },
         "linux": {
             "target": [
                 "AppImage",
                 "zip"
             ],
-            "icon": "build/icon.png"
+            "icon": "electron-src/build/icon.png"
         }
     },
     "win": {
