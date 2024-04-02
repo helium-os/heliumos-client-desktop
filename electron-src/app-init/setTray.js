@@ -19,14 +19,13 @@ let setTray = (win) => {
     // 双击托盘图标时显示应用
     tray.on('double-click', () => win.show());
     if (process.platform === 'darwin') {
-        const lightModeTrayIcon = path.join(__dirname, '../build/lightModeTrayIcon.png');
-        const darkModeTrayIcon = path.join(__dirname, '../build/darkModeTrayIcon.png');
         function updateTrayIcon() {
             // 检测操作系统的外观设置
             // 根据外观设置选择相应的托盘图标
-            const trayIconPath = nativeTheme.shouldUseDarkColors
-                ? path.join(__dirname, darkModeTrayIcon)
-                : path.join(__dirname, lightModeTrayIcon);
+            const trayIconPath = path.join(
+                __dirname,
+                nativeTheme.shouldUseDarkColors ? '../build/darkModeTrayIcon.png' : '../build/lightModeTrayIcon.png',
+            );
             let changeImage = nativeImage.createFromPath(trayIconPath);
             // 设置托盘图标
             tray.setImage(changeImage.resize({ width: 16, height: 16 }));
