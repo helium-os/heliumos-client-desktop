@@ -71,24 +71,6 @@
             "electron-src",
             "out"
         ],
-        "extraResources": [
-            {
-                "from": "electron-src/heliumos.crt",
-                "to": "heliumos.crt"
-            },
-            {
-                "from": "electron-src/build/icon.png",
-                "to": "icon.png"
-            },
-            {
-                "from": "electron-src/build/lightModeTrayIcon.png",
-                "to": "lightModeTrayIcon.png"
-            },
-            {
-                "from": "electron-src/build/darkModeTrayIcon.png",
-                "to": "darkModeTrayIcon.png"
-            }
-        ],
         "appId": "com.xxx.app",
         "productName": "Helium OS",
         "nsis": {
