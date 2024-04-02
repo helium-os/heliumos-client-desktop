@@ -62,13 +62,13 @@ jobs:
       #   with:
       #     tag_name: v${{ env.VERSION }}
       #     files: |
-      #      dist/Helium OS-${{ env.VERSION }}.dmg
-      #      dist/Helium OS-${{ env.VERSION }}-mac.zip
-      #      dist/Helium OS-${{ env.VERSION }}.dmg.blockmap
-      #      dist/Helium OS-${{ env.VERSION }}-mac.zip.blockmap
+      #      dist/HeliumOS-${{ env.VERSION }}.dmg
+      #      dist/HeliumOS-${{ env.VERSION }}-mac.zip
+      #      dist/HeliumOS-${{ env.VERSION }}.dmg.blockmap
+      #      dist/HeliumOS-${{ env.VERSION }}-mac.zip.blockmap
       #      dist/latest-mac.yml
-      #      dist/Helium OS Setup ${{ env.VERSION }}.exe
-      #      dist/Helium OS Setup ${{ env.VERSION }}.exe.blockmap
+      #      dist/HeliumOS Setup ${{ env.VERSION }}.exe
+      #      dist/HeliumOS Setup ${{ env.VERSION }}.exe.blockmap
       #      dist/latest.yml
-      #      dist/Helium OS-${{ env.VERSION }}.AppImage
-      #      dist/Helium OS-${{ env.VERSION }}.zip
+      #      dist/HeliumOS-${{ env.VERSION }}.AppImage
+      #      dist/HeliumOS-${{ env.VERSION }}.zip

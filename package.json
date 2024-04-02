@@ -1,5 +1,5 @@
 {
-    "name": "Helium-OS",
+    "name": "HeliumOS",
     "version": "1.2.8",
     "main": "electron-src/main.js",
     "scripts": {
@@ -71,8 +71,8 @@
             "electron-src",
             "out"
         ],
-        "appId": "com.xxx.app",
-        "productName": "Helium OS",
+        "appId": "io.heliumos.client-desktop",
+        "productName": "HeliumOS",
         "nsis": {
             "perMachine": false
         },
