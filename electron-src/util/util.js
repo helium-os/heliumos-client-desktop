@@ -314,24 +314,24 @@ const loadKeycloakLoginPage = (win, orgId) => {
 };
 
 // 加载当前项目page
-const loadLocalePage = (win, pathname, options = {}) => {
+const loadLocalPage = (win, pathname, options = {}) => {
     if (!pathname) return;
     return loadURL(win, getOrigin() + pathname, options);
 };
 
 // 加载登录页面
 const loadLoginPage = (win, options = {}) => {
-    return loadLocalePage(win, pageToPathMap.login, options);
+    return loadLocalPage(win, pageToPathMap.login, options);
 };
 
 // 加载用户选择页面
 const loadUserListPage = (win, options = {}) => {
-    return loadLocalePage(win, pageToPathMap.userList, options);
+    return loadLocalPage(win, pageToPathMap.userList, options);
 };
 
 // 加载安装模式页面
 const loadInstallModePage = (win, options = {}) => {
-    return loadLocalePage(win, pageToPathMap.installMode, options);
+    return loadLocalPage(win, pageToPathMap.installMode, options);
 };
 
 module.exports = {
@@ -352,7 +352,7 @@ module.exports = {
     loadURL,
     loadKeycloakLoginPage,
     pageToPathMap,
-    loadLocalePage,
+    loadLocalPage,
     loadLoginPage,
     loadUserListPage,
     loadInstallModePage,
