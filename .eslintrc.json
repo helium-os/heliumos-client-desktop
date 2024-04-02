@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "next",
+    "plugin:prettier/recommended" // eslint-config-prettier
+  ],
+  "rules": {
+    "no-empty-pattern": ["error", { "allowObjectPatternsAsParameters": true }],
+    // 提醒有未使用的变量
+    "no-unused-vars": "warn",
+    // 允许在对象上直接调用原型上的方法
+    "no-prototype-builtins": "off",
+    // 不允许空块语句（catch代码块除外）
+    "no-empty": ["error", { "allowEmptyCatch": true }],
+
+    // ------------eslint-plugin-react
+    // 关闭target="_blank"不带rel="noreferrer"属性校验
+    "react/jsx-no-target-blank": "off"
+  }
+}
