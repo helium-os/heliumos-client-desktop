@@ -45,7 +45,7 @@ export const keyNameMap: { [key: string]: string } = {
     serverIp: '公网 IP',
     nodes: '节点',
     component: '组件',
-    mame: 'MAME',
+    mame: '节点名',
     cpu: 'CPU',
     memory: 'MEM',
 };

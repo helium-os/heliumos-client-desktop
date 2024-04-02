@@ -12,7 +12,7 @@ const log = require('electron-log');
 const packageObj = require('../package.json');
 
 const publicKey = fs.readFileSync(path.join(__dirname, 'heliumos.crt'), 'utf8');
-app.setName('Helium OS');
+app.setName('HeliumOS');
 
 //F10双击,F8双击
 let f10Press = false,
@@ -538,7 +538,7 @@ app.whenReady().then(async () => {
         process.platform === 'darwin'
             ? [
                   {
-                      label: 'Helium OS',
+                      label: 'HeliumOS',
                       submenu: [
                           { role: 'about' },
                           { type: 'separator' },
