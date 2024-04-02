@@ -1,0 +1,282 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu, Helvetica Neue, Helvetica, Arial,
+  PingFang SC, Hiragino Sans GB, Microsoft YaHei UI, Microsoft YaHei, Source Han Sans CN, sans-serif;
+}
+
+#app {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  background-color: #e8eaed;
+  /* overflow-y: auto; */
+}
+
+.panel {
+  margin-right: 10%;
+}
+
+.form {
+  flex: 2 0 500px;
+  width: 400px;
+  min-height: 478px;
+  padding: 22px 40px 22px 40px;
+  background: #fff;
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .2);
+  box-sizing: border-box;
+  border-radius: 6px;
+}
+
+.form .formTitle {
+  margin-bottom: 50px;
+  display: flex;
+  align-items: center;
+}
+
+.form .formTitle .img {
+  width: 36px;
+  height: 36px;
+}
+
+.form .formTitle .title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #242A38;
+  line-height: 40px;
+  letter-spacing: 1px;
+}
+
+.embedded {
+  border-radius: 10px;
+  border: 0.5px solid #FFF;
+  background: rgba(30, 29, 29, 0.10);
+}
+
+
+.ant-form-item-required {
+  font-size: 16px !important;
+  height: 30px;
+}
+
+.userList {
+  width: 750px;
+  height: 360px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.userInfo {
+  margin: 0px 45px;
+  width: 60px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+
+}
+
+.userImg {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #FFF;
+  overflow: hidden;
+}
+
+.userImg img {
+  width: 100%;
+  height: 100%;
+}
+
+.useName {
+  margin-top: 16px;
+  color: #FFF;
+  text-align: center;
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.useOrg {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, .5);
+  text-align: center;
+
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+
+}
+
+.userInfo:hover .useOrg {
+  visibility: visible;
+}
+
+.goBack {
+  cursor: pointer;
+  color: #FFF;
+  text-align: center;
+
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration-line: underline;
+  position: fixed;
+  bottom: 40px;
+  left: calc(50% - 14px);
+}
+
+.myInput {
+  box-sizing: border-box;
+  width: 295px;
+  height: 52px;
+  border: 0 solid black;
+  padding: 14px 12px;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.10);
+  position: relative;
+  left: -0.5px;
+}
+
+.myInputTitle {
+  color: #E5E5E5;
+
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  height: 16px;
+  width: 100%;
+  display: none;
+
+}
+
+.inputTitleHeight {
+  display: block;
+}
+
+.myInputContent {
+  border: none !important;
+  color: #FFF;
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  height: 22px;
+  width: 100%;
+  background-color: rgba(213, 213, 213, 0);
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.40);
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 150% */
+}
+
+.myInputContent:focus {
+  outline: none;
+  /* 移除选中时的轮廓样式 */
+}
+
+.coverInput {
+  box-sizing: border-box;
+  border: 0.5px solid #FFF;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.errBorder {
+  border-color: #FE5F56 !important;
+  border-width: 0.5px !important;
+}
+
+.focusBorder {
+  border-width: 2px;
+}
+
+.valuePadding {
+  padding: 8px 12px;
+}
+
+.errColor {
+  /* color: #FE5F56 !important; */
+}
+
+
+
+
+
+
+
+.errorMessage {
+  width: 100%;
+  height: 16px;
+  color: #FE5F56;
+
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  padding-left: 12px;
+  padding-top: 4px;
+}
+
+.whiteShadow {
+  text-shadow: 0px 2px 3px rgba(48, 48, 48, 0.06);
+}
+
+.userBackgroundFont {
+  width: 100%;
+  height: 100%;
+  color: #FFF;
+  text-align: center;
+
+  font-size: 38px;
+  font-style: normal;
+  font-weight: bold;
+  line-height: 100px;
+  user-select: none;
+}
+
+.textOverflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  max-width: 150px;
+
+}
+
+.inputPopup {
+  margin-left: -10px;
+  height: 190px;
+}
+
+
+
+.cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
