@@ -35,7 +35,6 @@ const deploymentList = [
     'pulsar-zookeeper',
     'pulsar-bookie',
     'couchdb',
-    'heliumos-vault-ldq0001-agent-injector',
     'vault-manager',
     'pulsar-manager',
     'postgres-manager',
@@ -303,6 +302,9 @@ async function getInstallStatus(orgId) {
     let deploymentNameList = [];
     let percent = 0;
 
+    if (deploymentList.indexOf('heliumos-vault-'+ orgId+ '-agent-injector') < 0) {
+        deploymentList.push('heliumos-vault-'+ orgId+ '-agent-injector');
+    }
     try {
         const result = await exec(
             kubectlPath + ' get deployment -n ' +
