@@ -7,7 +7,7 @@ const path = require('path');
 const log = require('electron-log');
 const electronLocalshortcut = require('electron-localshortcut');
 const express = require('express');
-const { pageToPathMap, pagePaths } = require('../../pagePath');
+const { pageToPathMap, pagePaths } = require('./pagePath');
 const appExpress = express();
 
 let updateDownloaded = false;

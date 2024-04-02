@@ -1,4 +1,4 @@
-const { pageToPathMap } = require('../../../pagePath');
+const { pageToPathMap } = require('../../../electron-src/util/pagePath');
 
 export enum LoginType {
     Alias = 'alias',

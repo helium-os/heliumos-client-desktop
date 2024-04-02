@@ -5,7 +5,7 @@ import BgLayout from '@/components/structure/BgLayout';
 import useStyles from '@/components/install-mode/style';
 import { ModeType } from '@/utils/data';
 import SwitchModeType from '@/components/structure/SwitchModeType';
-const { pageToPathMap } = require('../../../pagePath');
+const { pageToPathMap } = require('../../../electron-src/util/pagePath');
 
 export default function Page() {
     const router = useRouter();
