@@ -5,7 +5,7 @@ const path = require('path');
 let setTray = (win) => {
     const iconPath = path.join(__dirname, '../build/icon.png');
     //  创建系统托盘图标
-    const image = nativeImage.createFromPath(path.join(__dirname, iconPath));
+    const image = nativeImage.createFromPath(iconPath);
     let tray = new Tray(image.resize({ width: 16, height: 16 }));
     // 创建托盘菜单
     const contextMenu = Menu.buildFromTemplate([

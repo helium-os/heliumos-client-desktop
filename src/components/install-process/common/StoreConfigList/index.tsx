@@ -85,7 +85,7 @@ const StoreConfigList: React.FC<IProps> = ({ readOnly }) => {
                     {!readOnly && <DownOutlinedIcon />}
                 </div>
             </SectionLayout>
-            <SectionLayout title="存储PV" size={Size.Large} style={{ display: expand ? 'block' : 'none' }}>
+            <SectionLayout title="存储 PV" size={Size.Large} style={{ display: expand ? 'block' : 'none' }}>
                 <div className={styles.storeConfigListWrap}>
                     <ul className={styles.storeConfigList}>
                         {storeConfigList.map((item) => (

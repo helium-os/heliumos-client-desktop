@@ -122,8 +122,8 @@ function AutoUpdaterInterval(autoUpdater, hour = 6, updateNow = true) {
             updateDownloaded = true;
             dialog
                 .showMessageBox({
-                    title: '更新 Helium OS',
-                    message: '发现新版本，重新启动 Helium OS 即可更新完成。',
+                    title: '更新 HeliumOS',
+                    message: '发现新版本，重新启动 HeliumOS 即可完成更新。',
                     buttons: ['重新启动以更新', '取消'],
                 })
                 .then((res) => {

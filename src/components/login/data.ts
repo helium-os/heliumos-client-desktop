@@ -25,7 +25,7 @@ export const loginTypeMap: LoginTypeMap = {
     },
     [LoginType.Ip]: {
         type: LoginType.Ip,
-        name: '节点IP',
+        name: '节点 IP ',
         path: pageToPathMap.loginByIp,
     },
 };
