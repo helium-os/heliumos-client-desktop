@@ -21,12 +21,12 @@ exports.default = async function notarizing(context) {
     // teamId: process.env.APPLE_TEAM_ID,
 
     // Option 2: Using an App Store Connect API key
-    // appleApiKey: process.env.APPLE_API_KEY,
-    // appleApiKeyId: process.env.APPLE_API_KEY_ID,
-    // appleApiIssuer: process.env.APPLE_API_ISSUER,
+    appleApiKey: process.env.APPLE_API_KEY,
+    appleApiKeyId: process.env.APPLE_API_KEY_ID,
+    appleApiIssuer: process.env.APPLE_API_ISSUER,
     
     // Option 3: Using a keychain
     // keychain: process.env.HOS_KETCHAIN, // optional
-    keychainProfile: process.env.HOS_KEYCHAIN_PROFILE
+    // keychainProfile: process.env.HOS_KEYCHAIN_PROFILE
   });
 };
