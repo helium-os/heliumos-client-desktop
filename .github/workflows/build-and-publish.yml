@@ -84,6 +84,6 @@ jobs:
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: npm run dist-mac
 
-      - name: Upload products to Cloud Storage
-        run:
+      # - name: Upload products to Cloud Storage
+      #   run:
           # TODO
