@@ -70,12 +70,15 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v0.1.15
         with:
+          # TODO: adjust release name to like v1.2.3.202404011200
           tag_name: v${{ env.VERSION }}
 
       - name: Install Dependencies&&Build
         env:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        # TODO: adjust electron publish release type to draft
+        # TODO: adjust electron bundle files version name to like v1.2.3.202404011200
         run: |
           npm run build
 
