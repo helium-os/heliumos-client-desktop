@@ -2,6 +2,8 @@
     "name": "HeliumOS",
     "version": "1.2.8",
     "main": "electron-src/main.js",
+    "description": "HeliumOS client desktop",
+    "author": "HeliumOS",
     "scripts": {
         "dev": "next dev -p 3001",
         "build": "next build",
@@ -51,6 +53,7 @@
         "sqlite3": "^5.1.6"
     },
     "devDependencies": {
+        "@electron/notarize": "^2.3.0",
         "@types/node": "^20",
         "@types/react": "^18",
         "@types/react-dom": "^18",
@@ -76,6 +79,7 @@
         "nsis": {
             "perMachine": false
         },
+        "afterSign": "electron-src/build/scripts/notarize.js",
         "publish": [
             {
                 "provider": "github",
@@ -84,6 +88,10 @@
             }
         ],
         "mac": {
+            "hardenedRuntime": true,
+            "gatekeeperAssess": false,
+            "entitlements": "electron-src/build/entitlements.mac.plist",
+            "entitlementsInherit": "electron-src/build/entitlements.mac.plist",
             "target": [
                 "dmg",
                 "zip"
