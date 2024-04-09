@@ -82,7 +82,7 @@ const F8 = (win) => {
     });
 };
 
-createWindow = async () => {
+const createWindow = async () => {
     const win = new BrowserWindow({
         width: 800,
         height: 800,
@@ -99,7 +99,7 @@ createWindow = async () => {
         },
     });
     // 创建加载动画窗口
-    const loadingWindow = new BrowserWindow({
+    let loadingWindow = new BrowserWindow({
         show: false,
         width: 300,
         height: 300,
@@ -494,6 +494,7 @@ app.whenReady().then(async () => {
 
     ipcMain.handle('getDbValue', async function () {
         let res = await proxy.getAlias(env);
+        log.info('~~~~~~~~~~~~~~~getAlias res', res);
         return res;
     });
 
