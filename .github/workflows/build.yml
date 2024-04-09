@@ -74,8 +74,8 @@ jobs:
         env:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-        # TODO: adjust electron publish release type to draft
-        # TODO: adjust electron bundle files version name to like v1.2.3.202404011200
+          # TODO: adjust electron publish release type to draft
+          # TODO: adjust electron bundle files version name to like v1.2.3.202404011200
         run: |
           npm run build
 
