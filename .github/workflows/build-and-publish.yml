@@ -21,6 +21,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.17.x'
+      - name: Export version as variable
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Current version: $VERSION"
+        shell: bash
+
       - name: Install Dependencies
         run: |
           npm install npm@8.15.0 -g
@@ -29,15 +36,10 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Export version to variable
-        run: |
-          npm run version
-          echo "VERSION=$(cat version)" >> "$GITHUB_ENV"
-
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: 'v$VERSION'
+          tag_name: v${{ env.VERSION }}
 
       - name: Install the Apple certificate and api key
         if: ${{ runner.os == 'macOS' }}
@@ -86,4 +88,4 @@ jobs:
 
       # - name: Upload products to Cloud Storage
       #   run:
-          # TODO
+      # TODO
