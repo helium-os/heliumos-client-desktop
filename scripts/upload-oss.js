@@ -39,9 +39,9 @@ async function uploadFiles(source, target) {
         const targetPath = path.join(target, file);
         const result = await client.multipartUpload(targetPath, filePath, {
           headers,
-          progress: function (p) {
-            console.log(`Uploading ${file}: ${Math.round(p * 100)}%`);
-          },
+          // progress: function (p) {
+          //   console.log(`Uploading ${file}: ${Math.round(p * 100)}%`);
+          // },
         });
         const statusOK = result?.res?.status === 200;
         console.log(`${statusOK ? 'Uploaded' : 'Failed'}: ${file}`);

@@ -43,35 +43,41 @@ jobs:
         with:
           tag_name: v${{ env.VERSION }}
 
-      - name: Install the Apple certificate and api key
-        if: ${{ runner.os == 'macOS' && env.SIGN_AND_NOTARIZE }}
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          API_KEY_BASE64: ${{ secrets.API_KEY_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          # create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          API_KEY_PATH=$RUNNER_TEMP/auth_key.p8
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+      - name: Test1
+        if: ${{ runner.os == 'macOS' && env.SIGN_AND_NOTARIZE == true }}
+        run: echo 'Test1 end';
+      - name: Test2
+        if: ${{ runner.os == 'macOS' && env.SIGN_AND_NOTARIZE == 'true' }}
+        run: echo 'Test2 end';
+      # - name: Install the Apple certificate and api key
+      #   if: ${{ runner.os == 'macOS' }}
+      #   env:
+      #     BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+      #     P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      #     API_KEY_BASE64: ${{ secrets.API_KEY_BASE64 }}
+      #     KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      #   run: |
+      #     # create variables
+      #     CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+      #     API_KEY_PATH=$RUNNER_TEMP/auth_key.p8
+      #     KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-          # import certificate and api key from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo "CSC_LINK=$CERTIFICATE_PATH" >> "$GITHUB_ENV"
-          echo "CSC_KEY_PASSWORD=$P12_PASSWORD" >> "$GITHUB_ENV"
-          echo -n "$API_KEY_BASE64" | base64 --decode -o $API_KEY_PATH
-          echo "APPLE_API_KEY=$API_KEY_PATH" >> "$GITHUB_ENV"
+      #     # import certificate and api key from secrets
+      #     echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+      #     echo "CSC_LINK=$CERTIFICATE_PATH" >> "$GITHUB_ENV"
+      #     echo "CSC_KEY_PASSWORD=$P12_PASSWORD" >> "$GITHUB_ENV"
+      #     echo -n "$API_KEY_BASE64" | base64 --decode -o $API_KEY_PATH
+      #     echo "APPLE_API_KEY=$API_KEY_PATH" >> "$GITHUB_ENV"
 
-          # create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+      #     # create temporary keychain
+      #     security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+      #     security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+      #     security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-          # import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
+      #     # import certificate to keychain
+      #     security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+      #     security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+      #     security list-keychain -d user -s $KEYCHAIN_PATH
 
       - name: Build Windows App
         if: ${{ runner.os == 'Windows' }}
