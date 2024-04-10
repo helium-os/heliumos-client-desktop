@@ -10,7 +10,7 @@ const SOURCE_PATH = path.join(process.cwd(), BUILD_OUT_DIR);
 const TARGET_PATH = path.join(ALI_OSS_RELEASE_PATH, VERSION_TAG);
 
 const client = new OSS({
-  region: process.env.ALI_OSS_REGION,
+  // region: process.env.ALI_OSS_REGION,
   accessKeyId: process.env.ALI_OSS_ACCESS_KEY_ID,
   accessKeySecret: process.env.ALI_OSS_ACCESS_KEY_SECRET,
   bucket: process.env.ALI_OSS_BUCKET,
