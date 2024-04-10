@@ -8,6 +8,8 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # TODO: wait delte, quick build for debug
+  SIGN_AND_NOTARIZE: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   build:
@@ -42,7 +44,7 @@ jobs:
           tag_name: v${{ env.VERSION }}
 
       - name: Install the Apple certificate and api key
-        if: ${{ runner.os == 'macOS' }}
+        if: ${{ runner.os == 'macOS' && env.SIGN_AND_NOTARIZE }}
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
@@ -87,7 +89,8 @@ jobs:
         run: npm run dist-mac
 
       - name: Upload to Cloud Storage
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        # TODO: wait for use
+        # if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           echo "Current version: $VERSION"
           npm i ali-oss
