@@ -5,7 +5,7 @@ const { notarize } = require('@electron/notarize');
 // https://www.electron.build/code-signing
 exports.default = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
-  if (electronPlatformName !== 'darwin') {
+  if (electronPlatformName !== 'darwin' && process.env.SIGN_AND_NOTARIZE === 'false') {
     return;
   }
 
@@ -24,7 +24,7 @@ exports.default = async function notarizing(context) {
     appleApiKey: process.env.APPLE_API_KEY,
     appleApiKeyId: process.env.APPLE_API_KEY_ID,
     appleApiIssuer: process.env.APPLE_API_ISSUER,
-    
+
     // Option 3: Using a keychain
     // keychain: process.env.HOS_KETCHAIN, // optional
     // keychainProfile: process.env.HOS_KEYCHAIN_PROFILE
