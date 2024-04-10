@@ -36,10 +36,10 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ env.VERSION }}
+      # - name: Release
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     tag_name: v${{ env.VERSION }}
 
       - name: Install the Apple certificate and api key
         if: ${{ runner.os == 'macOS' }}
@@ -86,6 +86,17 @@ jobs:
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: npm run dist-mac
 
-      # - name: Upload products to Cloud Storage
-      #   run:
-      # TODO
+      - name: Upload to Cloud Storage
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          echo "Current version: $VERSION"
+          npm i ali-oss
+          node ./scripts/upload-oss.js
+        env:
+          ALI_OSS_REGION: ${{ vars.ALI_OSS_REGION }}
+          ALI_OSS_ACCESS_KEY_ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
+          ALI_OSS_ACCESS_KEY_SECRET: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
+          ALI_OSS_BUCKET: ${{ vars.ALI_OSS_BUCKET }}
+          ALI_OSS_ENDPOINT: ${{ vars.ALI_OSS_ENDPOINT }}
+          ALI_OSS_RELEASE_PATH: ${{ vars.ALI_OSS_RELEASE_PATH }}
+        shell: bash
