@@ -42,7 +42,6 @@ async function uploadFiles(source, target) {
           },
         });
         const statusOK = result?.res?.status === 200;
-        console.log('statusOK', statusOK);
         console.log(`${statusOK ? 'Uploaded' : 'Failed'}: ${file}`);
         return statusOK;
       } catch (e) {
