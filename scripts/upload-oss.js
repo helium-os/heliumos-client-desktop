@@ -7,7 +7,9 @@ const ALI_OSS_RELEASE_PATH = process.env.ALI_OSS_RELEASE_PATH;
 const VERSION_TAG = 'v' + process.env.VERSION;
 
 const SOURCE_PATH = path.join(process.cwd(), BUILD_OUT_DIR);
-const TARGET_PATH = path.join(ALI_OSS_RELEASE_PATH, VERSION_TAG);
+// TODO: Upload to version directory and setting softlinks
+// const TARGET_PATH = path.join(ALI_OSS_RELEASE_PATH, VERSION_TAG);
+const TARGET_PATH = ALI_OSS_RELEASE_PATH;
 
 const client = new OSS({
   region: process.env.ALI_OSS_REGION,
