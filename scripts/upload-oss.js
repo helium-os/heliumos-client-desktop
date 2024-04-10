@@ -7,9 +7,7 @@ const ALI_OSS_RELEASE_PATH = process.env.ALI_OSS_RELEASE_PATH;
 const VERSION_TAG = 'v' + process.env.VERSION;
 
 const SOURCE_PATH = path.join(process.cwd(), BUILD_OUT_DIR);
-// TODO: Upload to version directory and setting softlinks
-// const TARGET_PATH = path.join(ALI_OSS_RELEASE_PATH, VERSION_TAG);
-const TARGET_PATH = ALI_OSS_RELEASE_PATH;
+const TARGET_PATH = path.join(ALI_OSS_RELEASE_PATH, VERSION_TAG);
 
 const client = new OSS({
   region: process.env.ALI_OSS_REGION,
@@ -37,13 +35,19 @@ async function uploadFiles(source, target) {
       try {
         // 上传文件
         const targetPath = path.join(target, file);
-        const result = await client.multipartUpload(targetPath, filePath, {
+        const uploadRes = await client.multipartUpload(targetPath, filePath, {
           headers,
-          // progress: function (p) {
-          //   console.log(`Uploading ${file}: ${Math.round(p * 100)}%`);
-          // },
+          progress: function (p) {
+            console.log(`Uploading ${file}: ${Math.round(p * 100)}%`);
+          },
         });
-        const statusOK = result?.res?.status === 200;
+        const symlinkPath = path.join(ALI_OSS_RELEASE_PATH, file);
+        const symlinkRes = await client.putSymlink(symlinkPath, targetPath);
+
+        const uploadOK = uploadRes?.res?.statusCode === 200;
+        const symlinkOK = symlinkRes?.res.statusCode === 200;
+        const statusOK = uploadOK && symlinkOK;
+        console.log(`uploadOK=${uploadOK} symlinkOK=${symlinkOK}`);
         console.log(`${statusOK ? 'Uploaded' : 'Failed'}: ${file}`);
         return statusOK;
       } catch (e) {
