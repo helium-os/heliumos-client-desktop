@@ -36,10 +36,10 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      # - name: Release
-      #   uses: softprops/action-gh-release@v2
-      #   with:
-      #     tag_name: v${{ env.VERSION }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
 
       - name: Install the Apple certificate and api key
         if: ${{ runner.os == 'macOS' }}
