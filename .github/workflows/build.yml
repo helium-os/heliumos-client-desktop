@@ -8,8 +8,6 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SIGN_AND_NOTARIZE: false
-  DATE_TIME1: '$(date +"%Y-%m-%d %H:%M:%S")'
-  DATE_TIME2: $(date +"%Y-%m-%d %H:%M:%S")
 
 jobs:
   build:
@@ -29,6 +27,8 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "Current version: $VERSION"
+
+          echo "BUILD_DATE_TIME=$(date +"%Y%m%d%H%M%S")" >> "$GITHUB_ENV"
           echo "EP_DRAFT=true" >> "$GITHUB_ENV"
           echo "electron-publish will release a draft"
         shell: bash
@@ -42,7 +42,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.VERSION }}.$(date +"%Y%m%d%H%M%S")
+          tag_name: v${{ env.VERSION }}.${{ env.BUILD_DATE_TIME }}
 
       - name: Install the Apple certificate and api key
         if: ${{ runner.os == 'macOS' && env.SIGN_AND_NOTARIZE == 'true' }}
