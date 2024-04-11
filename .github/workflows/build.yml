@@ -24,7 +24,7 @@ jobs:
 
       - name: Export version as variable
         run: |
-          # Bump version for temp development build and release draft
+          # Bump version for temp test build and release draft
           VERSION=$(node -p "require('./package.json').version")
           echo "Before version: $VERSION"
           npm version --no-git-tag-version --preid beta prerelease
@@ -90,5 +90,3 @@ jobs:
       - name: Build macOS App
         if: ${{ runner.os == 'macOS' }}
         run: npm run dist-mac
-
-  # TODO: adjust electron bundle files version name to like v1.2.3.202404011200

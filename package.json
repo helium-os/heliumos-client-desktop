@@ -73,6 +73,7 @@
             "out"
         ],
         "appId": "io.heliumos.client-desktop",
+        "artifactName": "${productName}-${version}${env.BUILD_DATE_TIME}${arch}.${ext}",
         "productName": "HeliumOS",
         "nsis": {
             "perMachine": false
