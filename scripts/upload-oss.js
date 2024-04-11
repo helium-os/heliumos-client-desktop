@@ -27,39 +27,62 @@ function replaceToForwardSlash(p = '') {
   return p?.replace(/\\/g, '/');
 }
 
+// // https://github.com/github/rest-api-description/issues/2968
+function isSafeGithubName(name = '') {
+  return /^[0-9A-Za-z._-]+$/.test(name);
+}
+
+function computeSafeArtifactNameIfNeeded(suggestedName = '', safeNameProducer = () => '') {
+  // GitHub only allows the listed characters in file names.
+  if (!!suggestedName) {
+    if (isSafeGithubName(suggestedName)) {
+      return null;
+    }
+
+    // prefer to use suggested name - so, if space is the only problem, just replace only space to dash
+    suggestedName = suggestedName.replace(/ /g, '-');
+    if (isSafeGithubName(suggestedName)) {
+      return suggestedName;
+    }
+  }
+
+  return safeNameProducer();
+}
+
 // 递归遍历目录并上传文件
 async function uploadFiles(source, target) {
-  console.log('From: ', source);
-  console.log('To: ', target, replaceToForwardSlash(target));
+  console.log(`From: ${source}, To: ${target} format=${replaceToForwardSlash(target)}`);
 
   const files = fs.readdirSync(source);
   const uploadPromises = files.map(async (file) => {
     const filePath = path.join(source, file);
+    const fileName = computeSafeArtifactNameIfNeeded(file) || file;
     const stat = fs.statSync(filePath);
     if (stat.isFile()) {
       try {
         // 上传文件
-        const targetPath = replaceToForwardSlash(path.join(target, file));
+        const targetPath = replaceToForwardSlash(path.join(target, fileName));
         const uploadRes = await client.multipartUpload(targetPath, filePath, {
           headers,
           progress: function (p) {
-            console.log(`Uploading ${file}: ${Math.round(p * 100)}%`);
+            console.log(`Uploading ${fileName}: ${Math.round(p * 100)}%`);
           },
         });
-        const symlinkPath = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, file));
+        const symlinkPath = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, fileName));
         const symlinkRes = await client.putSymlink(symlinkPath, targetPath);
 
         const uploadOK = uploadRes?.res?.statusCode === 200;
         const symlinkOK = symlinkRes?.res.statusCode === 200;
         const statusOK = uploadOK && symlinkOK;
-        console.log(`uploadOK=${uploadOK} symlinkOK=${symlinkOK}`);
-        console.log(`${statusOK ? 'Uploaded' : 'Failed'}: ${file}`);
+        console.log(
+          `${statusOK ? 'Uploaded' : 'Failed'}: fileName=${fileName} file=${file}, uploadOK=${uploadOK} symlinkOK=${symlinkOK}`,
+        );
         return statusOK;
       } catch (e) {
         // 不覆盖文件
         console.log('[DEBUG]: Upload Failed', e);
         const isFileAlreadyExists = String(e?.code) === 'FileAlreadyExists';
-        console.log(`${String(e?.code || '')}: `, file);
+        console.log(`${String(e?.code || '')}: `, fileName);
         return isFileAlreadyExists ? true : false;
       }
     } else {
