@@ -24,6 +24,10 @@ jobs:
 
       - name: Export version as variable
         run: |
+          # Bump version for temp development build and release draft
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Before version: $VERSION"
+          npm version --no-git-tag-version --preid beta prerelease
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "Current version: $VERSION"
@@ -42,7 +46,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.VERSION }}.${{ env.BUILD_DATE_TIME }}
+          tag_name: v${{ env.VERSION }}
+          draft: true
 
       - name: Install the Apple certificate and api key
         if: ${{ runner.os == 'macOS' && env.SIGN_AND_NOTARIZE == 'true' }}
@@ -86,7 +91,4 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         run: npm run dist-mac
 
-  # TODO: adjust release name to like v1.2.3.202404011200
-  # tag_name: v${{ env.VERSION }}.$(date +"%Y%m%d%H%M%S")
-  # TODO: adjust electron publish release type to draft
   # TODO: adjust electron bundle files version name to like v1.2.3.202404011200
