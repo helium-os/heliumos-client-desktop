@@ -22,7 +22,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '18.17.x'
+          node-version-file: .nvmrc
+
       - name: Export version as variable
         run: |
           VERSION=$(node -p "require('./package.json').version")
@@ -31,9 +32,7 @@ jobs:
         shell: bash
 
       - name: Install Dependencies
-        run: |
-          npm install npm@8.15.0 -g
-          npm ci
+        run: npm ci
 
       - name: Build Project
         run: npm run build
