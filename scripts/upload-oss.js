@@ -22,10 +22,15 @@ const headers = {
   'x-oss-forbid-overwrite': 'true',
 };
 
+// 将 Windows 下的反斜杠的目录分隔符，替换为正斜杠
+function replaceToForwardSlash(p = '') {
+  return p?.replace(/\\/g, '/');
+}
+
 // 递归遍历目录并上传文件
 async function uploadFiles(source, target) {
   console.log('From: ', source);
-  console.log('To: ', target);
+  console.log('To: ', target, replaceToForwardSlash(target));
 
   const files = fs.readdirSync(source);
   const uploadPromises = files.map(async (file) => {
@@ -34,14 +39,14 @@ async function uploadFiles(source, target) {
     if (stat.isFile()) {
       try {
         // 上传文件
-        const targetPath = path.join(target, file);
+        const targetPath = replaceToForwardSlash(path.join(target, file));
         const uploadRes = await client.multipartUpload(targetPath, filePath, {
           headers,
           progress: function (p) {
             console.log(`Uploading ${file}: ${Math.round(p * 100)}%`);
           },
         });
-        const symlinkPath = path.join(ALI_OSS_RELEASE_PATH, file);
+        const symlinkPath = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, file));
         const symlinkRes = await client.putSymlink(symlinkPath, targetPath);
 
         const uploadOK = uploadRes?.res?.statusCode === 200;
