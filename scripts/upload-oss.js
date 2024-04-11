@@ -52,6 +52,7 @@ async function uploadFiles(source, target) {
         return statusOK;
       } catch (e) {
         // 不覆盖文件
+        console.log('[DEBUG]: Upload Failed', e);
         const isFileAlreadyExists = String(e?.code) === 'FileAlreadyExists';
         console.log(`${String(e?.code || '')}: `, file);
         return isFileAlreadyExists ? true : false;
