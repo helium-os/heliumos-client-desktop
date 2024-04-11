@@ -22,6 +22,8 @@ const headers = {
   'x-oss-forbid-overwrite': 'true',
 };
 
+const ignoreFiles = ['builder-debug.yml'];
+
 // 将 Windows 下的反斜杠的目录分隔符，替换为正斜杠
 function replaceToForwardSlash(p = '') {
   return p?.replace(/\\/g, '/');
@@ -51,7 +53,7 @@ function computeSafeArtifactNameIfNeeded(suggestedName = '', safeNameProducer = 
 
 // 递归遍历目录并上传文件
 async function uploadFiles(source, target) {
-  console.log(`From: ${source}, To: ${target} format=${replaceToForwardSlash(target)}`);
+  console.log(`From: ${source}, \nTo: ${target} format=${replaceToForwardSlash(target)}`);
 
   const files = fs.readdirSync(source);
   const uploadPromises = files.map(async (file) => {
@@ -59,6 +61,11 @@ async function uploadFiles(source, target) {
     const fileName = computeSafeArtifactNameIfNeeded(file) || file;
     const stat = fs.statSync(filePath);
     if (stat.isFile()) {
+      if (ignoreFiles.includes(file)) {
+        // 忽略文件
+        console.log(`Skip file: ${file}`);
+        return true;
+      }
       try {
         // 上传文件
         const targetPath = replaceToForwardSlash(path.join(target, fileName));
@@ -75,7 +82,8 @@ async function uploadFiles(source, target) {
         const symlinkOK = symlinkRes?.res.statusCode === 200;
         const statusOK = uploadOK && symlinkOK;
         console.log(
-          `${statusOK ? 'Uploaded' : 'Failed'}: fileName=${fileName} file=${file}, uploadOK=${uploadOK} symlinkOK=${symlinkOK}`,
+          `${statusOK ? 'Uploaded' : 'Failed'}: fileName=${fileName} file=${file}`,
+          `${!statusOK ? `uploadOK=${uploadOK}, symlinkOK=${symlinkOK}` : ``}`,
         );
         return statusOK;
       } catch (e) {
