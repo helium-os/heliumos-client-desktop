@@ -5,7 +5,12 @@ const { notarize } = require('@electron/notarize');
 // https://www.electron.build/code-signing
 exports.default = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
-  if (electronPlatformName !== 'darwin' && process.env.SIGN_AND_NOTARIZE === 'false') {
+  console.log(
+    'electronPlatformName, process.env.SIGN_AND_NOTARIZE',
+    electronPlatformName,
+    process.env.SIGN_AND_NOTARIZE,
+  );
+  if (electronPlatformName !== 'darwin' || process.env.SIGN_AND_NOTARIZE === 'false') {
     return;
   }
 
