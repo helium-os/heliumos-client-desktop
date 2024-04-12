@@ -24,15 +24,22 @@ jobs:
 
       - name: Export version as variable
         run: |
+          # create variable
+          VERSION=$(node -p "require('./package.json').version")
+          LATEST_COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "Before version: $VERSION, latest commit hash: $LATEST_COMMIT_HASH"
+
           # Bump version for temp test build and release draft
+          # npm version --no-git-tag-version --preid beta prerelease
+          npm version --no-git-tag-version --preid beta-$(echo $LATEST_COMMIT_HASH) prerelease
           VERSION=$(node -p "require('./package.json').version")
-          echo "Before version: $VERSION"
-          npm version --no-git-tag-version --preid beta prerelease
-          VERSION=$(node -p "require('./package.json').version")
+
+          # export version variable
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "Current version: $VERSION"
 
-          echo "TEST_BUILD_HASH=.$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+          # export current branch latest git commit short-hash for test build
+          echo "TEST_BUILD_HASH=.$(LATEST_COMMIT_HASH)" >> "$GITHUB_ENV"
           echo "EP_DRAFT=true" >> "$GITHUB_ENV"
           echo "electron-publish will release a draft"
         shell: bash
