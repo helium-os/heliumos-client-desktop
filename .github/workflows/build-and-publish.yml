@@ -4,15 +4,13 @@ on:
   # TODO: wait for remove workflow_dispatch event
   workflow_dispatch:
   push:
-    tags: '*'
+    tags: 'v*'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
-    # if no [ci] mark will skip job
-    if: ${{ contains(github.event.head_commit.message, '[ci]') }}
     strategy:
       matrix:
         os: [ubuntu-20.04, macos-latest, windows-latest]
