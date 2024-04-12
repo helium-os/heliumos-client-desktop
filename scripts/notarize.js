@@ -7,7 +7,7 @@ exports.default = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
   if (electronPlatformName !== 'darwin' || process.env.IGNORE_NOTARIZATION === 'true') {
     console.log(
-      `[WARN]: Ignore notarize, bacause platform=${electronPlatformName}, IGNORE_NOTARIZATION=${process.env.IGNORE_NOTARIZATION}`,
+      `[INFO]: Ignore notarize, bacause platform=${electronPlatformName}, IGNORE_NOTARIZATION=${process.env.IGNORE_NOTARIZATION}`,
     );
     return;
   }
