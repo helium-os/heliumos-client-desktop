@@ -3,8 +3,7 @@ name: Build
 on:
   workflow_dispatch:
   pull_request:
-    types:
-      - opened
+    types: [opened]
     branches:
       - main
   push:
@@ -12,7 +11,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  SIGN_AND_NOTARIZE: false
+  IGNORE_NOTARIZATION: true
 
 jobs:
   build:
@@ -62,7 +61,7 @@ jobs:
           draft: true
 
       - name: Install the Apple certificate and api key
-        if: ${{ runner.os == 'macOS' && env.SIGN_AND_NOTARIZE == 'true' }}
+        if: ${{ runner.os == 'macOS' }}
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}

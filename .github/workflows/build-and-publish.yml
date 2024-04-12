@@ -8,8 +8,6 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # SIGN_AND_NOTARIZE: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
-  SIGN_AND_NOTARIZE: true
 
 jobs:
   build:
@@ -54,7 +52,7 @@ jobs:
           tag_name: v${{ env.VERSION }}
 
       - name: Install the Apple certificate and api key
-        if: ${{ runner.os == 'macOS' && env.SIGN_AND_NOTARIZE == 'true' }}
+        if: ${{ runner.os == 'macOS' }}
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}

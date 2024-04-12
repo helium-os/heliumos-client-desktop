@@ -5,9 +5,9 @@ const { notarize } = require('@electron/notarize');
 // https://www.electron.build/code-signing
 exports.default = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
-  if (electronPlatformName !== 'darwin' || process.env.SIGN_AND_NOTARIZE === 'false') {
+  if (electronPlatformName !== 'darwin' || process.env.IGNORE_NOTARIZATION === 'true') {
     console.log(
-      `[WARN]: Ignore notarize, bacause platform=${electronPlatformName}, SIGN_AND_NOTARIZE=${process.env.SIGN_AND_NOTARIZE}`,
+      `[WARN]: Ignore notarize, bacause platform=${electronPlatformName}, IGNORE_NOTARIZATION=${process.env.IGNORE_NOTARIZATION}`,
     );
     return;
   }
