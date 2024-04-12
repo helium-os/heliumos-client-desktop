@@ -64,7 +64,8 @@ prod
 /out/
 
 # production
-/electron-src/build/icons/png
+/electron-src/build/icons/icon.icns
+/electron-src/build/icons/icon.ico
 
 # misc
 *.pem
