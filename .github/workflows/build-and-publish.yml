@@ -26,12 +26,21 @@ jobs:
 
       - name: Export version as variable
         run: |
+          # create variable
           VERSION=$(node -p "require('./package.json').version")
+
+          # export version variable
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "Current version: $VERSION"
 
           echo "TEST_BUILD_HASH=" >> "$GITHUB_ENV"
         shell: bash
+
+      - name: Check tag and version
+        if: github.ref_name != 'v$VERSION'
+        run: |
+          echo "Push tag version different with project version, tag=$GITHUB_REF_NAME, project=v$VERSION"
+          exit 1
 
       - name: Install Dependencies
         run: npm ci
