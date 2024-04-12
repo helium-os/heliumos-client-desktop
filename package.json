@@ -116,7 +116,7 @@
                 "AppImage",
                 "zip"
             ],
-            "icon": "electron-src/build/icons"
+            "icon": "electron-src/build/icons/linux/icon.icns"
         }
     },
     "win": {
