@@ -41,7 +41,6 @@ jobs:
           echo "Current version: $VERSION"
 
           # export current branch latest git commit short-hash for test build
-          echo "TEST_BUILD_HASH=.$(LATEST_COMMIT_HASH)" >> "$GITHUB_ENV"
           echo "EP_DRAFT=true" >> "$GITHUB_ENV"
           echo "electron-publish will release a draft"
         shell: bash

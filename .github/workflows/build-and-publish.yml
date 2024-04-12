@@ -30,8 +30,6 @@ jobs:
           # export version variable
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "Current version: $VERSION"
-
-          echo "TEST_BUILD_HASH=" >> "$GITHUB_ENV"
         shell: bash
 
       - name: Check tag and version
