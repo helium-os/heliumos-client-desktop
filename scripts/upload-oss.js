@@ -54,6 +54,25 @@ function computeSafeArtifactNameIfNeeded(suggestedName = '', safeNameProducer = 
   return safeNameProducer();
 }
 
+function generateLatestInstallerNameIfMatch(f = '') {
+  // artifactName => "${productName}-${version}-${arch}-${os}.${ext}"
+  // ${version} 1.2.3 (preid? beta-sde31d3.0)
+  // ${arch}: x64|arm64|x86_64|ia32|armv7l ${os}: mac|win|linux ${ext}: dmg|exe|AppImage
+  const regexp =
+    /^([\w]+)-([0-9]+\.[0-9]+\.[0-9]+)-([\w\.-]+-)?(x64|arm64|x86_64|ia32|armv7l)-(mac|win|linux)\.([(dmg|exe|AppImage)]+)$/;
+  if (!f || !regexp.test(f)) {
+    return null;
+  }
+
+  return f.replace(regexp, function (_, productName, _version, _preid, arch, os, ext) {
+    console.log(
+      `Generate Latest Installer Name If Match, arguments: _=${_} productName=${productName} _version=${_version} _preid=${_preid} arch=${arch} os=${os} ext=${ext}`,
+    );
+
+    return `${productName}-latest-${arch}-${os}.${ext}`;
+  });
+}
+
 // 递归遍历目录并上传文件
 async function uploadFiles(source, target) {
   console.log(`From: ${source}, \nTo: ${target} format=${replaceToForwardSlash(target)}`);
@@ -78,11 +97,28 @@ async function uploadFiles(source, target) {
             console.log(`Uploading ${fileName}: ${Math.round(p * 100)}%`);
           },
         });
+        const uploadOK = uploadRes?.res?.statusCode === 200;
+        console.log(`${uploadOK ? 'Uploaded' : 'Failed'}: targetPath=${fileName} filePath=${filePath} file=${file}`);
+
+        // 创建软链接
         const symlinkPath = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, fileName));
         const symlinkRes = await client.putSymlink(symlinkPath, targetPath);
-
-        const uploadOK = uploadRes?.res?.statusCode === 200;
         const symlinkOK = symlinkRes?.res.statusCode === 200;
+        console.log(
+          `${symlinkOK ? 'Created' : 'Failed'}: symlinkPath=${symlinkPath} targetPath=${targetPath} file=${file}`,
+        );
+
+        // 创建 latest 软链接
+        const latestFileName = generateLatestInstallerNameIfMatch(fileName);
+        if (latestFileName) {
+          const latestSymlinkPath = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, latestFileName));
+          const latestSymlinkRes = await client.putSymlink(latestSymlinkPath, targetPath);
+          const latestSymlinkOK = latestSymlinkRes?.res.statusCode === 200;
+          console.log(
+            `${latestSymlinkOK ? 'Updated' : 'Failed'}: symlinkPath=${latestSymlinkPath} targetPath=${targetPath} file=${file}`,
+          );
+        }
+
         const statusOK = uploadOK && symlinkOK;
         console.log(
           `${statusOK ? 'Uploaded' : 'Failed'}: fileName=${fileName} file=${file}`,
