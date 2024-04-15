@@ -24,6 +24,9 @@ const headers = {
 
 const ignoreFiles = ['builder-debug.yml'];
 
+// TODO: 保留最近两个版本软链接 +-
+// TODO: 为不同操作系统的安装包创建版本 version=latest 的软链接，以确保官网上的下载链接始终指向最新的文件 ++
+
 // 将 Windows 下的反斜杠的目录分隔符，替换为正斜杠
 function replaceToForwardSlash(p = '') {
   return p?.replace(/\\/g, '/');
