@@ -29,13 +29,15 @@ jobs:
 
           # export version variable
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "VERSION_TAG=v$VERSION" >> "$GITHUB_ENV"
           echo "Current version: $VERSION"
+          echo "Current tag: $VERSION_TAG"
         shell: bash
 
       - name: Check tag and version
-        if: github.ref_name != 'v$VERSION'
+        if: ${{ github.ref_name != env.VERSION_TAG }}
         run: |
-          echo "Push tag version different with project version, tag=$GITHUB_REF_NAME, project=v$VERSION"
+          echo "Push tag version different with project version, tag=$GITHUB_REF_NAME, project=$VERSION_TAG"
           exit 1
 
       - name: Install Dependencies
