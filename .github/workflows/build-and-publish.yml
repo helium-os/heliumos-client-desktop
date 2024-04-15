@@ -1,21 +1,16 @@
-name: Build
+name: Build And Publish
 
 on:
+  # TODO: wait for remove workflow_dispatch event
   workflow_dispatch:
   push:
-    branches:
-      - main
-      - 'users/*/[0-9]+/**'
+    tags: 'v*'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # if there is [skip-notarize] mark on commit message will skip notarize
-  SKIP_NOTARIZE: ${{ contains(github.event.head_commit.message, '[skip-notarize]') }}
 
 jobs:
   build:
-    # if no [ci] mark on commit message will skip job
-    if: ${{ contains(github.event.head_commit.message, '[ci]') }}
     strategy:
       matrix:
         os: [ubuntu-20.04, macos-latest, windows-latest]
@@ -31,22 +26,17 @@ jobs:
         run: |
           # create variable
           VERSION=$(node -p "require('./package.json').version")
-          LATEST_COMMIT_HASH=$(git rev-parse --short HEAD)
-          echo "Before version: $VERSION, latest commit hash: $LATEST_COMMIT_HASH"
-
-          # Bump version for temp test build and release draft
-          # npm version --no-git-tag-version --preid beta prerelease
-          npm version --no-git-tag-version --preid beta-$(echo $LATEST_COMMIT_HASH) prerelease
-          VERSION=$(node -p "require('./package.json').version")
 
           # export version variable
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "Current version: $VERSION"
-
-          # export current branch latest git commit short-hash for test build
-          echo "EP_DRAFT=true" >> "$GITHUB_ENV"
-          echo "electron-publish will release a draft"
         shell: bash
+
+      - name: Check tag and version
+        if: github.ref_name != 'v$VERSION'
+        run: |
+          echo "Push tag version different with project version, tag=$GITHUB_REF_NAME, project=v$VERSION"
+          exit 1
 
       - name: Install Dependencies
         run: npm ci
@@ -58,7 +48,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VERSION }}
-          draft: true
 
       - name: Install the Apple certificate and api key
         if: ${{ runner.os == 'macOS' }}
@@ -104,3 +93,17 @@ jobs:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: npm run dist-mac
+
+      - name: Upload to Cloud Storage
+        run: |
+          echo "Current version: $VERSION"
+          npm i ali-oss
+          node ./scripts/upload-oss.js
+        env:
+          ALI_OSS_REGION: ${{ vars.ALI_OSS_REGION }}
+          ALI_OSS_ACCESS_KEY_ID: ${{ secrets.ALI_OSS_ACCESS_KEY_ID }}
+          ALI_OSS_ACCESS_KEY_SECRET: ${{ secrets.ALI_OSS_ACCESS_KEY_SECRET }}
+          ALI_OSS_BUCKET: ${{ vars.ALI_OSS_BUCKET }}
+          ALI_OSS_ENDPOINT: ${{ vars.ALI_OSS_ENDPOINT }}
+          ALI_OSS_RELEASE_PATH: ${{ vars.ALI_OSS_RELEASE_PATH }}
+        shell: bash

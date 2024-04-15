@@ -1,6 +1,6 @@
 {
     "name": "HeliumOS",
-    "version": "1.2.10",
+    "version": "1.2.11",
     "main": "electron-src/main.js",
     "description": "HeliumOS client desktop",
     "author": "HeliumOS",
@@ -10,7 +10,6 @@
         "lint": "next lint",
         "lint:fix": "next lint --fix",
         "electron-start": "cross-env NODE_ENV=testinner electron . --icon=favicon.ico ",
-        "electron:generate-icons": "electron-icon-builder --input=./electron-src/build/icon.png --output=electron-src/build",
         "electron-start-all": "concurrently \"npm run dev\" \"wait-on http://localhost:3001 && npm run electron-start\"",
         "dist": "cross-env  electron-builder --win --x64",
         "dist-mac": "electron-builder --macos --arm64 --x64",
@@ -18,9 +17,7 @@
         "build:dist": "npm run build && npm run dist",
         "build:dist-mac": "npm run build && npm run dist-mac",
         "build:dist-linux": "npm run build && npm run dist-linux",
-        "release": "electron-builder --win --config --publish always",
-        "version": "echo $npm_package_version > version",
-        "version-win": "echo $npm_package_version "
+        "release": "electron-builder --win --config --publish always"
     },
     "dependencies": {
         "@ant-design/nextjs-registry": "^1.0.0",
@@ -75,11 +72,12 @@
             "out"
         ],
         "appId": "io.heliumos.client-desktop",
+        "artifactName": "${productName}-${version}-${arch}-${os}.${ext}",
         "productName": "HeliumOS",
         "nsis": {
             "perMachine": false
         },
-        "afterSign": "electron-src/build/scripts/notarize.js",
+        "afterSign": "scripts/notarize.js",
         "publish": [
             {
                 "provider": "github",
