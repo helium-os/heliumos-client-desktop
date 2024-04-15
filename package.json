@@ -1,6 +1,6 @@
 {
     "name": "HeliumOS",
-    "version": "1.2.10",
+    "version": "1.2.11",
     "main": "electron-src/main.js",
     "description": "HeliumOS client desktop",
     "author": "HeliumOS",
@@ -10,7 +10,6 @@
         "lint": "next lint",
         "lint:fix": "next lint --fix",
         "electron-start": "cross-env NODE_ENV=testinner electron . --icon=favicon.ico ",
-        "electron:generate-icons": "electron-icon-builder --input=./electron-src/build/icon.png --output=electron-src/build",
         "electron-start-all": "concurrently \"npm run dev\" \"wait-on http://localhost:3001 && npm run electron-start\"",
         "dist": "cross-env  electron-builder --win --x64",
         "dist-mac": "electron-builder --macos --arm64 --x64",
