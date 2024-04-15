@@ -1,8 +1,6 @@
 name: Build And Publish
 
 on:
-  # TODO: wait for remove workflow_dispatch event
-  workflow_dispatch:
   push:
     tags: 'v*'
 
