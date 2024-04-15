@@ -100,4 +100,7 @@ jobs:
 
       - name: Build macOS App
         if: ${{ runner.os == 'macOS' }}
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: npm run dist-mac
