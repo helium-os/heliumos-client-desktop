@@ -100,7 +100,7 @@ async function uploadFiles(source, target) {
         console.log(`${uploadOK ? 'Uploaded' : 'Failed'}: targetPath=${fileName} filePath=${filePath} file=${file}`);
 
         // 删除软链接，仅保留最近一个版本
-        const prefix = path.join(ALI_OSS_RELEASE_PATH, '/');
+        const prefix = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, '/'));
         await deleteSymlinks(prefix);
 
         // 创建软链接
@@ -227,7 +227,7 @@ async function deleteSymlinks(prefix) {
       // 批量删除其余旧版本的软链接
       const targetNames = Object.keys(nameGroupByVersion).reduce((ret, v) => {
         const names = nameGroupByVersion[v];
-        const namesWithPrefix = names.map((name) => path.join(prefix, name));
+        const namesWithPrefix = names.map((name) => replaceToForwardSlash(path.join(prefix, name)));
         return [].concat(ret, namesWithPrefix);
       }, []);
       // console.log('Will delete Object:', targetNames);
