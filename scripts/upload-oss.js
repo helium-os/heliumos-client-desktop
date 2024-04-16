@@ -210,7 +210,7 @@ async function deleteSymlinks(prefix) {
       const oldVersions = Object.keys(nameGroupByVersion);
       if (oldVersions?.length <= 1) {
         console.log(
-          `[INFO]: Skip delete, because no outdated version symlink files in {prefix} directory`,
+          `[INFO]: Skip delete, because no outdated version symlink files in ${prefix} directory`,
           `, previousVersion=${oldVersions?.[0] || ''}`,
         );
         return null;
