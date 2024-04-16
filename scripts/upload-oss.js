@@ -207,6 +207,15 @@ async function deleteSymlinks(prefix) {
         nameGroupByVersion[outputVersion].push(name);
       });
 
+      const oldVersions = Object.keys(nameGroupByVersion);
+      if (oldVersions?.length <= 1) {
+        console.log(
+          `[INFO]: Skip delete, because no outdated version symlink files in {prefix} directory`,
+          `, previousVersion=${oldVersions?.[0] || ''}`,
+        );
+        return null;
+      }
+
       // 找到历史版本中相对最新的版本号
       const sortedVersions = Object.keys(nameGroupByVersion).sort((a, b) => (semver.lt(a, b) ? 1 : -1));
       const previousVersion = sortedVersions[0];
