@@ -1,6 +1,6 @@
 {
     "name": "HeliumOS",
-    "version": "1.2.12-beta.1",
+    "version": "1.2.12-beta.2",
     "main": "electron-src/main.js",
     "description": "HeliumOS client desktop",
     "author": "HeliumOS",
