@@ -133,7 +133,7 @@ async function uploadFiles(source, target) {
         return statusOK;
       } catch (e) {
         // 不覆盖文件
-        console.log('[DEBUG]: Upload Failed', e);
+        console.log('[ERROR]: Upload Failed', e);
         const isFileAlreadyExists = String(e?.code) === 'FileAlreadyExists';
         console.log(`${String(e?.code || '')}: `, fileName);
         return isFileAlreadyExists ? true : false;
@@ -159,18 +159,33 @@ async function uploadFiles(source, target) {
 
 // 提取产物名称中的版本号
 function extractVersionFromArtifactName(name) {
+  // HeliumOS-1.2.12-beta.1-arm64-mac.dmg.blockmap
+  // artifactName => "${productName}-${version}-${arch}-${os}.${ext}"
+  // G1: ${productName} => HeliumOS
+  // G2: ${version} => (1.2.12)-?(beta.1)?
+  // G3: ${version} no preid => 1.2.3
+  // G4: ${version} preid => beta.1, beta-sde31d3.0
+  // G5: ${arch} => x64|arm64|x86_64|ia32|armv7l
+  // G6: ${os} => mac|win|linux
+  // G7: ${ext} => dmg.blockmap, (dmg|exe|AppImage|zip)\.?(blockmap)?
+  // G8: ${ext} prefix => dmg, G9: ${ext} suffix => blockmap
   const regexp =
-    /^([\w]+)-([0-9]+\.[0-9]+\.[0-9]+)-([\w\d-]\.[\d]+)?-?(x64|arm64|x86_64|ia32|armv7l)?-?(mac|win|linux)?\.(dmg|exe|AppImage|zip)\.?(blockmap)?$/;
+    /^([\w]+)-(([\d]+\.[\d]+\.[\d]+)-?([\w\.-]+)?)-(x64|arm64|x86_64|ia32|armv7l)-(mac|win|linux)\.((dmg|exe|AppImage|zip)\.?(blockmap)?)$/;
+  // 使用正则匹配构建产物名称
   const matchRet = name.match(regexp);
-  // console.log('matchRet', matchRet);
 
+  // 准备预过滤版本号
   let inputVersion = '';
   if (matchRet) {
-    inputVersion = `${matchRet[2]}${matchRet[3] ? `-${matchRet[3]}` : ''}`;
+    inputVersion = `${matchRet[2]}`;
   } else {
+    // 正则没匹配到版本号时，将产物名称作为预过滤版本号，等待强制提取
+    console.log(`[INFO]: Regexp match null, try to force extract version from fileName=${name}`);
     inputVersion = name;
   }
 
+  // 过滤版本号，确保版本号符合规范
+  // https://github.com/npm/node-semver?tab=readme-ov-file#coercion
   const semverVal = semver.coerce(inputVersion, {
     includePrerelease: true,
   });
@@ -224,24 +239,24 @@ async function deleteSymlinks(prefix) {
       delete nameGroupByVersion[previousVersion];
       console.log('nameGroupByVersion', nameGroupByVersion);
 
-      // 批量删除其余旧版本的软链接
-      const targetNames = Object.keys(nameGroupByVersion).reduce((ret, v) => {
+      // 组装远程文件路径
+      const willDeleteFileNames = Object.keys(nameGroupByVersion).reduce((ret, v) => {
         const names = nameGroupByVersion[v];
         const namesWithPrefix = names.map((name) => replaceToForwardSlash(path.join(prefix, name)));
         return [].concat(ret, namesWithPrefix);
       }, []);
-      // console.log('Will delete Object:', targetNames);
-      const deleteRes = await client.deleteMulti(targetNames, { quiet: true });
+      console.log('willDeleteFileNames', willDeleteFileNames);
+      // 批量删除其余旧版本的软链接
+      const deleteRes = await client.deleteMulti(willDeleteFileNames, { quiet: true });
       console.log('deleteRes', deleteRes);
 
       const deleteOK = deleteRes?.res?.statusCode === 200;
-      console.log(`${deleteOK ? 'Deleted' : 'Delete failed'}: file=${name}`);
-      // console.log('All outdated symlink deleted.');
+      console.log(`${deleteOK ? 'All outdated symlink deleted.' : 'Outdated symlink delete failed.'}`);
     } else {
       console.log(`[INFO]: No match symlink files in ${prefix} directory`);
     }
   } catch (e) {
-    console.log(`[DEBUG]: Delete failed`, e);
+    console.log(`[ERROR]: Delete failed`, e);
   }
 }
 
