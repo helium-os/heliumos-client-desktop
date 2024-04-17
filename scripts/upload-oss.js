@@ -4,12 +4,10 @@ const fs = require('fs');
 const semver = require('semver');
 
 const BUILD_OUT_DIR = 'dist';
+const LATEST_IDENTIFY = 'latest';
 const ALI_OSS_RELEASE_PATH = process.env.ALI_OSS_RELEASE_PATH;
 const VERSION = process.env.VERSION;
 const VERSION_TAG = 'v' + VERSION;
-
-const SOURCE_PATH = path.join(process.cwd(), BUILD_OUT_DIR);
-const TARGET_PATH = path.join(ALI_OSS_RELEASE_PATH, VERSION_TAG);
 
 const client = new OSS({
   // region: process.env.ALI_OSS_REGION,
@@ -26,16 +24,23 @@ const headers = {
 
 const ignoreFiles = ['builder-debug.yml'];
 
-// 将 Windows 下的反斜杠的目录分隔符，替换为正斜杠
-function replaceToForwardSlash(p = '') {
-  return p?.replace(/\\/g, '/');
+// 将字符串中的反斜杠的目录分隔符，替换为正斜杠（默认）
+function replaceDelimiter(p = '', delimiter = '/') {
+  return p?.replace(/\\/g, delimiter);
 }
 
-// // https://github.com/github/rest-api-description/issues/2968
+// 阿里云 OSS 使用正斜杠作为目录分隔符
+function aliOSSPathJoin(...paths) {
+  return replaceDelimiter(path.join(...paths));
+}
+
+// 检查是否时安全的 GitHub 文件名称
+// https://github.com/github/rest-api-description/issues/2968
 function isSafeGithubName(name = '') {
   return /^[0-9A-Za-z._-]+$/.test(name);
 }
 
+// 为构建产物文件计算安全的文件名称，如果给定的文件名不安全的时候
 function computeSafeArtifactNameIfNeeded(suggestedName = '', safeNameProducer = () => '') {
   // GitHub only allows the listed characters in file names.
   if (!!suggestedName) {
@@ -53,28 +58,29 @@ function computeSafeArtifactNameIfNeeded(suggestedName = '', safeNameProducer = 
   return safeNameProducer();
 }
 
-function generateLatestInstallerNameIfMatch(f = '') {
+// 生成以 latest 为版本号的安装包文件名称
+function generateLatestInstallerNameIfMatch(fileName = '') {
   // artifactName => "${productName}-${version}-${arch}-${os}.${ext}"
   // ${version} 1.2.3 (preid? beta-sde31d3.0)
   // ${arch}: x64|arm64|x86_64|ia32|armv7l ${os}: mac|win|linux ${ext}: dmg|exe|AppImage
   const regexp =
     /^([\w]+)-([0-9]+\.[0-9]+\.[0-9]+)-([\w\.-]+-)?(x64|arm64|x86_64|ia32|armv7l)-(mac|win|linux)\.([(dmg|exe|AppImage)]+)$/;
-  if (!f || !regexp.test(f)) {
+  if (!fileName || !regexp.test(fileName)) {
     return null;
   }
 
-  return f.replace(regexp, function (_, productName, _version, _preid, arch, os, ext) {
+  return fileName.replace(regexp, function (_, productName, _version, _preid, arch, os, ext) {
     console.log(
       `Generate Latest Installer Name If Match, arguments: _=${_} productName=${productName} _version=${_version} _preid=${_preid} arch=${arch} os=${os} ext=${ext}`,
     );
 
-    return `${productName}-latest-${arch}-${os}.${ext}`;
+    return `${productName}-${LATEST_IDENTIFY}-${arch}-${os}.${ext}`;
   });
 }
 
 // 递归遍历目录并上传文件
 async function uploadFiles(source, target) {
-  console.log(`From: ${source}, \nTo: ${target} format=${replaceToForwardSlash(target)}`);
+  console.log(`From: ${source}, \nTo: ${target}`);
 
   const files = fs.readdirSync(source);
   const uploadPromises = files.map(async (file) => {
@@ -89,7 +95,7 @@ async function uploadFiles(source, target) {
       }
       try {
         // 上传文件
-        const targetPath = replaceToForwardSlash(path.join(target, fileName));
+        const targetPath = aliOSSPathJoin(target, fileName);
         const uploadRes = await client.multipartUpload(targetPath, filePath, {
           headers,
           progress: function (p) {
@@ -100,7 +106,7 @@ async function uploadFiles(source, target) {
         console.log(`${uploadOK ? 'Uploaded' : 'Failed'}: targetPath=${fileName} filePath=${filePath} file=${file}`);
 
         // 创建软链接
-        const symlinkPath = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, fileName));
+        const symlinkPath = aliOSSPathJoin(ALI_OSS_RELEASE_PATH, fileName);
         const symlinkRes = await client.putSymlink(symlinkPath, targetPath);
         const symlinkOK = symlinkRes?.res.statusCode === 200;
         console.log(
@@ -108,10 +114,10 @@ async function uploadFiles(source, target) {
         );
 
         // 创建/更新 latest 软链接
-        // 为不同操作系统的安装包创建版本 version=latest 的软链接，以确保官网上的下载链接始终指向最新的文件
+        // 为不同操作系统的安装包创建版本 version='latest' 的软链接，以确保官网上的下载链接始终指向最新的文件
         const latestFileName = generateLatestInstallerNameIfMatch(fileName);
         if (latestFileName) {
-          const latestSymlinkPath = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, latestFileName));
+          const latestSymlinkPath = aliOSSPathJoin(ALI_OSS_RELEASE_PATH, latestFileName);
           const latestSymlinkRes = await client.putSymlink(latestSymlinkPath, targetPath);
           const latestSymlinkOK = latestSymlinkRes?.res.statusCode === 200;
           console.log(
@@ -203,7 +209,7 @@ async function deleteOutdatedSymlinks(prefix) {
     // 列出软链接文件名称
     const symlinkNames = result?.objects
       ?.filter((obj) => {
-        return obj.type === 'Symlink' && obj.name.indexOf('latest') === -1;
+        return obj.type === 'Symlink' && obj.name.indexOf(LATEST_IDENTIFY) === -1;
       })
       .map((obj) => obj.name.replace(prefix, ''));
 
@@ -219,6 +225,7 @@ async function deleteOutdatedSymlinks(prefix) {
         nameGroupByVersion[outputVersion].push(name);
       });
 
+      // 保留最近一个版本的软链接
       const oldVersions = Object.keys(nameGroupByVersion);
       if (oldVersions?.length <= 1) {
         console.log(
@@ -239,7 +246,7 @@ async function deleteOutdatedSymlinks(prefix) {
       // 组装远程文件路径
       const willDeleteFileNames = Object.keys(nameGroupByVersion).reduce((ret, v) => {
         const names = nameGroupByVersion[v];
-        const namesWithPrefix = names.map((name) => replaceToForwardSlash(path.join(prefix, name)));
+        const namesWithPrefix = names.map((name) => aliOSSPathJoin(prefix, name));
         return [].concat(ret, namesWithPrefix);
       }, []);
       console.log('willDeleteFileNames', willDeleteFileNames);
@@ -258,11 +265,14 @@ async function deleteOutdatedSymlinks(prefix) {
 }
 
 async function start() {
+  const pathPrefix = aliOSSPathJoin(ALI_OSS_RELEASE_PATH, '/');
   // 执行删除过时软链接操作
-  await deleteOutdatedSymlinks(replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, '/')));
+  await deleteOutdatedSymlinks(pathPrefix);
 
+  const sourcePath = path.join(process.cwd(), BUILD_OUT_DIR);
+  const targetPath = aliOSSPathJoin(ALI_OSS_RELEASE_PATH, VERSION_TAG);
   // 执行并发上传操作
-  uploadFiles(SOURCE_PATH, TARGET_PATH).catch((error) => {
+  uploadFiles(sourcePath, targetPath).catch((error) => {
     console.log('UploadFiles error:', error);
   });
 }
