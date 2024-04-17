@@ -99,10 +99,6 @@ async function uploadFiles(source, target) {
         const uploadOK = uploadRes?.res?.statusCode === 200;
         console.log(`${uploadOK ? 'Uploaded' : 'Failed'}: targetPath=${fileName} filePath=${filePath} file=${file}`);
 
-        // 删除软链接，仅保留最近一个版本
-        const prefix = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, '/'));
-        await deleteSymlinks(prefix);
-
         // 创建软链接
         const symlinkPath = replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, fileName));
         const symlinkRes = await client.putSymlink(symlinkPath, targetPath);
@@ -195,7 +191,8 @@ function extractVersionFromArtifactName(name) {
   return outputVersion;
 }
 
-async function deleteSymlinks(prefix) {
+// 经过比较后批量删除过时版本的软链接（仅保留最近一个版本的软链接）
+async function deleteOutdatedSymlinks(prefix) {
   // 不带任何参数，默认最多返回100个文件。
   try {
     // 列出目录下的文件
@@ -256,11 +253,18 @@ async function deleteSymlinks(prefix) {
       console.log(`[INFO]: No match symlink files in ${prefix} directory`);
     }
   } catch (e) {
-    console.log(`[ERROR]: Delete failed`, e);
+    console.log(`[ERROR]: Delete outdated symlinks failed`, e);
   }
 }
 
-// 执行并发上传操作
-uploadFiles(SOURCE_PATH, TARGET_PATH).catch((error) => {
-  console.log('UploadFiles error:', error);
-});
+async function start() {
+  // 执行删除过时软链接操作
+  await deleteOutdatedSymlinks(replaceToForwardSlash(path.join(ALI_OSS_RELEASE_PATH, '/')));
+
+  // 执行并发上传操作
+  uploadFiles(SOURCE_PATH, TARGET_PATH).catch((error) => {
+    console.log('UploadFiles error:', error);
+  });
+}
+
+start();
