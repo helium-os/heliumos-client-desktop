@@ -197,7 +197,7 @@ function extractVersionFromArtifactName(name) {
   return outputVersion;
 }
 
-// 经过比较后批量删除过时版本的软链接（仅保留最近一个版本的软链接）
+// 经过比较后批量删除过时版本的软链接（除当前版本外，保留最近一个版本的软链接）
 async function deleteOutdatedSymlinks(prefix) {
   // 不带任何参数，默认最多返回100个文件。
   try {
@@ -225,9 +225,14 @@ async function deleteOutdatedSymlinks(prefix) {
         nameGroupByVersion[outputVersion].push(name);
       });
 
-      // 保留最近一个版本的软链接
+      // 找到历史版本中相对最新的版本号
+      const sortedVersions = Object.keys(nameGroupByVersion).sort((a, b) => (semver.lt(a, b) ? 1 : -1));
+      const previousVersion = sortedVersions[0];
+      console.log(`currentVersion=${VERSION}, previousVersion=${previousVersion}`, sortedVersions);
+
+      // 检查是否有过时版本的软链接
       const oldVersions = Object.keys(nameGroupByVersion);
-      if (oldVersions?.length <= 1) {
+      if (previousVersion === VERSION || oldVersions?.length <= 1) {
         console.log(
           `[INFO]: Skip delete, because no outdated version symlink files in ${prefix} directory`,
           `, previousVersion=${oldVersions?.[0] || ''}`,
@@ -235,13 +240,10 @@ async function deleteOutdatedSymlinks(prefix) {
         return null;
       }
 
-      // 找到历史版本中相对最新的版本号
-      const sortedVersions = Object.keys(nameGroupByVersion).sort((a, b) => (semver.lt(a, b) ? 1 : -1));
-      const previousVersion = sortedVersions[0];
-      console.log('previousVersion', previousVersion, sortedVersions);
-      // 保留该版本的软链接
+      // 除当前版本外，保留最近一个版本的软链接
+      delete nameGroupByVersion[VERSION];
       delete nameGroupByVersion[previousVersion];
-      console.log('nameGroupByVersion', nameGroupByVersion);
+      console.log('nameGroupByOutdatedVersion', nameGroupByVersion);
 
       // 组装远程文件路径
       const willDeleteFileNames = Object.keys(nameGroupByVersion).reduce((ret, v) => {
