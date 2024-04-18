@@ -97,7 +97,7 @@ jobs:
       - name: Upload to Cloud Storage
         run: |
           echo "Current version: $VERSION"
-          npm i ali-oss
+          npm i ali-oss semver
           node ./scripts/upload-oss.js
         env:
           ALI_OSS_REGION: ${{ vars.ALI_OSS_REGION }}
