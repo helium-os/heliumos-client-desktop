@@ -5,6 +5,15 @@ const semver = require('semver');
 
 const BUILD_OUT_DIR = 'dist';
 const LATEST_IDENTIFY = 'latest';
+// https://www.electron.build/file-patterns#file-macros
+const RUNNER_OS_TO_BUILDER_OS = {
+  Linux: 'linux',
+  Windows: 'win',
+  macOS: 'mac'
+};
+
+// https://docs.github.com/zh/actions/learn-github-actions/variables#default-environment-variables
+const RUNNER_OS = process.env.RUNNER_OS;
 const ALI_OSS_RELEASE_PATH = process.env.ALI_OSS_RELEASE_PATH;
 const VERSION = process.env.VERSION;
 const VERSION_TAG = 'v' + VERSION;
@@ -211,7 +220,8 @@ async function deleteOutdatedSymlinks(prefix) {
       ?.filter((obj) => {
         return obj.type === 'Symlink' && obj.name.indexOf(LATEST_IDENTIFY) === -1;
       })
-      .map((obj) => obj.name.replace(prefix, ''));
+      .map((obj) => obj.name.replace(prefix, ''))
+      .filter(name => name.indexOf(RUNNER_OS_TO_BUILDER_OS[RUNNER_OS]) >= 0)
 
     if (symlinkNames && symlinkNames.length) {
       // 按文件名中的版本号进行分组
